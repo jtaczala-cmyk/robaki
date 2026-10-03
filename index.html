@@ -17,8 +17,8 @@
   <meta property="og:url" content="https://jtaczala-cmyk.github.io/robaki/" />
   <meta property="og:image" content="https://jtaczala-cmyk.github.io/robaki/intro.jpg" />
   <meta name="copyright" content="© 2026 Jacek Taczała" />
-  <meta name="robaki-version" content="v4.2-swiat-truckpark" />
-  <link rel="stylesheet" href="fonts/fonts.css?v=4.2" />
+  <meta name="robaki-version" content="v4.3-swiat-truckpark" />
+  <link rel="stylesheet" href="fonts/fonts.css?v=4.3" />
   <style>
     /* =====================================================================
        THEME — every colour / font of the game lives here.
@@ -90,6 +90,10 @@
     .logo { display: flex; flex-direction: column; align-items: center; line-height: 1; margin-bottom: 6px; }
     .logo-top { font-family: var(--font-title); font-size: clamp(26px, 8vw, 40px); color: var(--c-pink); transform: rotate(-4deg); letter-spacing: 1px; text-shadow: 0 3px 0 var(--c-ink); }
     .logo-main { font-family: var(--font-heavy); font-size: clamp(38px, 12.5vw, 66px); letter-spacing: 1px; text-transform: uppercase; transform: skewX(-10deg); text-shadow: 0 4px 0 var(--c-red), 0 8px 18px rgba(0,0,0,.6); }
+    #langSw { position: absolute; top: calc(10px + env(safe-area-inset-top, 0px)); left: calc(10px + env(safe-area-inset-left, 0px)); display: flex; gap: 4px; z-index: 5; }
+    #langSw .ibtn { width: 44px; height: 40px; font-size: 14px; letter-spacing: 1px; }
+    #langSw .ibtn.on { background: var(--c-red); border-color: var(--c-white); }
+    .icons em { font-style: normal; }
     .logo-pl { margin-top: 2px; font-family: var(--font-title); font-size: 15px; letter-spacing: .5px; color: #e8dcdf; transform: rotate(-2deg); }
     .legal { font-size: 11px !important; color: var(--c-muted); margin: 8px 0 0 !important; letter-spacing: .3px; }
     .legal a { color: var(--c-white); text-decoration: underline; display: inline-block; padding: 8px 2px; margin: -8px 0; }
@@ -221,9 +225,9 @@
       <div id="safeProbe"></div>
       <div id="hud" style="display:none">
         <div class="hud-top">
-          <div class="hcard time"><label>CZAS</label><b id="t">60.0</b></div>
+          <div class="hcard time"><label data-i18n="hudTime">CZAS</label><b id="t">60.0</b></div>
           <div class="hmid">
-            <div class="hrow"><label>KABINA</label><span id="hpTxt">100%</span></div>
+            <div class="hrow"><label data-i18n="hudCab">KABINA</label><span id="hpTxt">100%</span></div>
             <div class="bar"><div id="hpbar"></div></div>
             <div class="hrow"><span id="waveTxt">FALA 1</span><span id="aliveTxt">0</span></div>
             <div class="bar thin"><div id="skillbar"></div></div>
@@ -231,8 +235,8 @@
           </div>
           <div class="hcard score"><label id="hudNick">PUNKTY</label><b id="s">0</b></div>
           <div class="hbtns">
-            <button id="pauseBtn" class="ibtn" type="button" aria-label="Pauza">II</button>
-            <button class="sndBtn ibtn" type="button" aria-label="Dźwięk">🔊</button>
+            <button id="pauseBtn" class="ibtn" type="button" aria-label="Pauza" data-i18n-aria="aPause">II</button>
+            <button class="sndBtn ibtn" type="button" aria-label="Dźwięk" data-i18n-aria="aSound">🔊</button>
           </div>
         </div>
         <div id="chips"></div>
@@ -242,79 +246,175 @@
         <div class="logo">
           <span class="logo-top">Sneaky</span>
           <span class="logo-main">BUGS</span>
-          <span class="logo-pl">Atak Czarnych Robaków</span>
-          <span class="logo-sub">NOCNY TRUCK PARK · 60 S</span>
+          <span class="logo-pl" data-i18n="logoPl">Atak Czarnych Robaków</span>
+          <span class="logo-sub" data-i18n="logoSub">NOCNY TRUCK PARK · 60 S</span>
         </div>
         <ul class="checks">
-          <li>60 s + premie<i>✓</i></li>
-          <li>Fale 6·8·10·12…<i>✓</i></li>
-          <li>5 stref na mapie<i>✓</i></li>
-          <li>Umiejętności<i>✓</i></li>
+          <li><span data-i18n="chk1">60 s + premie</span><i>✓</i></li>
+          <li><span data-i18n="chk2">Fale 6·8·10·12…</span><i>✓</i></li>
+          <li><span data-i18n="chk3">5 stref na mapie</span><i>✓</i></li>
+          <li><span data-i18n="chk4">Umiejętności</span><i>✓</i></li>
         </ul>
-        <p class="howto">Przytrzymaj palec — ciężarówka jedzie w to miejsce. Rozjeżdżaj robaki w&nbsp;ruchu i&nbsp;uciekaj przed jadem. Co 6 robaków nowa umiejętność, co 5 robaków +1&nbsp;s.</p>
+        <p class="howto" data-i18n="howto">Przytrzymaj palec — ciężarówka jedzie w to miejsce. Rozjeżdżaj robaki w&nbsp;ruchu i&nbsp;uciekaj przed jadem. Co 6 robaków nowa umiejętność, co 5 robaków +1&nbsp;s.</p>
         <div class="icons">
-          <span><b style="background:#ff6b78">+</b>naprawa</span><span><b style="background:#5fe08a">T</b>+5 s</span><span><b style="background:#ffc94a">»</b>turbo</span><span><b style="background:#ff8a3d">✸</b>miażdż.</span><span><b style="background:#9fd6ff">◆</b>pancerz</span><span><b style="background:#f5f5f5">!</b>klakson</span>
+          <span><b style="background:#ff6b78">+</b><em data-i18n="icRepair">naprawa</em></span><span><b style="background:#5fe08a">T</b>+5 s</span><span><b style="background:#ffc94a">»</b><em data-i18n="icTurbo">turbo</em></span><span><b style="background:#ff8a3d">✸</b><em data-i18n="icCrush">miażdż.</em></span><span><b style="background:#9fd6ff">◆</b><em data-i18n="icArmor">pancerz</em></span><span><b style="background:#f5f5f5">!</b><em data-i18n="icHorn">klakson</em></span>
         </div>
         <div class="nickbox">
-          <label for="nick">TWÓJ NICK</label>
-          <input id="nick" type="text" maxlength="16" autocomplete="nickname" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="np. Jacek" />
+          <label for="nick" data-i18n="nickLabel">TWÓJ NICK</label>
+          <input id="nick" type="text" maxlength="16" autocomplete="nickname" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="np. Jacek" data-i18n-ph="nickPh" />
           <div class="err" id="nickErr"></div>
           <div class="lb-note">
-            <p>Nick i wynik trafią do publicznego rankingu online. Nie wpisuj imienia i nazwiska ani e-maila. <a href="prywatnosc/" target="_blank" rel="noopener">Prywatność</a></p>
-            <label class="chk"><input type="checkbox" id="lbConsent" /> Pokaż mój wynik w rankingu online</label>
+            <p><span data-i18n="lbNote">Nick i wynik trafią do publicznego rankingu online. Nie wpisuj imienia i nazwiska ani e-maila.</span> <a href="prywatnosc/" target="_blank" rel="noopener" data-i18n="privacy" data-i18n-href="privacyHref">Prywatność</a></p>
+            <label class="chk"><input type="checkbox" id="lbConsent" /> <span data-i18n="lbConsent">Pokaż mój wynik w rankingu online</span></label>
           </div>
-          <label class="chk"><input type="checkbox" id="skipIntroChk" /> Pomijaj intro (od razu do gry)</label>
+          <label class="chk"><input type="checkbox" id="skipIntroChk" /> <span data-i18n="skipIntro">Pomijaj intro (od razu do gry)</span></label>
         </div>
         <p class="best" id="bestMenu"></p>
         <div class="btnrow">
-          <button id="startBtn" class="btn" type="button">ROZPOCZNIJ</button>
-          <button id="rankBtn" class="btn ghost" type="button">RANKING</button>
+          <button id="startBtn" class="btn" type="button" data-i18n="start">ROZPOCZNIJ</button>
+          <button id="rankBtn" class="btn ghost" type="button" data-i18n="ranking">RANKING</button>
         </div>
-        <p class="legal">© 2026 Jacek Taczała · <a href="prywatnosc/" target="_blank" rel="noopener">Prywatność</a> · <a href="informacje/" target="_blank" rel="noopener">Zasady i licencje</a></p>
+        <p class="legal">© 2026 Jacek Taczała · <a href="prywatnosc/" target="_blank" rel="noopener" data-i18n="privacy" data-i18n-href="privacyHref">Prywatność</a> · <a href="informacje/" target="_blank" rel="noopener" data-i18n="terms" data-i18n-href="termsHref">Zasady i licencje</a></p>
+        <div id="langSw" role="group" aria-label="Język" data-i18n-aria="aLang"><button type="button" class="ibtn" data-lang="pl" lang="pl">PL</button><button type="button" class="ibtn" data-lang="en" lang="en">EN</button></div>
       </div>
-      <button id="sndMenu" class="sndBtn ibtn" type="button" aria-label="Dźwięk">🔊</button>
+      <button id="sndMenu" class="sndBtn ibtn" type="button" aria-label="Dźwięk" data-i18n-aria="aSound">🔊</button>
 
       <div id="rank-overlay" class="ov" style="display:none">
-        <div class="kicker">Najlepsi kierowcy</div>
-        <h1 class="head">RANKING</h1>
+        <div class="kicker" data-i18n="rankKicker">Najlepsi kierowcy</div>
+        <h1 class="head" data-i18n="rankHead">RANKING</h1>
         <div class="rank" id="rankList"></div>
         <p class="send" id="rankNote"></p>
-        <button id="rankBack" class="btn ghost" type="button">WRÓĆ</button>
+        <button id="rankBack" class="btn ghost" type="button" data-i18n="back">WRÓĆ</button>
       </div>
 
       <div id="end-overlay" class="ov" style="display:none">
-        <div class="kicker" id="endKicker">Koniec rundy</div>
-        <h1 class="head" id="endTitle">KONIEC</h1>
+        <div class="kicker" id="endKicker" data-i18n="endKicker">Koniec rundy</div>
+        <h1 class="head" id="endTitle" data-i18n="endTitle">KONIEC</h1>
         <p id="endMsg"></p>
-        <div class="scorebig"><small id="endNick"></small><b id="endScore">0</b><span>PUNKTÓW</span></div>
+        <div class="scorebig"><small id="endNick"></small><b id="endScore">0</b><span data-i18n="points">PUNKTÓW</span></div>
         <p class="best" id="endBest"></p>
         <div class="stats" id="endStats"></div>
         <div class="endside" id="endSide">
-          <div class="evlog" id="endLog"><div class="rank-cap">PRZEBIEG GRY</div><div class="evsum" id="endLogSum"></div><ol id="endLogList"></ol></div>
+          <div class="evlog" id="endLog"><div class="rank-cap" data-i18n="logCap">PRZEBIEG GRY</div><div class="evsum" id="endLogSum"></div><ol id="endLogList"></ol></div>
           <div class="rank" id="endRank"></div>
         </div>
         <p class="send" id="endSend"></p>
         <div class="btnrow">
-          <button id="againBtn" class="btn" type="button">JESZCZE RAZ</button>
-          <button id="menuBtn" class="btn ghost" type="button">MENU</button>
+          <button id="againBtn" class="btn" type="button" data-i18n="again">JESZCZE RAZ</button>
+          <button id="menuBtn" class="btn ghost" type="button" data-i18n="menu">MENU</button>
         </div>
       </div>
 
       <div id="pause-overlay" class="ov dim" style="display:none">
-        <div class="kicker">Silnik na luzie</div>
-        <h1 class="head">PAUZA</h1>
-        <p>Robaki czekają…</p>
-        <button id="resumeBtn" class="btn" type="button">GRAJ DALEJ</button>
-        <button id="quitBtn" class="btn ghost" type="button">WYJDŹ DO MENU</button>
+        <div class="kicker" data-i18n="pKicker">Silnik na luzie</div>
+        <h1 class="head" data-i18n="pHead">PAUZA</h1>
+        <p data-i18n="pText">Robaki czekają…</p>
+        <button id="resumeBtn" class="btn" type="button" data-i18n="resume">GRAJ DALEJ</button>
+        <button id="quitBtn" class="btn ghost" type="button" data-i18n="quit">WYJDŹ DO MENU</button>
       </div>
 
-      <button id="skip" class="btn ghost" type="button" style="display:none">POMIŃ INTRO ›</button>
-      <div id="hint"><span>Przytrzymaj palec — ciężarówka jedzie w palec</span></div>
+      <button id="skip" class="btn ghost" type="button" style="display:none" data-i18n="skip">POMIŃ INTRO ›</button>
+      <div id="hint"><span data-i18n="hint">Przytrzymaj palec — ciężarówka jedzie w palec</span></div>
     </div>
   </div>
 <script>
 (() => {
   'use strict';
+  // ---------- i18n: Polish (default for pl) / English. Priority: ?lang= or /en/ link > saved choice > browser language ----------
+  const LANG_KEY = 'robaki_lang_v1';
+  const STR = {
+    pl: {
+      docTitle: 'SNEAKY BUGS – Atak Czarnych Robaków', htmlLang: 'pl',
+      hudTime: 'CZAS', hudCab: 'KABINA', hudPoints: 'PUNKTY', aPause: 'Pauza', aSound: 'Dźwięk', aLang: 'Język',
+      logoSub: 'NOCNY TRUCK PARK · 60 S', logoPl: 'Atak Czarnych Robaków',
+      chk1: '60 s + premie', chk2: 'Fale 6·8·10·12…', chk3: '5 stref na mapie', chk4: 'Umiejętności',
+      howto: 'Przytrzymaj palec — ciężarówka jedzie w to miejsce. Rozjeżdżaj robaki w\u00a0ruchu i\u00a0uciekaj przed jadem. Co 6 robaków nowa umiejętność, co 5 robaków +1\u00a0s.',
+      icRepair: 'naprawa', icTurbo: 'turbo', icCrush: 'miażdż.', icArmor: 'pancerz', icHorn: 'klakson',
+      nickLabel: 'TWÓJ NICK', nickPh: 'np. Jacek',
+      lbNote: 'Nick i wynik trafią do publicznego rankingu online. Nie wpisuj imienia i nazwiska ani e-maila.',
+      privacy: 'Prywatność', terms: 'Zasady i licencje', privacyHref: 'prywatnosc/', termsHref: 'informacje/',
+      lbConsent: 'Pokaż mój wynik w rankingu online', skipIntro: 'Pomijaj intro (od razu do gry)',
+      start: 'ROZPOCZNIJ', ranking: 'RANKING', rankKicker: 'Najlepsi kierowcy', rankHead: 'RANKING', back: 'WRÓĆ',
+      endKicker: 'Koniec rundy', endTitle: 'KONIEC', points: 'PUNKTÓW', logCap: 'PRZEBIEG GRY', again: 'JESZCZE RAZ', menu: 'MENU',
+      pKicker: 'Silnik na luzie', pHead: 'PAUZA', pText: 'Robaki czekają…', resume: 'GRAJ DALEJ', quit: 'WYJDŹ DO MENU',
+      skip: 'POMIŃ INTRO ›', hint: 'Przytrzymaj palec — ciężarówka jedzie w palec',
+      best: b => 'REKORD: ' + b, mute: 'Wyłącz dźwięk', unmute: 'Włącz dźwięk',
+      nickShort: 'Wpisz nick (2–16 znaków).', nickChars: 'Dozwolone: litery, cyfry, spacja i . _ \' - (na początku litera lub cyfra).', nickBad: 'Ten nick jest niedozwolony — wybierz inny.',
+      tagFailed: 'nie wysłano', tagSending: 'wysyłam…', capOnline: 'TOP 10 · RANKING ONLINE', capLocal: 'TOP 10 · NA TYM URZĄDZENIU', rankEmpty: 'Brak wyników — zagraj pierwszy!',
+      z_road: 'ULICA · WYJAZD', z_park: 'TRUCK PARK', z_fuel: 'STACJA PALIW', z_yard: 'PLAC PRZEMYSŁOWY', z_docks: 'RAMPY ZAŁADUNKOWE',
+      sExit: 'WYJAZD ›', sLoading: 'STREFA ZAŁADUNKU', sEntry: 'WJAZD ↑', sWarehouse: 'MAGAZYN  B', sShop: 'SKLEP · 24/7', sWash: 'MYJNIA', sFuel: 'PALIWO · DIESEL · ADBLUE', sDiesel: 'ON 6,49', sPetrol: 'PB 6,89', sQuay: 'NABRZEŻE',
+      hWave: 'FALA ', hBugs: 'ROBAKI ', hNext: (sk, n, t, m) => sk + ' ZA ' + n + ' · +' + t + ' S ZA ' + m, map: 'MAPA · ',
+      sk_turbo: 'TURBO', sk_crush: 'MIAŻDŻENIE', sk_armor: 'PANCERZ', sk_horn: 'KLAKSON', ch_turbo: 'TURBO', ch_crush: 'MIAŻDŻ', ch_armor: 'PANCERZ',
+      pk_repair: 'NAPRAWA +35', pk_time: '+5 S CZASU', pk_turbo: 'TURBO!', pk_crush: 'MIAŻDŻENIE!', pk_armor: 'PANCERZ!', pk_horn: 'KLAKSON!',
+      flArmor: 'PANCERZ', flVenom: '-JAD',
+      sumWaves: 'fale', sumSkills: 'umiejętn.', sumPicks: 'power-upy', sumTime: 'premie czasu', sumZones: 'strefy', sumCombos: 'serie x3+', noEvents: 'Brak zdarzeń.',
+      evSkill: (sk, n) => 'Umiejętność: ' + sk + ' (za ' + n + ' robaków)', evTime: (a, why) => 'Premia czasowa +' + a + ' s · ' + why, whyKills: n => n + ' robaków',
+      evPick: nm => 'Power-up: ' + nm, evCombo: n => 'Seria x' + n + ' robaków', evHp: 'Kabina poniżej 30%',
+      evWave1: (n, z) => 'Fala 1 · ' + n + ' robaków z naczepy · ' + z, evWave: (w, n) => 'Fala ' + w + ' · ' + n + ' robaków', evZone: z => 'Nowa strefa: ' + z,
+      evWin: b => 'Koniec czasu · ciężarówka ocalała · premia +' + b + ' pkt', evLose: w => 'Ciężarówka zniszczona na fali ' + w,
+      kWin: 'Kierowca ocalał', kLose: 'Ciężarówka padła', tWin: 'PRZETRWAŁEŚ', tLose: 'KONIEC GRY',
+      mWin: b => 'Czas minął, a ciężarówka wciąż stoi. Premia: +' + b + ' pkt.', mLose: w => 'Jad przeżarł kabinę na fali ' + w + '.', newBest: 'NOWY REKORD!',
+      stBugs: 'robaki', stWave: 'fala', stCombo: 'najdł. seria', stZones: 'strefy', stSkills: 'umiejętn.', stTime: 'czas jazdy',
+      sending: 'Wysyłam wynik do rankingu online…', sent: 'Wynik zapisany w rankingu online ✓',
+      sendFail: 'Wynik nie wysłano do rankingu online — zapisany na tym urządzeniu, spróbuję ponownie później.',
+      sendLocal: 'Wynik zapisany na tym urządzeniu. Zaznacz „Pokaż mój wynik w rankingu online” w menu, żeby trafić do rankingu online.',
+      loading: 'Wczytuję…', noteOnline: 'Wyniki wszystkich graczy (najlepszy wynik każdego nicku).',
+      noteEmpty: 'Ranking online jest jeszcze pusty — pokazuję wyniki z tego urządzenia.', noteDown: 'Ranking online jest chwilowo niedostępny — pokazuję wyniki z tego urządzenia.',
+      caps: [['NOC · NABRZEŻE', 'Widok z lotu ptaka. Do brzegu cicho podpływa mała łódka…'], ['DESANT', 'Łódka przybija do nabrzeża. Wyskakują z niej czarne robaki o czerwonych oczach.'],
+        ['COŚ SIĘ RUSZA…', 'Robaki wspinają się na ciężarówkę, która stoi na czerwonym świetle.'], ['ZIELONE!', 'Kierowca niczego nie zauważył. Rusza w stronę TRUCK PARKU.'],
+        ['TRUCK PARK', 'Cel podróży. Ostatni zakręt na parking…'], ['STOP.', 'Ciężarówka staje. Robaki wysypują się z naczepy!']],
+    },
+    en: {
+      docTitle: 'SNEAKY BUGS – Attack of the Black Bugs', htmlLang: 'en',
+      hudTime: 'TIME', hudCab: 'CAB', hudPoints: 'POINTS', aPause: 'Pause', aSound: 'Sound', aLang: 'Language',
+      logoSub: 'NIGHT TRUCK PARK · 60 S', logoPl: 'Attack of the Black Bugs',
+      chk1: '60 s + bonuses', chk2: 'Waves 6·8·10·12…', chk3: '5 map zones', chk4: 'Skills',
+      howto: 'Hold your finger down — the truck drives to that spot. Squash bugs on the move and dodge the venom. Every 6 bugs = a new skill, every 5 bugs = +1\u00a0s.',
+      icRepair: 'repair', icTurbo: 'turbo', icCrush: 'crush', icArmor: 'armor', icHorn: 'horn',
+      nickLabel: 'YOUR NICKNAME', nickPh: 'e.g. Jack',
+      lbNote: 'Your nickname and score go on a public online leaderboard. Don\'t use your real name or email.',
+      privacy: 'Privacy', terms: 'Terms & licences', privacyHref: 'en/privacy/', termsHref: 'en/info/',
+      lbConsent: 'Show my score on the online leaderboard', skipIntro: 'Skip the intro (straight into the game)',
+      start: 'START', ranking: 'LEADERBOARD', rankKicker: 'Top drivers', rankHead: 'LEADERBOARD', back: 'BACK',
+      endKicker: 'Round over', endTitle: 'THE END', points: 'POINTS', logCap: 'GAME LOG', again: 'PLAY AGAIN', menu: 'MENU',
+      pKicker: 'Engine idling', pHead: 'PAUSED', pText: 'The bugs are waiting…', resume: 'RESUME', quit: 'QUIT TO MENU',
+      skip: 'SKIP INTRO ›', hint: 'Hold your finger down — the truck follows it',
+      best: b => 'BEST: ' + b, mute: 'Mute', unmute: 'Unmute',
+      nickShort: 'Enter a nickname (2–16 characters).', nickChars: 'Allowed: letters, digits, spaces and . _ \' - (start with a letter or digit).', nickBad: 'That nickname isn\'t allowed — pick another one.',
+      tagFailed: 'not sent', tagSending: 'sending…', capOnline: 'TOP 10 · ONLINE', capLocal: 'TOP 10 · THIS DEVICE', rankEmpty: 'No scores yet — be the first!',
+      z_road: 'STREET · EXIT', z_park: 'TRUCK PARK', z_fuel: 'FUEL STATION', z_yard: 'INDUSTRIAL YARD', z_docks: 'LOADING DOCKS',
+      sExit: 'EXIT ›', sLoading: 'LOADING ZONE', sEntry: 'ENTRY ↑', sWarehouse: 'WAREHOUSE  B', sShop: 'SHOP · 24/7', sWash: 'WASH', sFuel: 'FUEL · DIESEL · ADBLUE', sDiesel: 'DSL 6.49', sPetrol: 'UNL 6.89', sQuay: 'QUAYSIDE',
+      hWave: 'WAVE ', hBugs: 'BUGS ', hNext: (sk, n, t, m) => sk + ' IN ' + n + ' · +' + t + ' S IN ' + m, map: 'MAP · ',
+      sk_turbo: 'TURBO', sk_crush: 'CRUSHER', sk_armor: 'ARMOR', sk_horn: 'HORN', ch_turbo: 'TURBO', ch_crush: 'CRUSH', ch_armor: 'ARMOR',
+      pk_repair: 'REPAIR +35', pk_time: '+5 S TIME', pk_turbo: 'TURBO!', pk_crush: 'CRUSHER!', pk_armor: 'ARMOR!', pk_horn: 'HORN!',
+      flArmor: 'ARMOR', flVenom: '-VENOM',
+      sumWaves: 'waves', sumSkills: 'skills', sumPicks: 'power-ups', sumTime: 'time bonuses', sumZones: 'zones', sumCombos: 'streaks x3+', noEvents: 'Nothing happened.',
+      evSkill: (sk, n) => 'Skill: ' + sk + ' (for ' + n + ' bugs)', evTime: (a, why) => 'Time bonus +' + a + ' s · ' + why, whyKills: n => n + ' bugs',
+      evPick: nm => 'Power-up: ' + nm, evCombo: n => n + '-bug streak', evHp: 'Cab below 30%',
+      evWave1: (n, z) => 'Wave 1 · ' + n + ' bugs off the trailer · ' + z, evWave: (w, n) => 'Wave ' + w + ' · ' + n + ' bugs', evZone: z => 'New zone: ' + z,
+      evWin: b => 'Time\'s up · truck survived · bonus +' + b + ' pts', evLose: w => 'Truck wrecked on wave ' + w,
+      kWin: 'Driver survived', kLose: 'Truck down', tWin: 'YOU SURVIVED', tLose: 'GAME OVER',
+      mWin: b => 'Time\'s up and the truck\'s still standing. Bonus: +' + b + ' pts.', mLose: w => 'The venom ate through the cab on wave ' + w + '.', newBest: 'NEW BEST!',
+      stBugs: 'bugs', stWave: 'wave', stCombo: 'best streak', stZones: 'zones', stSkills: 'skills', stTime: 'drive time',
+      sending: 'Sending your score to the online leaderboard…', sent: 'Score saved to the online leaderboard ✓',
+      sendFail: 'Couldn\'t send your score to the online leaderboard — it\'s saved on this device and we\'ll try again later.',
+      sendLocal: 'Score saved on this device. Tick “Show my score on the online leaderboard” in the menu to get on the online leaderboard.',
+      loading: 'Loading…', noteOnline: 'Everyone\'s scores (best score per nickname).',
+      noteEmpty: 'The online leaderboard is still empty — showing scores from this device.', noteDown: 'The online leaderboard is down right now — showing scores from this device.',
+      caps: [['NIGHT · QUAYSIDE', 'Bird\'s-eye view. A small boat is quietly heading for the shore…'], ['LANDING PARTY', 'The boat pulls up at the quay. Black bugs with blood-red eyes come pouring out.'],
+        ['SOMETHING\'S MOVING…', 'The bugs climb onto a truck waiting at a red light.'], ['GREEN!', 'The driver hasn\'t noticed a thing. Off he goes, towards the TRUCK PARK.'],
+        ['TRUCK PARK', 'Destination reached. One last turn into the lot…'], ['STOP.', 'The truck pulls up. Bugs spill off the trailer!']],
+    },
+  };
+  let LANG = (() => {
+    try {
+      const q = new URLSearchParams(location.search).get('lang');
+      if (q === 'pl' || q === 'en') { localStorage.setItem(LANG_KEY, q); return q; }
+      const s = localStorage.getItem(LANG_KEY); if (s === 'pl' || s === 'en') return s;
+    } catch (e) {}
+    return /^pl\b/i.test(navigator.language || '') ? 'pl' : 'en';
+  })();
+  const L = (k, ...a) => { const v = STR[LANG][k] != null ? STR[LANG][k] : STR.pl[k]; return typeof v === 'function' ? v(...a) : v; };
   const $ = id => document.getElementById(id);
   const canvas = $('c');
   const ctx = canvas.getContext('2d', { alpha: false });
@@ -360,7 +460,7 @@
   const BEST_KEY = 'robaki_best_v4';
   const getBest = () => { try { return parseInt(localStorage.getItem(BEST_KEY) || '0', 10) || 0; } catch (e) { return 0; } };
   const setBest = v => { try { localStorage.setItem(BEST_KEY, String(v)); } catch (e) {} };
-  const showBestMenu = () => { const b = getBest(); $('bestMenu').textContent = b ? 'REKORD: ' + b : ''; };
+  const showBestMenu = () => { const b = getBest(); $('bestMenu').textContent = b ? L('best', b) : ''; };
   showBestMenu();
 
   // ---------- sound (WebAudio, no files) ----------
@@ -451,7 +551,7 @@
     click:  () => { tone(880, 0.06, 'square', 0.16); tone(1320, 0.08, 'square', 0.12, 0, 0.05); },
   };
   function sndIcons() {
-    document.querySelectorAll('.sndBtn').forEach(b => { b.textContent = soundOn ? '🔊' : '🔇'; b.setAttribute('aria-label', soundOn ? 'Wyłącz dźwięk' : 'Włącz dźwięk'); });
+    document.querySelectorAll('.sndBtn').forEach(b => { b.textContent = soundOn ? '🔊' : '🔇'; b.setAttribute('aria-label', soundOn ? L('mute') : L('unmute')); });
   }
   function setSound(on) {
     soundOn = on;
@@ -487,9 +587,9 @@
   }
   const cleanNick = n => String(n || '').replace(/<[^>]*>/g, '').replace(/[\u0000-\u001f\u007f<>&"`\\]/g, '').replace(/\s+/g, ' ').trim().slice(0, 16);
   function nickError(n) {
-    if (n.length < 2) return 'Wpisz nick (2–16 znaków).';
-    if (!NAME_RE.test(n)) return 'Dozwolone: litery, cyfry, spacja i . _ \' - (na początku litera lub cyfra).';
-    if (nameBlocked(n)) return 'Ten nick jest niedozwolony — wybierz inny.';
+    if (n.length < 2) return L('nickShort');
+    if (!NAME_RE.test(n)) return L('nickChars');
+    if (nameBlocked(n)) return L('nickBad');
     return '';
   }
   let nick = (() => { try { return cleanNick(localStorage.getItem(NICK_KEY) || ''); } catch(e) { return ''; } })();
@@ -538,7 +638,7 @@
         let out = (rows || []).map(r => ({ id: r.id, name: r.name, score: r.score, ko: r.ko || 0 }));
         if (out.length || (pend && pend.state === 'sent')) {
           if (pend && pend.state !== 'sent' && pend.state !== 'local' && !out.some(r => r.name === pend.name && r.score === pend.score)) {
-            out.push({ id: 'pend', name: pend.name, score: pend.score, ko: pend.ko, tag: pend.state === 'failed' ? 'nie wysłano' : 'wysyłam…' });
+            out.push({ id: 'pend', name: pend.name, score: pend.score, ko: pend.ko, tag: pend.state === 'failed' ? L('tagFailed') : L('tagSending') });
             out.sort((a, b) => b.score - a.score);
           }
           return { online: true, rows: top10Unique(out) };
@@ -596,9 +696,9 @@
   function renderRank(el, res, hl) {
     el.textContent = '';
     const cap = document.createElement('div'); cap.className = 'rank-cap';
-    cap.textContent = res.online ? 'TOP 10 · RANKING ONLINE' : 'TOP 10 · NA TYM URZĄDZENIU';
+    cap.textContent = res.online ? L('capOnline') : L('capLocal');
     el.appendChild(cap);
-    if (!res.rows.length) { const e = document.createElement('div'); e.className = 'empty'; e.textContent = 'Brak wyników — zagraj pierwszy!'; el.appendChild(e); return; }
+    if (!res.rows.length) { const e = document.createElement('div'); e.className = 'empty'; e.textContent = L('rankEmpty'); el.appendChild(e); return; }
     const ol = document.createElement('ol');
     let meDone = false;
     res.rows.forEach((r, i) => {
@@ -783,7 +883,7 @@
       for (let i = 0; i < 7; i++) { g.fillRect(2084, 1958 + i * 30, 30, 16); g.fillRect(1838, 1958 + i * 30, 30, 16); }
       g.fillRect(2072, 1952, 6, 104);
       g.fillStyle = 'rgba(240,240,240,.5)'; g.font = F('700', 30, THEME.fontUI); g.textAlign = 'center';
-      g.save(); g.translate(2290, 2110); g.fillText('WYJAZD ›', 0, 10); g.restore();
+      g.save(); g.translate(2290, 2110); g.fillText(L('sExit'), 0, 10); g.restore();
     }
     if (inView(v, 480, 760, 1860, 1900)) {
       g.strokeStyle = Wd.line; g.lineWidth = 3; g.beginPath();
@@ -805,11 +905,11 @@
     }
     if (inView(v, 0, 330, WW, 760)) {
       g.strokeStyle = 'rgba(231,180,22,.55)'; g.lineWidth = 4; g.beginPath(); g.moveTo(320, 520); g.lineTo(2080, 520); g.stroke();
-      g.fillStyle = 'rgba(245,245,245,.35)'; g.font = F('700', 34, THEME.fontUI); g.textAlign = 'center'; g.fillText('STREFA ZAŁADUNKU', 1200, 660);
+      g.fillStyle = 'rgba(245,245,245,.35)'; g.font = F('700', 34, THEME.fontUI); g.textAlign = 'center'; g.fillText(L('sLoading'), 1200, 660);
     }
     if (inView(v, 1860, 760, WW, 1900)) {
       g.strokeStyle = 'rgba(245,245,245,.35)'; g.lineWidth = 3; g.strokeRect(1950, 1100, 390, 400);
-      g.fillStyle = 'rgba(198,45,49,.6)'; g.font = F('italic 700', 30, THEME.fontUI); g.textAlign = 'center'; g.fillText('WJAZD ↑', 2140, 1840);
+      g.fillStyle = 'rgba(198,45,49,.6)'; g.font = F('italic 700', 30, THEME.fontUI); g.textAlign = 'center'; g.fillText(L('sEntry'), 2140, 1840);
     }
     if (inView(v, 0, 760, 480, 1900)) {
       g.fillStyle = 'rgba(0,0,0,.35)'; [[210, 1120, 30], [380, 1420, 24], [150, 1660, 36], [250, 1300, 20]].forEach(s => { g.beginPath(); g.ellipse(s[0], s[1], s[2], s[2] * .6, .4, 0, 7); g.fill(); });
@@ -845,7 +945,7 @@
         g.fillStyle = o.col; g.fillRect(o.x, o.y, o.w, o.h);
         g.strokeStyle = 'rgba(255,255,255,.06)'; g.lineWidth = 2; g.beginPath(); for (let x = o.x + 12; x < o.x + o.w; x += 24) { g.moveTo(x, o.y); g.lineTo(x, o.y + o.h); } g.stroke();
         g.strokeStyle = 'rgba(0,0,0,.5)'; g.lineWidth = 4; g.strokeRect(o.x + 2, o.y + 2, o.w - 4, o.h - 4);
-        g.fillStyle = 'rgba(245,245,245,.12)'; g.font = F('400', 90, THEME.fontHeavy); g.textAlign = 'center'; g.fillText('MAGAZYN  B', o.x + o.w / 2, o.y + o.h / 2 + 32);
+        g.fillStyle = 'rgba(245,245,245,.12)'; g.font = F('400', 90, THEME.fontHeavy); g.textAlign = 'center'; g.fillText(L('sWarehouse'), o.x + o.w / 2, o.y + o.h / 2 + 32);
         for (const d of DOORS) {
           g.fillStyle = '#0f0f12'; g.fillRect(d.x, o.y + o.h - 14, 72, 14);
           g.fillStyle = Wd.yellow; g.fillRect(d.x - 4, o.y + o.h - 16, 4, 16); g.fillRect(d.x + 72, o.y + o.h - 16, 4, 16);
@@ -857,8 +957,8 @@
         g.fillStyle = o.col; g.fillRect(o.x, o.y, o.w, o.h);
         g.strokeStyle = 'rgba(255,255,255,.09)'; g.lineWidth = 3; g.strokeRect(o.x + 5, o.y + 5, o.w - 10, o.h - 10);
         if (o.ac) { g.fillStyle = '#55555c'; for (const a of o.ac) g.fillRect(a[0], a[1], a[2], a[3]); g.fillStyle = '#26262b'; for (const a of o.ac) g.fillRect(a[0] + 3, a[1] + 3, a[2] - 6, 4); }
-        if (o.t === 'shop') { g.fillStyle = THEME.red; g.fillRect(o.x, o.y + o.h - 12, o.w, 12); g.fillStyle = THEME.white; g.font = F('700', 26, THEME.fontUI); g.textAlign = 'center'; g.fillText('SKLEP · 24/7', o.x + o.w / 2, o.y + o.h / 2 + 8); }
-        if (o.t === 'wash') { g.fillStyle = 'rgba(120,190,255,.25)'; g.fillRect(o.x + 20, o.y - 6, o.w - 40, 10); g.fillStyle = THEME.white; g.font = F('700', 22, THEME.fontUI); g.textAlign = 'center'; g.fillText('MYJNIA', o.x + o.w / 2, o.y + o.h / 2); }
+        if (o.t === 'shop') { g.fillStyle = THEME.red; g.fillRect(o.x, o.y + o.h - 12, o.w, 12); g.fillStyle = THEME.white; g.font = F('700', 26, THEME.fontUI); g.textAlign = 'center'; g.fillText(L('sShop'), o.x + o.w / 2, o.y + o.h / 2 + 8); }
+        if (o.t === 'wash') { g.fillStyle = 'rgba(120,190,255,.25)'; g.fillRect(o.x + 20, o.y - 6, o.w - 40, 10); g.fillStyle = THEME.white; g.font = F('700', 22, THEME.fontUI); g.textAlign = 'center'; g.fillText(L('sWash'), o.x + o.w / 2, o.y + o.h / 2); }
         return;
       }
       case 'trailer': {
@@ -918,7 +1018,7 @@
       g.globalAlpha = .8; g.fillStyle = THEME.ink; g.fillRect(1960, 1110, 370, 380);
       g.globalAlpha = 1; g.fillStyle = THEME.red; g.fillRect(1960, 1110, 370, 22); g.fillRect(1960, 1468, 370, 22);
       g.fillStyle = THEME.white; g.fillRect(1960, 1132, 370, 4); g.fillRect(1960, 1464, 370, 4);
-      g.font = F('italic 700', 18, THEME.fontUI); g.textAlign = 'center'; g.fillText('PALIWO · DIESEL · ADBLUE', 2145, 1128); g.fillText('24 / 7', 2145, 1486);
+      g.font = F('italic 700', 18, THEME.fontUI); g.textAlign = 'center'; g.fillText(L('sFuel'), 2145, 1128); g.fillText('24 / 7', 2145, 1486);
       g.fillStyle = 'rgba(255,255,255,.07)'; for (let x = 1990; x < 2330; x += 60) g.fillRect(x, 1140, 30, 320);
     }
     if (inView(v, 1240, 1780, 1430, 1880)) {
@@ -930,7 +1030,7 @@
     }
     if (inView(v, 2310, 1800, 2390, 1900)) {
       g.fillStyle = THEME.ink; g.fillRect(2318, 1806, 64, 40); g.fillStyle = THEME.red; g.fillRect(2318, 1806, 64, 12);
-      g.fillStyle = THEME.white; g.font = F('700', 10, THEME.fontUI); g.textAlign = 'center'; g.fillText('ON 6,49', 2350, 1830); g.fillText('PB 6,89', 2350, 1842);
+      g.fillStyle = THEME.white; g.font = F('700', 10, THEME.fontUI); g.textAlign = 'center'; g.fillText(L('sDiesel'), 2350, 1830); g.fillText(L('sPetrol'), 2350, 1842);
     }
   }
   function drawTLights(g, v) {
@@ -1042,17 +1142,17 @@
   const hudCache = {};
   const setT = (id, v) => { if (hudCache[id] !== v) { hudCache[id] = v; $(id).textContent = v; } };
   const setW = (id, v) => { if (hudCache[id + 'w'] !== v) { hudCache[id + 'w'] = v; $(id).style.width = v; } };
-  const SK_NAME = { turbo: 'TURBO', crush: 'MIAŻDŻENIE', armor: 'PANCERZ', horn: 'KLAKSON' };
+  const SK_NAME = {};
   function updateHud() {
     const tl = Math.max(0, timeLeft);
     setT('t', tl.toFixed(1)); const low = tl < 10; if (hudCache.low !== low) { hudCache.low = low; $('t').classList.toggle('low', low); }
     setT('s', String(score));
     setT('hpTxt', Math.ceil(truck.hp) + '%'); setW('hpbar', (100 * truck.hp / truck.maxHp).toFixed(1) + '%');
-    setT('waveTxt', 'FALA ' + wave + ' · ' + waveSize(wave));
-    setT('aliveTxt', 'ROBAKI ' + (bugs.length + pending));
+    setT('waveTxt', L('hWave') + wave + ' · ' + waveSize(wave));
+    setT('aliveTxt', L('hBugs') + (bugs.length + pending));
     const into = kills % SKILL_EVERY; setW('skillbar', (100 * into / SKILL_EVERY).toFixed(0) + '%');
-    setT('nextSkill', SK_NAME[SKILL_CYCLE[skillIdx % SKILL_CYCLE.length]] + ' ZA ' + (SKILL_EVERY - into) + ' · +' + TIME_KILL_BONUS + ' S ZA ' + (TIME_EVERY - kills % TIME_EVERY));
-    const chips = []; if (skills.turbo > 0) chips.push('turbo:TURBO ' + Math.ceil(skills.turbo)); if (skills.crush > 0) chips.push('crush:MIAŻDŻ ' + Math.ceil(skills.crush)); if (skills.armor > 0) chips.push('armor:PANCERZ ' + Math.ceil(skills.armor));
+    setT('nextSkill', L('hNext', SK_NAME[SKILL_CYCLE[skillIdx % SKILL_CYCLE.length]], SKILL_EVERY - into, TIME_KILL_BONUS, TIME_EVERY - kills % TIME_EVERY));
+    const chips = []; if (skills.turbo > 0) chips.push('turbo:' + L('ch_turbo') + ' ' + Math.ceil(skills.turbo)); if (skills.crush > 0) chips.push('crush:' + L('ch_crush') + ' ' + Math.ceil(skills.crush)); if (skills.armor > 0) chips.push('armor:' + L('ch_armor') + ' ' + Math.ceil(skills.armor));
     const key = chips.join('|');
     if (hudCache.chips !== key) { hudCache.chips = key; const el = $('chips'); el.textContent = ''; chips.forEach(c => { const [k, t] = c.split(':'); const s = document.createElement('span'); s.className = 'chip c-' + k; s.textContent = t + ' S'; el.appendChild(s); }); }
   }
@@ -1062,10 +1162,10 @@
   const mmss = t => { t = Math.max(0, Math.floor(t)); return Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0'); };
   function renderLog() {
     const sum = $('endLogSum'), ol = $('endLogList'); sum.textContent = ''; ol.textContent = '';
-    [['fale', wave], ['umiejętn.', skillsGot], ['power-upy', evCount.pick || 0], ['premie czasu', (evCount.time || 0) + ' · +' + Math.round(timeGained) + ' s'], ['strefy', visited.size + '/5'], ['serie x3+', evCount.combo || 0]].forEach(c => {
+    [[L('sumWaves'), wave], [L('sumSkills'), skillsGot], [L('sumPicks'), evCount.pick || 0], [L('sumTime'), (evCount.time || 0) + ' · +' + Math.round(timeGained) + ' s'], [L('sumZones'), visited.size + '/5'], [L('sumCombos'), evCount.combo || 0]].forEach(c => {
       const sp = document.createElement('span'), b = document.createElement('b'); sp.append(document.createTextNode(c[0] + ' ')); b.textContent = String(c[1]); sp.appendChild(b); sum.appendChild(sp);
     });
-    if (!evLog.length) { const li = document.createElement('li'); li.className = 'empty'; li.textContent = 'Brak zdarzeń.'; ol.appendChild(li); }
+    if (!evLog.length) { const li = document.createElement('li'); li.className = 'empty'; li.textContent = L('noEvents'); ol.appendChild(li); }
     for (const e of evLog) {
       const li = document.createElement('li'), tm = document.createElement('time'), sp = document.createElement('span');
       li.className = 'k-' + e.k; tm.textContent = mmss(e.t); sp.textContent = e.txt; li.append(tm, sp); ol.appendChild(li);
@@ -1130,20 +1230,20 @@
     else if (k === 'crush') { skills.crush = 9; truck.smashR = 40; }
     else if (k === 'armor') skills.armor = 10;
     else if (k === 'horn') hornBlast();
-    if (fromKills) { skillsGot++; logEv('skill', 'Umiejętność: ' + SK_NAME[k] + ' (za ' + kills + ' robaków)'); sfx.skill(); vibrate(30); }
+    if (fromKills) { skillsGot++; logEv('skill', L('evSkill', SK_NAME[k], kills)); sfx.skill(); vibrate(30); }
   }
   function addTime(s, x, y, why) {
     const room = Math.max(0, MAX_TOTAL - playT - timeLeft), add = Math.min(s, room);
     if (add <= 0) return;
     timeLeft += add; timeGained += add; floater(x, y, '+' + add.toFixed(0) + ' S', THEME.good, 13);
-    if (why) logEv('time', 'Premia czasowa +' + (Math.round(add * 10) / 10) + ' s · ' + why); else evCount.time = (evCount.time || 0) + 1;   // a +5 s power-up is listed once, as the power-up
+    if (why) logEv('time', L('evTime', Math.round(add * 10) / 10, why)); else evCount.time = (evCount.time || 0) + 1;   // a +5 s power-up is listed once, as the power-up
   }
   function applyPickup(p) {
     const k = p.t.k;
     if (k === 'repair') truck.hp = Math.min(truck.maxHp, truck.hp + 35);
     else if (k === 'time') addTime(5, truck.x, truck.y - 56);
     else grantSkill(k, false);
-    logEv('pick', 'Power-up: ' + p.t.name.replace(/!$/, ''));
+    logEv('pick', L('evPick', p.t.name.replace(/!$/, '')));
     boom(p.x, p.y, 18, p.t.col);
     sfx.pickup(); vibrate(25);
   }
@@ -1167,7 +1267,7 @@
     if (particles.length > 420) particles.splice(0, particles.length - 420);
   }
   let hornDepth = 0, hornQueued = false;
-  function endCombo() { if (combo >= 3) logEv('combo', 'Seria x' + combo + ' robaków'); combo = 0; }
+  function endCombo() { if (combo >= 3) logEv('combo', L('evCombo', combo)); combo = 0; }
   function killBug(i, byHorn) {
     const b = bugs[i];
     if (comboT <= 0) endCombo(); combo = comboT > 0 ? combo + 1 : 1; comboT = 1.6; bestCombo = Math.max(bestCombo, combo);
@@ -1181,17 +1281,17 @@
     bugs.splice(i, 1);
     sfx.squash(combo); vibrate(b.big ? 40 : 15); shake = Math.max(shake, b.big ? .15 : .06);
     if (b.big || Math.random() < 0.1) spawnPickup(null, b.x, b.y);
-    if (kills % TIME_EVERY === 0) addTime(TIME_KILL_BONUS, truck.x, truck.y - 70, kills + ' robaków');       // running over bugs extends the round
+    if (kills % TIME_EVERY === 0) addTime(TIME_KILL_BONUS, truck.x, truck.y - 70, L('whyKills', kills));       // running over bugs extends the round
     if (kills % SKILL_EVERY === 0) {
       const k = SKILL_CYCLE[skillIdx % SKILL_CYCLE.length]; skillIdx++;
-      if (k === 'horn' && hornDepth > 0) { skillsGot++; hornQueued = true; logEv('skill', 'Umiejętność: ' + SK_NAME.horn + ' (za ' + kills + ' robaków)'); return; }   // no horn-in-horn: blast on the next frame
+      if (k === 'horn' && hornDepth > 0) { skillsGot++; hornQueued = true; logEv('skill', L('evSkill', SK_NAME.horn, kills)); return; }   // no horn-in-horn: blast on the next frame
       grantSkill(k, true);
     }
   }
   function damage(dmg) {
     if (skills.armor > 0) dmg *= 0.4;
     truck.hp -= dmg; shake = Math.max(shake, .25); flash = .25;
-    if (!hpWarned && truck.hp < 30 && truck.hp > 0) { hpWarned = true; logEv('hp', 'Kabina poniżej 30%'); }
+    if (!hpWarned && truck.hp < 30 && truck.hp > 0) { hpWarned = true; logEv('hp', L('evHp')); }
     if (truck.hp <= 0) { truck.hp = 0; endGame(false); return true; }
     return false;
   }
@@ -1271,13 +1371,13 @@
     for (const k in hudCache) delete hudCache[k];
     evLog = []; evCount = {}; hpWarned = false;
     pourOut(waveSize(1));
-    logEv('wave', 'Fala 1 · ' + waveSize(1) + ' robaków z naczepy · ' + (curZone ? curZone.name : ''));
+    logEv('wave', L('evWave1', waveSize(1), curZone ? curZone.name : ''));
     sfx.wave();
     updateHud();
   }
   function startWave() {
     wave++; const n = waveSize(wave); pending += n;
-    logEv('wave', 'Fala ' + wave + ' · ' + n + ' robaków');
+    logEv('wave', L('evWave', wave, n));
     sfx.wave();
   }
   function startPlay(fromIntro) {
@@ -1287,7 +1387,7 @@
     $('sndMenu').style.display = 'none';
     if (!fromIntro) riders = [];
     resetGame();
-    setT('hudNick', nick ? nick.toUpperCase() : 'PUNKTY');
+    setT('hudNick', nick ? nick.toUpperCase() : L('hudPoints'));
     if (!fromIntro) { cam.x = truck.x; cam.y = truck.y; }
     cam.z = Zg; clampCam();
     prewarmTiles();
@@ -1301,18 +1401,18 @@
     const bonus = survived ? 1000 + Math.round(truck.hp) * 10 : 0;     // <= 2000
     score += bonus;
     endCombo();
-    logEv('end', survived ? 'Koniec czasu · ciężarówka ocalała · premia +' + bonus + ' pkt' : 'Ciężarówka zniszczona na fali ' + wave);
+    logEv('end', survived ? L('evWin', bonus) : L('evLose', wave));
     renderLog();
     const prev = getBest(), isRecord = score > prev; if (isRecord) setBest(score);
     endOv.style.display = 'flex'; $('sndMenu').style.display = 'block';
-    $('endKicker').textContent = survived ? 'Kierowca ocalał' : 'Ciężarówka padła';
-    $('endTitle').textContent = survived ? 'PRZETRWAŁEŚ' : 'KONIEC GRY';
-    $('endMsg').textContent = survived ? 'Czas minął, a ciężarówka wciąż stoi. Premia: +' + bonus + ' pkt.' : 'Jad przeżarł kabinę na fali ' + wave + '.';
+    $('endKicker').textContent = survived ? L('kWin') : L('kLose');
+    $('endTitle').textContent = survived ? L('tWin') : L('tLose');
+    $('endMsg').textContent = survived ? L('mWin', bonus) : L('mLose', wave);
     $('endScore').textContent = score;
-    $('endBest').textContent = isRecord ? 'NOWY REKORD!' : 'REKORD: ' + prev;
+    $('endBest').textContent = isRecord ? L('newBest') : L('best', prev);
     $('endNick').textContent = nick ? nick.toUpperCase() : '';
     const st = $('endStats'); st.textContent = '';
-    [[kills, 'robaki'], [wave, 'fala'], [bestCombo, 'najdł. seria'], [visited.size + '/5', 'strefy'], [skillsGot, 'umiejętn.'], [Math.round(playT) + ' s', 'czas jazdy']].forEach(c => {
+    [[kills, L('stBugs')], [wave, L('stWave')], [bestCombo, L('stCombo')], [visited.size + '/5', L('stZones')], [skillsGot, L('stSkills')], [Math.round(playT) + ' s', L('stTime')]].forEach(c => {
       const d = document.createElement('div'), b = document.createElement('b'), s = document.createElement('small'); b.textContent = c[0]; s.textContent = c[1]; d.append(b, s); st.appendChild(d);
     });
     if (survived) { sfx.win(); vibrate([60, 40, 60, 40, 120]); } else { sfx.lose(); vibrate([200, 80, 300]); }
@@ -1321,26 +1421,25 @@
   let runId = 0;
   async function saveScore(d) {
     const my = ++runId, sendEl = $('endSend'), rankEl = $('endRank'), hl = { name: d.name, score: d.score };
-    sendEl.className = 'send'; sendEl.textContent = LB.consent() ? 'Wysyłam wynik do rankingu online…' : '';
+    sendEl.className = 'send'; sendEl.textContent = LB.consent() ? L('sending') : '';
     const sub = LB.submit(d);
     let loc = []; try { loc = JSON.parse(localStorage.getItem('robaki_lb_local_v1') || '[]'); } catch (e) {}
     renderRank(rankEl, { online: false, rows: loc.slice(0, 10) }, hl);
     const r = await sub; if (my !== runId) return;
-    if (r.state === 'sent') { sendEl.className = 'send ok'; sendEl.textContent = 'Wynik zapisany w rankingu online ✓'; }
-    else if (r.state === 'failed') { sendEl.className = 'send bad'; sendEl.textContent = 'Wynik nie wysłano do rankingu online — zapisany na tym urządzeniu, spróbuję ponownie później.'; }
-    else { sendEl.className = 'send'; sendEl.textContent = 'Wynik zapisany na tym urządzeniu. Zaznacz „Pokaż mój wynik w rankingu online” w menu, żeby trafić do rankingu online.'; }
+    if (r.state === 'sent') { sendEl.className = 'send ok'; sendEl.textContent = L('sent'); }
+    else if (r.state === 'failed') { sendEl.className = 'send bad'; sendEl.textContent = L('sendFail'); }
+    else { sendEl.className = 'send'; sendEl.textContent = L('sendLocal'); }
     const res = await LB.list(); if (my !== runId) return;
     renderRank(rankEl, res, hl);
   }
   async function showRanking() {
     titleOv.style.display = 'none';
     const ov = $('rank-overlay'); ov.style.display = 'flex';
-    $('rankList').textContent = 'Wczytuję…'; $('rankNote').textContent = '';
+    $('rankList').textContent = L('loading'); $('rankNote').textContent = '';
     LB.flushQueue();
     const res = await LB.list();
     renderRank($('rankList'), res, null);
-    $('rankNote').textContent = res.online ? 'Wyniki wszystkich graczy (najlepszy wynik każdego nicku).'
-      : res.reachable ? 'Ranking online jest jeszcze pusty — pokazuję wyniki z tego urządzenia.' : 'Ranking online jest chwilowo niedostępny — pokazuję wyniki z tego urządzenia.';
+    $('rankNote').textContent = res.online ? L('noteOnline') : res.reachable ? L('noteEmpty') : L('noteDown');
   }
 
   // =====================================================================================
@@ -1394,7 +1493,7 @@
     }
 
     const z = zoneAt(truck.x, truck.y);
-    if (z !== curZone) { curZone = z; if (!visited.has(z.id)) logEv('zone', 'Nowa strefa: ' + z.name); visited.add(z.id); }
+    if (z !== curZone) { curZone = z; if (!visited.has(z.id)) logEv('zone', L('evZone', z.name)); visited.add(z.id); }
 
     const look = 16 * truck.speed, tx0 = truck.x + Math.cos(truck.a) * look, ty0 = truck.y + Math.sin(truck.a) * look;
     const kc = 1 - Math.exp(-dt * 4.5);
@@ -1473,7 +1572,7 @@
         shots.splice(i, 1); boom(s.x, s.y, 10, THEME.venom); splats.push({ x: s.x, y: s.y, r: 7, a: 0, t: 4, green: true }); if (splats.length > 80) splats.shift();
         if (invuln <= 0) {
           invuln = .3; sfx.hit(); vibrate(60);
-          floater(truck.x, truck.y - 30, skills.armor > 0 ? 'PANCERZ' : '-JAD', skills.armor > 0 ? '#9fd6ff' : THEME.venom, 13);
+          floater(truck.x, truck.y - 30, skills.armor > 0 ? L('flArmor') : L('flVenom'), skills.armor > 0 ? '#9fd6ff' : THEME.venom, 13);
           if (damage(Math.min(14, 6 + wave * .6))) return;
         }
       }
@@ -1671,7 +1770,7 @@
     const s = mm.s, x0 = mm.x, y0 = mm.y, k = s / WW;
     ctx.fillStyle = 'rgba(28,21,24,.9)'; ctx.fillRect(x0 - 3, y0 - 17, s + 6, s + 20);
     ctx.fillStyle = THEME.red; ctx.fillRect(x0 - 3, y0 - 17, s + 6, 14);
-    ctx.fillStyle = THEME.white; ctx.font = F('600', 10, THEME.fontUI); ctx.textAlign = 'left'; ctx.fillText('MAPA · ' + (curZone ? curZone.name : ''), x0 + 2, y0 - 6);
+    ctx.fillStyle = THEME.white; ctx.font = F('600', 10, THEME.fontUI); ctx.textAlign = 'left'; ctx.fillText(L('map') + (curZone ? curZone.name : ''), x0 + 2, y0 - 6);
     ctx.globalAlpha = .92; ctx.drawImage(thumb, x0, y0, s, s); ctx.globalAlpha = 1;
     const v = view(); ctx.strokeStyle = 'rgba(245,245,245,.75)'; ctx.lineWidth = 1;
     ctx.strokeRect(x0 + clamp(v.x0, 0, WW) * k, y0 + clamp(v.y0, 0, WH) * k, (clamp(v.x1, 0, WW) - clamp(v.x0, 0, WW)) * k, (clamp(v.y1, 0, WH) - clamp(v.y0, 0, WH)) * k);
@@ -1779,7 +1878,7 @@
     for (let x = Math.floor(x0 / 80) * 80 + 20; x < x1; x += 80) { if (x > 1860 && x < 2080) continue; ctx.fillRect(x, 2528, 44, 5); }
     ctx.fillRect(2076, 2444, 7, 84);                                                                  // stop line
     for (let i = 0; i < 6; i++) { ctx.fillRect(1846, 2448 + i * 28, 28, 15); }                       // zebra west of the junction
-    ctx.fillStyle = 'rgba(245,245,245,.45)'; ctx.font = F('italic 700', 26, THEME.fontUI); ctx.textAlign = 'center'; ctx.fillText('NABRZEŻE', 1500, 2590); ctx.fillText('↑ TRUCK PARK', 2300, 2590);
+    ctx.fillStyle = 'rgba(245,245,245,.45)'; ctx.font = F('italic 700', 26, THEME.fontUI); ctx.textAlign = 'center'; ctx.fillText(L('sQuay'), 1500, 2590); ctx.fillText('↑ TRUCK PARK', 2300, 2590);
     ctx.fillStyle = PAT.concrete; ctx.fillRect(x0, QY, w, WATER_Y - QY);
     ctx.fillStyle = '#e7b416'; ctx.fillRect(x0, WATER_Y - 6, w, 4);
     ctx.fillStyle = '#1a1a1e'; for (let x = Math.floor(x0 / 160) * 160 + 60; x < x1; x += 160) { ctx.beginPath(); ctx.arc(x, QY + 26, 7, 0, 7); ctx.fill(); }
@@ -1861,12 +1960,7 @@
       ctx.fillStyle = THEME.red; ctx.fillText('BUGS', 0, 4); ctx.fillStyle = THEME.white; ctx.fillText('BUGS', 0, 0);
       ctx.restore(); ctx.globalAlpha = 1;
     }
-    const caps = [[0, T_ZOOM, 'NOC · NABRZEŻE', 'Widok z lotu ptaka. Do brzegu cicho podpływa mała łódka…'],
-      [T_ZOOM, 7.3, 'DESANT', 'Łódka przybija do nabrzeża. Wyskakują z niej czarne robaki o czerwonych oczach.'],
-      [7.3, T_GREEN, 'COŚ SIĘ RUSZA…', 'Robaki wspinają się na ciężarówkę, która stoi na czerwonym świetle.'],
-      [T_GREEN, 15.6, 'ZIELONE!', 'Kierowca niczego nie zauważył. Rusza w stronę TRUCK PARKU.'],
-      [15.6, T_STOP, 'TRUCK PARK', 'Cel podróży. Ostatni zakręt na parking…'],
-      [T_STOP, 99, 'STOP.', 'Ciężarówka staje. Robaki wysypują się z naczepy!']];
+    const C = L('caps'), caps = [[0, T_ZOOM].concat(C[0]), [T_ZOOM, 7.3].concat(C[1]), [7.3, T_GREEN].concat(C[2]), [T_GREEN, 15.6].concat(C[3]), [15.6, T_STOP].concat(C[4]), [T_STOP, 99].concat(C[5])];
     for (const c of caps) {
       if (t < c[0] || t >= c[1]) continue;
       ctx.globalAlpha = clamp((t - c[0]) / .35, 0, 1);
@@ -1966,6 +2060,24 @@
   const nickInp = $('nick'), consentBox = $('lbConsent');
   nickInp.value = nick; consentBox.checked = LB.consent();
   consentBox.addEventListener('change', () => LB.setConsent(consentBox.checked));
+  let booted = false;
+  function applyLang(l) {
+    if (l) { LANG = l; try { localStorage.setItem(LANG_KEY, l); } catch (e) {} }
+    document.documentElement.lang = L('htmlLang'); document.title = L('docTitle');
+    document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = L(el.dataset.i18n); });          // textContent only: no HTML injection
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = L(el.dataset.i18nPh); });
+    document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', L(el.dataset.i18nAria)); });
+    document.querySelectorAll('[data-i18n-href]').forEach(el => { el.setAttribute('href', L(el.dataset.i18nHref)); });
+    for (const z of ZONES) z.name = L('z_' + z.id);
+    for (const k of ['turbo', 'crush', 'armor', 'horn']) SK_NAME[k] = L('sk_' + k);
+    for (const pt of PICK_TYPES) pt.name = L('pk_' + pt.k);
+    document.querySelectorAll('#langSw [data-lang]').forEach(b => { const on = b.dataset.lang === LANG; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+    sndIcons(); showBestMenu(); for (const k in hudCache) delete hudCache[k];
+    if (booted) { tileCache.forEach(t => { t.width = t.height = 0; }); tileCache.clear(); renderThumb(); }     // signs on the map are baked into tiles
+    const ne = $('nickErr'); if (ne.textContent) ne.textContent = nickError(cleanNick(nickInp.value)) || '';
+  }
+  applyLang();
+  document.querySelectorAll('#langSw [data-lang]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); if (b.dataset.lang !== LANG) applyLang(b.dataset.lang); }));
   const skipChk = $('skipIntroChk'); skipChk.checked = skipIntroPref;
   skipChk.addEventListener('change', () => { skipIntroPref = skipChk.checked; try { localStorage.setItem(SKIPINTRO_KEY, skipIntroPref ? '1' : '0'); } catch (e) {} });
   nickInp.addEventListener('input', () => { $('nickErr').textContent = ''; });
@@ -2008,7 +2120,7 @@
 
   // read-only test hook for automated tests
   window.__robaki = () => ({
-    state, nick, sound: soundOn, skipIntro: skipIntroPref, evLog: evLog.length, audio: actx ? actx.state : 'none', wave, score, kills, hp: truck.hp, time: timeLeft, playT, bugs: bugs.length, pending,
+    state, lang: LANG, nick, sound: soundOn, skipIntro: skipIntroPref, evLog: evLog.length, audio: actx ? actx.state : 'none', wave, score, kills, hp: truck.hp, time: timeLeft, playT, bugs: bugs.length, pending,
     truck: { x: truck.x, y: truck.y, a: truck.a, speed: truck.speed }, cam: { x: cam.x, y: cam.y, z: cam.z }, W, H, zone: curZone ? curZone.id : null, visited: [...visited],
     introT, riders: riders.length, tiles: tileCache.size, tilesMade, pickups: pickups.length, shots: shots.length, skillsGot, timeGained, bestCombo, hits, mm: Object.assign({}, mm), imgs: Object.keys(imgs),
     nearest: bugs.length ? (b => ({ x: b.x, y: b.y }))(bugs.reduce((m, b) => dist(b.x, b.y, truck.x, truck.y) < dist(m.x, m.y, truck.x, truck.y) ? b : m)) : null,
@@ -2019,8 +2131,8 @@
   const fontsReady = (document.fonts && document.fonts.load)
     ? Promise.race([Promise.all([document.fonts.load('700 20px Oswald'), document.fonts.load('400 20px Anton'), document.fonts.load('400 20px "Racing Sans One"')]), new Promise(r => setTimeout(r, 2500))]).catch(() => {})
     : Promise.resolve();
-  Promise.all([loadImg('bugS', 'bug.png?v=4.2'), loadImg('truckS', 'truck.png?v=4.2'), loadImg('venomS', 'venom.png?v=4.2'), fontsReady])
-    .then(() => { renderThumb(); requestAnimationFrame(loop); });
+  Promise.all([loadImg('bugS', 'bug.png?v=4.3'), loadImg('truckS', 'truck.png?v=4.3'), loadImg('venomS', 'venom.png?v=4.3'), fontsReady])
+    .then(() => { booted = true; renderThumb(); requestAnimationFrame(loop); });
 })();
 </script>
 </body>
