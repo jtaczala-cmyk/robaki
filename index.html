@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#050505" />
+  <title>Atak Czarnych Robaków</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Creepster&family=Share+Tech+Mono&display=swap" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+    html, body {
+      width: 100%; height: 100%;
+      background: #050505;
+      overflow: hidden;
+      font-family: 'Share Tech Mono', ui-monospace, Menlo, 'Courier New', monospace;
+      color: #eee;
+      position: fixed;
+      inset: 0;
+      touch-action: none;
+      overscroll-behavior: none;
+    }
+    #wrap, #stage {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: #111;
+      touch-action: none;
+    }
+    #hud {
+      position: absolute;
+      top: calc(8px + env(safe-area-inset-top, 0px));
+      left: 0; right: 0;
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 0 12px;
+      pointer-events: none;
+      text-shadow: 0 2px 6px #000;
+      font-size: 15px;
+      gap: 8px;
+    }
+    #hud .bar-wrap { width: min(38vw, 190px); }
+    #hud label { font-size: 10px; letter-spacing: 1px; color: #f88; display: block; }
+    #hud small { font-size: 11px; color: #bbb; }
+    .bar {
+      height: 10px; background: #222; border: 1px solid #666;
+      margin-top: 3px;
+    }
+    .bar > div { height: 100%; background: linear-gradient(90deg,#c00,#f44); width: 100%; transition: width .15s; }
+    #skills { font-size: 11px; color: #fd8; margin-top: 6px; line-height: 1.4; }
+    #hud-right { text-align: right; display: flex; flex-direction: column; align-items: flex-end; }
+    #pauseBtn {
+      pointer-events: auto;
+      margin: 0; padding: 0; min-width: 44px; min-height: 44px; width: 44px; height: 44px;
+      font-size: 16px; letter-spacing: 0; background: rgba(40,0,0,.7); border-width: 1px;
+    }
+    #title-overlay, #end-overlay, #pause-overlay {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.86);
+      text-align: center;
+      padding: 24px 18px;
+      padding-top: calc(24px + env(safe-area-inset-top, 0px));
+      padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    }
+    #title-overlay h1, #end-overlay h1, #pause-overlay h1 {
+      font-family: 'Creepster', Impact, 'Arial Black', fantasy;
+      font-size: clamp(36px, 11vw, 64px);
+      color: #c00;
+      text-shadow: 0 0 20px #f00, 0 4px 0 #400;
+      margin-bottom: 8px;
+      line-height: 1.05;
+    }
+    #title-overlay p, #end-overlay p, #pause-overlay p {
+      max-width: 520px; line-height: 1.45; margin: 8px 0;
+      font-size: clamp(13px, 3.6vw, 16px);
+    }
+    .goal { color: #fd8; }
+    .legend { font-size: 12px !important; color: #ccc; }
+    .legend b { display: inline-block; width: 18px; height: 18px; border-radius: 50%; line-height: 18px; color: #000; font-size: 11px; margin: 0 2px 0 8px; }
+    .best { color: #8f8; }
+    button {
+      margin-top: 18px;
+      padding: 16px 28px;
+      font-size: 18px;
+      font-family: inherit;
+      background: #800;
+      color: #fff;
+      border: 2px solid #f44;
+      cursor: pointer;
+      letter-spacing: 2px;
+      min-height: 52px;
+      min-width: 200px;
+      border-radius: 6px;
+      touch-action: manipulation;
+    }
+    button.ghost { background: #222; border-color: #777; font-size: 15px; margin-top: 10px; min-height: 46px; }
+    button:active { background: #a00; transform: scale(0.98); }
+    #skip {
+      position: absolute;
+      top: calc(14px + env(safe-area-inset-top, 0px));
+      right: 14px;
+      margin: 0;
+      background: rgba(30,30,30,.85); border-color: #888; font-size: 14px;
+      padding: 10px 14px; min-width: 0; min-height: 44px;
+    }
+    #hint, #banner {
+      position: absolute;
+      left: 0; right: 0;
+      text-align: center;
+      pointer-events: none;
+      text-shadow: 0 2px 8px #000;
+      display: none;
+    }
+    #hint { bottom: calc(18px + env(safe-area-inset-bottom, 0px)); font-size: 13px; color: #ddd; }
+    #banner { top: 38%; font-family: 'Creepster', Impact, 'Arial Black', fantasy; font-size: clamp(30px, 10vw, 54px); color: #f33; text-shadow: 0 0 18px #f00, 0 3px 0 #400; }
+    #banner small { display: block; font-family: 'Share Tech Mono', ui-monospace, Menlo, monospace; font-size: 15px; color: #fd8; text-shadow: 0 2px 6px #000; margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <div id="wrap">
+    <div id="stage">
+      <canvas id="c" width="390" height="844"></canvas>
+      <div id="hud" style="display:none">
+        <div>
+          <div>CZAS: <span id="t">60</span>s</div>
+          <div>PKT: <span id="s">0</span></div>
+          <small>FALA <span id="w">1</span>/5 · ROBAKI <span id="left">0</span></small><br>
+          <small id="combo"></small>
+        </div>
+        <div class="bar-wrap">
+          <label>WYTRZYMAŁOŚĆ</label>
+          <div class="bar"><div id="hpbar"></div></div>
+          <div id="skills"></div>
+        </div>
+        <div id="hud-right">
+          <button id="pauseBtn" type="button" aria-label="Pauza">II</button>
+        </div>
+      </div>
+      <div id="title-overlay">
+        <h1>ATAK CZARNYCH ROBAKÓW</h1>
+        <p>Nocny parking. Ciężarówka. I coś, co nie powinno tu być.</p>
+        <p class="goal">CEL: rozgnieć robaki ze wszystkich 5 fal, zanim skończy się czas albo jad przeżre ciężarówkę.</p>
+        <p>Sterowanie: przytrzymaj palec na ekranie — ciężarówka jedzie w to miejsce. Rozjeżdżaj robaki w ruchu! Stojąca ciężarówka dostaje ugryzienia.</p>
+        <p class="legend">Zbieraj bonusy:<b style="background:#f66">+</b>naprawa<b style="background:#8f8">T</b>+czas<b style="background:#fd4">»</b>turbo<b style="background:#f84">✸</b>miażdżenie<b style="background:#8cf">◆</b>pancerz</p>
+        <p class="best" id="bestMenu"></p>
+        <button id="startBtn" type="button">ROZPOCZNIJ</button>
+      </div>
+      <div id="end-overlay" style="display:none">
+        <h1 id="endTitle">KONIEC</h1>
+        <p id="endMsg"></p>
+        <p id="endStats"></p>
+        <p>Wynik: <strong id="endScore">0</strong></p>
+        <p class="best" id="endBest"></p>
+        <button id="againBtn" type="button">JESZCZE RAZ</button>
+        <button id="menuBtn" class="ghost" type="button">MENU / INTRO</button>
+      </div>
+      <div id="pause-overlay" style="display:none">
+        <h1>PAUZA</h1>
+        <p>Robaki czekają…</p>
+        <button id="resumeBtn" type="button">GRAJ DALEJ</button>
+        <button id="quitBtn" class="ghost" type="button">WYJDŹ DO MENU</button>
+      </div>
+      <div id="banner"></div>
+      <button id="skip" type="button" style="display:none">POMIŃ INTRO</button>
+      <div id="hint">Przytrzymaj palec — ciężarówka jedzie w palec</div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('c');
+  const ctx = canvas.getContext('2d');
+  let W = 390, H = 844, dpr = 1;
+  const MONO = '"Share Tech Mono", ui-monospace, Menlo, "Courier New", monospace';
+  const $ = id => document.getElementById(id);
+
+  const imgs = {};
+  const loadImg = (name, src) => new Promise(res => {
+    const i = new Image();
+    i.onload = () => { imgs[name] = i; res(); };
+    i.onerror = () => res();
+    i.src = src;
+  });
+
+  const hud = $('hud');
+  const titleOv = $('title-overlay');
+  const endOv = $('end-overlay');
+  const pauseOv = $('pause-overlay');
+  const skipBtn = $('skip');
+  const hint = $('hint');
+  const banner = $('banner');
+
+  let state = 'menu';       // menu | intro | play | paused | over
+  let introT = 0;
+  let introSeen = false;
+  let last = 0;
+
+  const TOTAL_WAVES = 5;
+  const BASE_SPEED = 5.0, BASE_SMASH = 22;   // smash = half-width of the truck "crush capsule"
+  const TRUCK_LEN = 124, TRUCK_W = 30;
+
+  const truck = {
+    x: 200, y: 400, a: -Math.PI/2, speed: 0,
+    hp: 100, maxHp: 100,
+    smashR: BASE_SMASH,
+    maxSpeed: BASE_SPEED, acc: 0.26, fric: 0.07, turn: 0.09
+  };
+  let bugs = [], shots = [], particles = [], floaters = [], splats = [], pickups = [];
+  let score = 0, timeLeft = 60, kills = 0, wave = 0, toSpawn = 0, spawnCd = 0;
+  let waveDelay = 0, pickupCd = 6, combo = 0, comboT = 0, bestCombo = 0;
+  let invuln = 0, biteSnd = 0, shake = 0, flash = 0, playT = 0;
+  let keys = {};
+  let skills = { turbo: 0, armor: 0, crush: 0 };
+
+  const touch = { active: false, id: null, x: 0, y: 0 };
+
+  const rand = (a,b) => a + Math.random()*(b-a);
+  const dist = (a,b,c,d) => Math.hypot(a-c, b-d);
+  const clamp = (v,a,b) => Math.max(a, Math.min(b,v));
+  const wrapAng = (a) => {
+    while (a > Math.PI) a -= Math.PI*2;
+    while (a < -Math.PI) a += Math.PI*2;
+    return a;
+  };
+
+  // ---------- best score ----------
+  const BEST_KEY = 'robaki_best_v1';
+  const getBest = () => { try { return parseInt(localStorage.getItem(BEST_KEY) || '0', 10) || 0; } catch(e) { return 0; } };
+  const setBest = v => { try { localStorage.setItem(BEST_KEY, String(v)); } catch(e) {} };
+  const showBestMenu = () => { const b = getBest(); $('bestMenu').textContent = b ? 'Rekord: ' + b : ''; };
+  showBestMenu();
+
+  // ---------- sound (WebAudio, no files) ----------
+  let actx = null, master = null, noiseBuf = null;
+  function initAudio() {
+    try {
+      if (!actx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        actx = new AC();
+        master = actx.createGain(); master.gain.value = 0.5; master.connect(actx.destination);
+        noiseBuf = actx.createBuffer(1, actx.sampleRate * 0.4, actx.sampleRate);
+        const d = noiseBuf.getChannelData(0);
+        for (let i=0;i<d.length;i++) d[i] = Math.random()*2-1;
+      }
+      if (actx.state === 'suspended') actx.resume();
+    } catch(e) { actx = null; }
+  }
+  function tone(freq, dur, type='square', vol=0.2, slide=0, delay=0) {
+    if (!actx || actx.state !== 'running') return;
+    const t0 = actx.currentTime + delay;
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, t0);
+    if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, freq+slide), t0+dur);
+    g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.001, t0+dur);
+    o.connect(g); g.connect(master); o.start(t0); o.stop(t0+dur+0.02);
+  }
+  function noise(dur, vol=0.3, freq=900, delay=0) {
+    if (!actx || actx.state !== 'running') return;
+    const t0 = actx.currentTime + delay;
+    const s = actx.createBufferSource(); s.buffer = noiseBuf;
+    const f = actx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = freq;
+    const g = actx.createGain(); g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.001, t0+dur);
+    s.connect(f); f.connect(g); g.connect(master); s.start(t0); s.stop(t0+dur);
+  }
+  const sfx = {
+    squash: (c) => { noise(0.16, 0.45, 1400); tone(180 + Math.min(c,6)*40, 0.12, 'sawtooth', 0.12, -120); },
+    hit:    () => { noise(0.22, 0.4, 400); tone(90, 0.2, 'square', 0.15, -40); },
+    bite:   () => { tone(140, 0.06, 'square', 0.08, -60); },
+    spit:   () => { tone(700, 0.08, 'sine', 0.04, -400); },
+    pickup: () => { [523,659,784,1046].forEach((f,i) => tone(f, 0.09, 'square', 0.1, 0, i*0.06)); },
+    wave:   () => { tone(220, 0.35, 'sawtooth', 0.12); tone(165, 0.5, 'sawtooth', 0.12, 0, 0.3); },
+    win:    () => { [392,523,659,784,1046].forEach((f,i) => tone(f, 0.18, 'square', 0.12, 0, i*0.12)); },
+    lose:   () => { [330,262,196,131].forEach((f,i) => tone(f, 0.3, 'sawtooth', 0.14, -20, i*0.22)); },
+  };
+  const vibrate = p => { try { if (navigator.vibrate) navigator.vibrate(p); } catch(e) {} };
+
+  function resize() {
+    dpr = Math.min(2.5, window.devicePixelRatio || 1);
+    W = Math.max(1, window.innerWidth);
+    H = Math.max(1, window.innerHeight);
+    canvas.width = Math.floor(W * dpr);
+    canvas.height = Math.floor(H * dpr);
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    truck.x = clamp(truck.x, 30, W-30); truck.y = clamp(truck.y, 30, H-30);
+  }
+  window.addEventListener('resize', resize);
+  window.addEventListener('orientationchange', () => setTimeout(resize, 200));
+  resize();
+
+  // ---------- game flow ----------
+  function waveSize(w) { return 4 + w*3; }          // 7, 10, 13, 16, 19
+
+  function resetGame() {
+    truck.x = W * 0.5; truck.y = H * 0.55; truck.a = -Math.PI/2; truck.speed = 0;
+    truck.hp = 100; truck.maxHp = 100; truck.smashR = BASE_SMASH;
+    truck.maxSpeed = BASE_SPEED;
+    bugs = []; shots = []; particles = []; floaters = []; splats = []; pickups = [];
+    score = 0; timeLeft = 60; kills = 0; wave = 0; toSpawn = 0;
+    combo = 0; comboT = 0; bestCombo = 0; invuln = 0; shake = 0; flash = 0; playT = 0;
+    skills = { turbo: 0, armor: 0, crush: 0 };
+    pickupCd = 7;
+    touch.active = false;
+    nextWave();
+    updateHud();
+  }
+
+  function nextWave() {
+    wave++;
+    toSpawn = waveSize(wave);
+    spawnCd = 0.6;
+    waveDelay = 0;
+    showBanner('FALA ' + wave, wave === 1 ? 'Rozgnieć ' + toSpawn + ' robaków!' : toSpawn + ' robaków · szybsze i bardziej jadowite');
+    sfx.wave();
+  }
+
+  let bannerTimer = null;
+  function showBanner(big, small) {
+    banner.innerHTML = '';
+    banner.appendChild(document.createTextNode(big));
+    if (small) { const s = document.createElement('small'); s.textContent = small; banner.appendChild(s); }
+    banner.style.display = 'block';
+    clearTimeout(bannerTimer);
+    bannerTimer = setTimeout(() => { banner.style.display = 'none'; }, 2200);
+  }
+
+  function spawnBug() {
+    let x,y;
+    const side = Math.floor(Math.random()*4);
+    if (side===0){ x=rand(20,W-20); y=-20; }
+    else if (side===1){ x=W+20; y=rand(60,H-20); }
+    else if (side===2){ x=rand(20,W-20); y=H+20; }
+    else { x=-20; y=rand(60,H-20); }
+    const big = wave >= 3 && Math.random() < 0.12 + wave*0.04;   // "pluj" – bigger, spits more, needs speed
+    bugs.push({
+      x, y, vx: 0, vy: 0,
+      a: rand(0,Math.PI*2),
+      spit: rand(1.5, 3.5),
+      wiggle: rand(0,10),
+      big,
+      r: big ? 20 : 14,
+      maxSp: (big ? 0.85 : 1.15) + wave*0.16 + rand(-0.1,0.15),
+      lungeCd: rand(1.0, 3.5), lunge: 0,
+      orbit: rand(95, 150), dir: Math.random() < 0.5 ? -1 : 1,
+      dodgy: Math.random() < 0.25 + wave*0.12,     // smarter bugs jump out of the way
+    });
+  }
+
+  const PICK_TYPES = [
+    { k:'repair', sym:'+', col:'#f66', name:'NAPRAWA' },
+    { k:'time',   sym:'T', col:'#8f8', name:'+10s CZAS' },
+    { k:'turbo',  sym:'»', col:'#fd4', name:'TURBO!' },
+    { k:'crush',  sym:'✸', col:'#f84', name:'MIAŻDŻENIE!' },
+    { k:'armor',  sym:'◆', col:'#8cf', name:'PANCERZ!' },
+  ];
+  function spawnPickup(forceType) {
+    if (pickups.length >= 3) return;
+    let t = forceType || PICK_TYPES[Math.floor(Math.random()*PICK_TYPES.length)];
+    if (!forceType && truck.hp < 50 && Math.random() < 0.4) t = PICK_TYPES[0];
+    let x, y, tries = 0;
+    do { x = rand(40, W-40); y = rand(110, H-60); tries++; } while (dist(x,y,truck.x,truck.y) < 140 && tries < 20);
+    pickups.push({ x, y, t, life: 11, ph: rand(0,6) });
+  }
+
+  function applyPickup(p) {
+    const k = p.t.k;
+    if (k === 'repair') truck.hp = Math.min(truck.maxHp, truck.hp + 35);
+    else if (k === 'time') timeLeft += 10;
+    else if (k === 'turbo') { skills.turbo = 8; truck.maxSpeed = 7.2; }
+    else if (k === 'crush') { skills.crush = 9; truck.smashR = 40; }
+    else if (k === 'armor') skills.armor = 10;
+    floater(truck.x, truck.y-34, p.t.name, p.t.col);
+    boom(p.x, p.y, 18, p.t.col);
+    sfx.pickup(); vibrate(25);
+  }
+
+  function floater(x,y,txt,col,size=16) { floaters.push({x,y,txt,col,size, t: 1.4}); }
+
+  function boom(x,y, n=12, col='#f33', spd=4) {
+    for (let i=0;i<n;i++) {
+      const a = rand(0,Math.PI*2), s = rand(1,spd);
+      particles.push({x,y,vx:Math.cos(a)*s, vy:Math.sin(a)*s, t: rand(0.3,0.8), col, r: rand(2,5)});
+    }
+  }
+
+  function updateHud() {
+    $('t').textContent = Math.max(0, timeLeft).toFixed(1);
+    $('s').textContent = score;
+    $('w').textContent = wave;
+    $('left').textContent = bugs.length + toSpawn;
+    $('hpbar').style.width = (100*truck.hp/truck.maxHp) + '%';
+    $('combo').textContent = combo >= 2 ? 'COMBO x' + Math.min(combo,8) : '';
+    const sk = [];
+    if (skills.turbo>0) sk.push('TURBO '+skills.turbo.toFixed(0)+'s');
+    if (skills.crush>0) sk.push('MIAŻDŻ '+skills.crush.toFixed(0)+'s');
+    if (skills.armor>0) sk.push('PANCERZ '+skills.armor.toFixed(0)+'s');
+    $('skills').textContent = sk.join(' · ');
+  }
+
+  // ---------- drawing ----------
+  function drawTruck(x, y, ang, scale=1) {
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.rotate(ang);
+    ctx.scale(scale, scale);
+    if (imgs.truckS) {
+      // sprite faces left (cab at -x) → flip so cab points along +x (direction of travel)
+      ctx.rotate(Math.PI);
+      ctx.shadowColor = 'rgba(0,0,0,.7)'; ctx.shadowBlur = 10;
+      ctx.drawImage(imgs.truckS, -TRUCK_LEN/2, -TRUCK_W/2, TRUCK_LEN, TRUCK_W);
+      ctx.shadowBlur = 0;
+      ctx.rotate(Math.PI);
+      // headlights
+      const g = ctx.createRadialGradient(TRUCK_LEN/2+30, 0, 4, TRUCK_LEN/2+30, 0, 70);
+      g.addColorStop(0, 'rgba(255,240,170,.28)'); g.addColorStop(1, 'rgba(255,240,170,0)');
+      ctx.fillStyle = g; ctx.beginPath();
+      ctx.moveTo(TRUCK_LEN/2, -10); ctx.lineTo(TRUCK_LEN/2+100, -45); ctx.lineTo(TRUCK_LEN/2+100, 45); ctx.lineTo(TRUCK_LEN/2, 10); ctx.fill();
+      ctx.restore();
+      return;
+    }
+    ctx.fillStyle = '#6a6e72'; ctx.strokeStyle = '#222'; ctx.lineWidth = 2;
+    ctx.fillRect(-52, -16, 70, 32); ctx.strokeRect(-52, -16, 70, 32);
+    ctx.fillStyle = '#1a3a6b'; ctx.fillRect(16, -15, 34, 30);
+    ctx.fillStyle = '#9cf'; ctx.fillRect(38, -11, 10, 22);
+    ctx.fillStyle = '#fd4'; ctx.fillRect(48, -12, 4, 6); ctx.fillRect(48, 6, 4, 6);
+    ctx.restore();
+  }
+
+  function drawBug(b) {
+    ctx.save();
+    ctx.translate(b.x, b.y);
+    const r = b.r || 14;
+    if (imgs.bugS) {
+      // sprite head points down (+y) → rotate so head points along b.a
+      ctx.rotate(b.a - Math.PI/2 + Math.sin(b.wiggle)*0.15);
+      const s = r * 2.8, sy = s * (1 + Math.sin(b.wiggle*2)*0.04);
+      // pale halo so black bugs stay visible on the dark asphalt
+      const hg = ctx.createRadialGradient(0, 0, r*0.3, 0, 0, r*1.6);
+      hg.addColorStop(0, 'rgba(200,200,210,.35)'); hg.addColorStop(1, 'rgba(200,200,210,0)');
+      ctx.fillStyle = hg; ctx.beginPath(); ctx.arc(0, 0, r*1.6, 0, Math.PI*2); ctx.fill();
+      ctx.drawImage(imgs.bugS, -s/2, -sy/2, s, sy);
+      if (b.big) { ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = 'rgba(80,255,40,.12)'; ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.fill(); }
+      ctx.restore();
+      return;
+    }
+    ctx.rotate(b.a + Math.sin(b.wiggle)*0.2);
+    ctx.fillStyle = '#0a0a0a';
+    ctx.beginPath(); ctx.ellipse(0, 0, 13, 9, 0, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#ff1010';
+    ctx.beginPath(); ctx.arc(8, -3.5, 2.6, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(8,  3.5, 2.6, 0, Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+
+  function drawShot(s) {
+    ctx.save();
+    ctx.translate(s.x, s.y);
+    const ang = Math.atan2(s.vy, s.vx);
+    if (imgs.venomS) {
+      ctx.rotate(ang - 0.83);  // sprite blob flies toward lower-right
+      ctx.drawImage(imgs.venomS, -11, -13, 22, 26);
+    } else {
+      ctx.rotate(ang);
+      ctx.fillStyle = '#7f6';
+      ctx.beginPath(); ctx.ellipse(0,0, 9, 4.5, 0, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function drawPickup(p) {
+    const blink = p.life < 3 && Math.floor(p.life*6) % 2 === 0;
+    if (blink) return;
+    const bob = Math.sin(p.ph*3) * 3;
+    ctx.save();
+    ctx.translate(p.x, p.y + bob);
+    ctx.shadowColor = p.t.col; ctx.shadowBlur = 18;
+    ctx.fillStyle = p.t.col;
+    ctx.beginPath(); ctx.arc(0, 0, 15, 0, Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = 'rgba(255,255,255,.8)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(0, 0, 15 + Math.sin(p.ph*5)*2 + 3, 0, Math.PI*2); ctx.stroke();
+    ctx.fillStyle = '#000'; ctx.font = 'bold 17px ' + MONO; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(p.t.sym, 0, 1);
+    ctx.restore();
+    ctx.textBaseline = 'alphabetic';
+  }
+
+  function drawTouchTarget() {
+    if (!touch.active) return;
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(touch.x, touch.y, 16, 0, Math.PI*2);
+    ctx.strokeStyle = 'rgba(255,60,60,0.85)';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(touch.x, touch.y, 5, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(255,80,80,0.9)';
+    ctx.fill();
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath();
+    ctx.moveTo(truck.x, truck.y);
+    ctx.lineTo(touch.x, touch.y);
+    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawParkingBg() {
+    if (imgs.parking) {
+      const img = imgs.parking;
+      const s = Math.max(W / img.width, H / img.height);
+      const dw = img.width * s, dh = img.height * s;
+      ctx.drawImage(img, (W-dw)/2, (H-dh)/2, dw, dh);
+      ctx.fillStyle = 'rgba(0,0,0,0.28)';
+      ctx.fillRect(0,0,W,H);
+    } else {
+      ctx.fillStyle = '#2a2a2a';
+      ctx.fillRect(0,0,W,H);
+    }
+  }
+
+  function updateIntro(dt) { introT += dt; }
+
+  function drawIntro() {
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0,0,W,H);
+    const t = introT;
+
+    if (imgs.intro) {
+      const zoom = 1 + Math.min(t, 5)*0.18;
+      const img = imgs.intro;
+      const s = Math.max(W / img.width, H / img.height) * zoom;
+      const dw = img.width * s, dh = img.height * s;
+      ctx.drawImage(img, (W-dw)/2 - W*0.04*Math.min(t,4), (H-dh)/2, dw, dh);
+    }
+
+    const g = ctx.createRadialGradient(W/2,H/2, 80, W/2,H/2, Math.max(W,H)*0.7);
+    g.addColorStop(0,'rgba(0,0,0,0)');
+    g.addColorStop(1,'rgba(0,0,0,0.7)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,W,H);
+
+    ctx.textAlign = 'center';
+    ctx.font = '15px ' + MONO;
+    ctx.fillStyle = '#fff';
+    ctx.shadowColor = '#000'; ctx.shadowBlur = 6;
+    const ty = H - 90;
+
+    if (t < 4.2) {
+      wrapText('Widok z lotu ptaka. Skrzyżowanie. Czerwone światło.', W/2, ty, W-36);
+    } else if (t < 9) {
+      ctx.fillStyle = '#f44';
+      wrapText('Czarne robaki z krwistoczerwonymi oczami wpełzają do naczepy…', W/2, ty-24, W-36);
+      ctx.fillStyle = '#ccc';
+      ctx.font = '14px ' + MONO;
+      ctx.fillText('Kierowca nic nie wie.', W/2, ty+30);
+      const n = 8;
+      ctx.shadowBlur = 0;
+      for (let i=0;i<n;i++) {
+        const p = clamp((t-4.2)/4, 0, 1);
+        const bx = W*0.45 + Math.sin(i*1.7)*70 * (1-p) + p*20;
+        const by = H*0.55 + Math.cos(i*2.1)*50 * (1-p);
+        drawBug({x:bx, y:by, a: p*3 + i, wiggle: t*6+i, r: 12});
+      }
+    } else if (t < 13.5) {
+      ctx.fillStyle = '#8f8';
+      wrapText('Zielone. Ciężarówka rusza na parking.', W/2, ty, W-36);
+      const p = clamp((t-9)/4,0,1);
+      ctx.shadowBlur = 0;
+      drawTruck(W*0.38 + p*W*0.9, H*0.55 - p*40, -0.15, 0.85);
+    } else {
+      const fade = clamp((t-13.5)/2.2, 0, 1);
+      ctx.fillStyle = `rgba(0,0,0,${fade})`;
+      ctx.fillRect(0,0,W,H);
+      ctx.fillStyle = '#fff';
+      ctx.font = '22px ' + MONO;
+      ctx.fillText('Parking. Silnik gaśnie.', W/2, H/2 - 10);
+      ctx.font = '14px ' + MONO;
+      ctx.fillStyle = '#f88';
+      ctx.fillText('Coś wychodzi spod naczepy…', W/2, H/2 + 22);
+    }
+    ctx.shadowBlur = 0;
+    if (t > 16.2) startPlay();
+  }
+
+  function wrapText(text, x, y, maxW) {
+    const words = text.split(' ');
+    let line = '', yy = y;
+    ctx.textAlign = 'center';
+    for (let i=0;i<words.length;i++) {
+      const test = line + words[i] + ' ';
+      if (ctx.measureText(test).width > maxW && line) {
+        ctx.fillText(line, x, yy);
+        line = words[i] + ' ';
+        yy += 20;
+      } else line = test;
+    }
+    ctx.fillText(line, x, yy);
+  }
+
+  function startPlay() {
+    introSeen = true;
+    state = 'play';
+    titleOv.style.display = 'none';
+    endOv.style.display = 'none';
+    pauseOv.style.display = 'none';
+    skipBtn.style.display = 'none';
+    hud.style.display = 'flex';
+    hint.style.display = 'block';
+    resetGame();
+    setTimeout(() => { if (state==='play') hint.style.display = 'none'; }, 4000);
+  }
+
+  function endGame(win) {
+    state = 'over';
+    hud.style.display = 'none';
+    hint.style.display = 'none';
+    banner.style.display = 'none';
+    touch.active = false;
+    let bonus = 0;
+    if (win) bonus = Math.round(timeLeft) * 10 + Math.round(truck.hp) * 5;
+    score += bonus;
+    const prev = getBest();
+    const isRecord = score > prev;
+    if (isRecord) setBest(score);
+    endOv.style.display = 'flex';
+    $('endTitle').textContent = win ? 'PRZETRWAŁEŚ' : 'KONIEC GRY';
+    $('endMsg').textContent = win
+      ? 'Wszystkie fale rozgniecione. Ciężarówka jeszcze stoi.'
+      : (truck.hp <= 0 ? 'Jad przeżarł kabinę. Fala ' + wave + ' z ' + TOTAL_WAVES + '.' : 'Czas się skończył. Robaki opanowały parking (fala ' + wave + ').');
+    $('endStats').textContent = 'Rozgniecione: ' + kills + ' · najlepsze combo: x' + bestCombo + (bonus ? ' · bonus: +' + bonus : '');
+    $('endScore').textContent = score;
+    $('endBest').textContent = isRecord ? 'NOWY REKORD!' : 'Rekord: ' + prev;
+    if (win) { sfx.win(); vibrate([60,40,60,40,120]); } else { sfx.lose(); vibrate([200,80,300]); }
+  }
+
+  function damage(dmg, x, y) {
+    if (skills.armor > 0) dmg *= 0.4;
+    truck.hp -= dmg;
+    shake = Math.max(shake, 0.25); flash = 0.25;
+    if (truck.hp <= 0) { truck.hp = 0; endGame(false); return true; }
+    return false;
+  }
+
+  // distance from point to the truck's centre-line segment (truck is long, not round)
+  function truckDist(px, py) {
+    const hx = Math.cos(truck.a) * (TRUCK_LEN/2 - 12), hy = Math.sin(truck.a) * (TRUCK_LEN/2 - 12);
+    const ax = truck.x - hx, ay = truck.y - hy, bx = truck.x + hx, by = truck.y + hy;
+    const vx = bx-ax, vy = by-ay;
+    const t = clamp(((px-ax)*vx + (py-ay)*vy) / (vx*vx+vy*vy), 0, 1);
+    return dist(px, py, ax + vx*t, ay + vy*t);
+  }
+
+  function updatePlay(dt) {
+    const f = dt * 60;            // frame-rate independence (iPhone ProMotion runs at 120 Hz)
+    playT += dt;
+    ['turbo','armor','crush'].forEach(k => {
+      if (skills[k] > 0) {
+        skills[k] -= dt;
+        if (skills[k] <= 0) {
+          skills[k] = 0;
+          if (k==='turbo') truck.maxSpeed = BASE_SPEED;
+          if (k==='crush') truck.smashR = BASE_SMASH;
+        }
+      }
+    });
+    invuln = Math.max(0, invuln - dt);
+    shake = Math.max(0, shake - dt);
+    flash = Math.max(0, flash - dt);
+    biteSnd -= dt;
+    if (comboT > 0) { comboT -= dt; if (comboT <= 0) combo = 0; }
+
+    let throttle = 0;
+    if (touch.active) {
+      const dx = touch.x - truck.x;
+      const dy = touch.y - truck.y;
+      const d = Math.hypot(dx, dy);
+      if (d > 22) {
+        const wantAng = Math.atan2(dy, dx);
+        const diff = wrapAng(wantAng - truck.a);
+        const maxTurn = truck.turn * 2.1 * f;
+        truck.a += clamp(diff, -maxTurn, maxTurn);
+        // full throttle when roughly facing the finger, ease off in tight turns
+        throttle = clamp(d / 120, 0.35, 1) * (Math.abs(diff) > 2.2 ? 0.5 : 1);
+      }
+    } else {
+      if (keys['w'] || keys['arrowup']) throttle += 1;
+      if (keys['s'] || keys['arrowdown']) throttle -= 0.7;
+      const tr = truck.turn * f * (Math.abs(truck.speed)>0.15?1:0.4);
+      if (keys['a'] || keys['arrowleft']) truck.a -= tr;
+      if (keys['d'] || keys['arrowright']) truck.a += tr;
+    }
+
+    truck.speed += throttle * truck.acc * f;
+    truck.speed *= Math.pow(1 - truck.fric, f);
+    truck.speed = clamp(truck.speed, -2.2, truck.maxSpeed);
+    truck.x += Math.cos(truck.a) * truck.speed * f;
+    truck.y += Math.sin(truck.a) * truck.speed * f;
+    if (truck.x < 30 || truck.x > W-30 || truck.y < 30 || truck.y > H-30) truck.speed *= Math.pow(0.85, f);
+    truck.x = clamp(truck.x, 30, W-30);
+    truck.y = clamp(truck.y, 30, H-30);
+
+    // ---- bugs: chase the truck, bite when touching, spit from distance ----
+    const spitEvery = Math.max(1.3, 4.2 - wave*0.5);
+    let biting = 0;
+    for (const b of bugs) {
+      b.wiggle += dt * 10;
+      const dx = truck.x - b.x, dy = truck.y - b.y;
+      const d = Math.hypot(dx,dy) || 1;
+      // stalk: circle the truck at a distance, then lunge in to bite; dodge an oncoming truck
+      let tx, ty, lim = b.maxSp;
+      b.lungeCd -= dt;
+      if (b.lunge > 0) {
+        b.lunge -= dt; tx = dx/d; ty = dy/d; lim = b.maxSp * 1.9;
+      } else {
+        if (b.lungeCd <= 0) { b.lunge = rand(0.9, 1.5); b.lungeCd = rand(2.5, 5) - wave*0.3; }
+        const off = d > b.orbit ? 1 : -0.6;            // approach or back off
+        tx = (dx/d)*off + (-dy/d)*b.dir*0.9;
+        ty = (dy/d)*off + (dx/d)*b.dir*0.9;
+      }
+      if (b.dodgy && Math.abs(truck.speed) > 1.5 && d < 150) {
+        const fx = Math.cos(truck.a), fy = Math.sin(truck.a);
+        const ahead = (-dx)*fx + (-dy)*fy;              // bug in front of the truck?
+        if (ahead > 0) {
+          const side = (-dx)*(-fy) + (-dy)*fx >= 0 ? 1 : -1;
+          tx += -fy*side*2.2; ty += fx*side*2.2; lim = b.maxSp * 1.6;
+        }
+      }
+      const tl = Math.hypot(tx, ty) || 1;
+      b.vx += (tx/tl) * 0.1 * f; b.vy += (ty/tl) * 0.1 * f;
+      const sp = Math.hypot(b.vx,b.vy);
+      if (sp > lim) { b.vx *= lim/sp; b.vy *= lim/sp; }
+      b.x += b.vx * f; b.y += b.vy * f;
+      b.a = Math.atan2(b.vy, b.vx);
+      if (b.x > 0 && b.x < W && b.y > 0 && b.y < H) { b.x = clamp(b.x, 10, W-10); b.y = clamp(b.y, 10, H-10); }
+
+      const td = truckDist(b.x, b.y);
+      if (td < TRUCK_W/2 + b.r*0.6) {
+        biting++;                                       // touching a slow truck = bite
+      }
+
+      b.spit -= dt;
+      if (b.spit <= 0) {
+        b.spit = rand(spitEvery*0.7, spitEvery*1.3) * (b.big ? 0.6 : 1);
+        if (d > 70 && d < 340 && b.x > 0 && b.x < W && b.y > 0 && b.y < H) {
+          const spd = 3.0 + wave*0.25;
+          // lead the target a bit on later waves
+          const lead = wave >= 3 ? 12 : 0;
+          const ax = truck.x + Math.cos(truck.a)*truck.speed*lead - b.x, ay = truck.y + Math.sin(truck.a)*truck.speed*lead - b.y;
+          const ad = Math.hypot(ax, ay) || 1;
+          shots.push({ x: b.x, y: b.y, vx: (ax/ad)*spd, vy: (ay/ad)*spd, life: 3 });
+          sfx.spit();
+        }
+      }
+    }
+
+    // ---- squash ----
+    const fast = Math.abs(truck.speed) > 1.3 || skills.crush > 0;
+    for (let i=bugs.length-1;i>=0;i--) {
+      const b = bugs[i];
+      const td = truckDist(b.x, b.y);
+      if (fast && td < truck.smashR + b.r*0.6) {
+        if (b.big && Math.abs(truck.speed) < 2.6 && skills.crush <= 0) continue; // big ones need real speed
+        combo = comboT > 0 ? combo + 1 : 1;
+        comboT = 1.6;
+        bestCombo = Math.max(bestCombo, combo);
+        const mult = Math.min(combo, 8);
+        const add = ((b.big ? 60 : 25) + Math.floor(Math.abs(truck.speed)*6)) * mult;
+        score += add;
+        kills++;
+        boom(b.x, b.y, b.big ? 26 : 16, '#7f2', 5);
+        boom(b.x, b.y, 8, '#111', 3);
+        boom(b.x, b.y, 4, '#f22', 2);
+        splats.push({ x: b.x, y: b.y, r: b.r * rand(1.1, 1.6), a: rand(0,6), t: 14 });
+        if (splats.length > 70) splats.shift();
+        floater(b.x, b.y-12, '+'+add + (mult>1 ? ' x'+mult : ''), mult>1 ? '#fd4' : '#fff', mult>2 ? 20 : 16);
+        bugs.splice(i,1);
+        sfx.squash(combo);
+        vibrate(b.big ? 40 : 15);
+        shake = Math.max(shake, b.big ? 0.15 : 0.06);
+      }
+    }
+    if (biting && state === 'play') {
+      if (biteSnd <= 0) { sfx.bite(); vibrate(10); biteSnd = 0.35; }
+      if (damage(biting * 5 * dt, truck.x, truck.y)) return;
+      flash = Math.max(flash, 0.08);
+    }
+
+    // ---- spit ----
+    for (let i=shots.length-1;i>=0;i--) {
+      const s = shots[i];
+      s.x += s.vx * f; s.y += s.vy * f;
+      s.life -= dt;
+      if (s.life<=0 || s.x<-20||s.x>W+20||s.y<-20||s.y>H+20) { shots.splice(i,1); continue; }
+      if (truckDist(s.x, s.y) < TRUCK_W/2 + 4) {
+        shots.splice(i,1);
+        boom(s.x,s.y, 10, '#8f0');
+        splats.push({ x: s.x, y: s.y, r: 7, a: 0, t: 4, green: true });
+        if (invuln <= 0) {
+          invuln = 0.3;
+          sfx.hit(); vibrate(60);
+          floater(truck.x, truck.y-30, skills.armor>0 ? 'PANCERZ' : '-JAD', skills.armor>0 ? '#8cf' : '#8f0');
+          if (damage(7 + wave, s.x, s.y)) return;
+        }
+      }
+    }
+
+    // ---- pickups ----
+    pickupCd -= dt;
+    if (pickupCd <= 0) { spawnPickup(); pickupCd = rand(6, 9); }
+    for (let i=pickups.length-1;i>=0;i--) {
+      const p = pickups[i];
+      p.life -= dt; p.ph += dt;
+      if (p.life <= 0) { pickups.splice(i,1); continue; }
+      if (truckDist(p.x, p.y) < TRUCK_W/2 + 16) { applyPickup(p); pickups.splice(i,1); }
+    }
+
+    // ---- fx ----
+    particles.forEach(p => { p.x+=p.vx*f; p.y+=p.vy*f; p.vx*=Math.pow(0.96,f); p.vy*=Math.pow(0.96,f); p.t-=dt; });
+    particles = particles.filter(p => p.t>0);
+    floaters.forEach(fl => { fl.y -= 26*dt; fl.t -= dt; });
+    floaters = floaters.filter(fl => fl.t>0);
+    splats.forEach(s => s.t -= dt);
+    splats = splats.filter(s => s.t > 0);
+
+    // ---- waves ----
+    if (toSpawn > 0) {
+      spawnCd -= dt;
+      const maxAlive = 5 + wave * 2;
+      if (spawnCd <= 0 && bugs.length < maxAlive) {
+        spawnBug(); toSpawn--;
+        spawnCd = Math.max(0.25, 1.0 - wave*0.13);
+      }
+    } else if (bugs.length === 0) {
+      if (waveDelay === 0) {
+        if (wave >= TOTAL_WAVES) { endGame(true); return; }
+        waveDelay = 1.8;
+        const bonusT = 12;
+        timeLeft += bonusT;
+        score += 100 * wave;
+        showBanner('FALA ' + wave + ' CZYSTA', '+' + (100*wave) + ' pkt · +' + bonusT + 's');
+        spawnPickup(PICK_TYPES[0]);
+        sfx.pickup(); vibrate([30,30,30]);
+      } else {
+        waveDelay -= dt;
+        if (waveDelay <= 0) nextWave();
+      }
+    }
+
+    timeLeft -= dt;
+    if (timeLeft <= 0) { timeLeft = 0; endGame(false); return; }
+    updateHud();
+  }
+
+  function drawPlay() {
+    ctx.save();
+    if (shake > 0) ctx.translate(rand(-1,1)*shake*30, rand(-1,1)*shake*30);
+    drawParkingBg();
+    // ground splats
+    for (const s of splats) {
+      ctx.globalAlpha = clamp(s.t / 4, 0, 0.55);
+      ctx.fillStyle = s.green ? '#5c1' : '#1a2a06';
+      ctx.beginPath();
+      for (let k=0;k<9;k++) {
+        const an = s.a + k*0.7, rr = s.r * (0.6 + ((k*37)%10)/14);
+        k ? ctx.lineTo(s.x+Math.cos(an)*rr, s.y+Math.sin(an)*rr) : ctx.moveTo(s.x+Math.cos(an)*rr, s.y+Math.sin(an)*rr);
+      }
+      ctx.closePath(); ctx.fill();
+      if (!s.green) { ctx.fillStyle = '#4a8a10'; ctx.beginPath(); ctx.arc(s.x, s.y, s.r*0.35, 0, Math.PI*2); ctx.fill(); }
+    }
+    ctx.globalAlpha = 1;
+    pickups.forEach(drawPickup);
+    bugs.forEach(drawBug);
+    if (skills.crush>0) {
+      ctx.save(); ctx.translate(truck.x, truck.y); ctx.rotate(truck.a);
+      ctx.strokeStyle = 'rgba(255,120,0,0.5)'; ctx.lineWidth = 3;
+      ctx.strokeRect(-TRUCK_LEN/2-6, -truck.smashR, TRUCK_LEN+12, truck.smashR*2);
+      ctx.restore();
+    }
+    if (skills.armor>0) {
+      ctx.save(); ctx.translate(truck.x, truck.y); ctx.rotate(truck.a);
+      ctx.strokeStyle = 'rgba(120,200,255,' + (0.35+Math.sin(playT*8)*0.15) + ')'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.ellipse(0, 0, TRUCK_LEN/2+8, TRUCK_W/2+12, 0, 0, Math.PI*2); ctx.stroke();
+      ctx.restore();
+    }
+    if (!(invuln > 0 && Math.floor(invuln*20)%2)) drawTruck(truck.x, truck.y, truck.a);
+    shots.forEach(drawShot);
+    particles.forEach(p => {
+      ctx.globalAlpha = clamp(p.t*2,0,1);
+      ctx.fillStyle = p.col;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    floaters.forEach(fl => {
+      ctx.globalAlpha = clamp(fl.t*1.4,0,1);
+      ctx.fillStyle = fl.col;
+      ctx.font = 'bold ' + fl.size + 'px ' + MONO;
+      ctx.textAlign = 'center';
+      ctx.shadowColor = '#000'; ctx.shadowBlur = 4;
+      ctx.fillText(fl.txt, fl.x, fl.y);
+      ctx.shadowBlur = 0;
+    });
+    ctx.globalAlpha = 1;
+    if (skills.turbo>0 && Math.abs(truck.speed)>2) {
+      ctx.strokeStyle = 'rgba(255,220,80,0.35)';
+      ctx.lineWidth = 2;
+      for (let i=0;i<6;i++) {
+        const back = TRUCK_LEN/2 + i*12;
+        ctx.beginPath();
+        ctx.moveTo(truck.x - Math.cos(truck.a)*back + rand(-8,8), truck.y - Math.sin(truck.a)*back + rand(-8,8));
+        ctx.lineTo(truck.x - Math.cos(truck.a)*(back+18), truck.y - Math.sin(truck.a)*(back+18));
+        ctx.stroke();
+      }
+    }
+    drawTouchTarget();
+    // off-screen bug indicators
+    ctx.fillStyle = 'rgba(255,40,40,.8)';
+    for (const b of bugs) {
+      if (b.x >= 0 && b.x <= W && b.y >= 0 && b.y <= H) continue;
+      ctx.beginPath(); ctx.arc(clamp(b.x, 6, W-6), clamp(b.y, 6, H-6), 4, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.restore();
+    if (flash > 0) { ctx.fillStyle = 'rgba(255,0,0,' + (flash*0.5) + ')'; ctx.fillRect(0,0,W,H); }
+    if (truck.hp < 30) { // low-hp vignette
+      const g = ctx.createRadialGradient(W/2,H/2, Math.min(W,H)*0.3, W/2,H/2, Math.max(W,H)*0.7);
+      g.addColorStop(0,'rgba(120,0,0,0)'); g.addColorStop(1,'rgba(160,0,0,' + (0.35+Math.sin(playT*6)*0.12) + ')');
+      ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+    }
+  }
+
+  function drawMenuBg() {
+    ctx.fillStyle = '#050505';
+    ctx.fillRect(0,0,W,H);
+    if (imgs.intro) {
+      const img = imgs.intro;
+      const s = Math.max(W / img.width, H / img.height);
+      const dw = img.width * s, dh = img.height * s;
+      ctx.globalAlpha = 0.35;
+      ctx.drawImage(img, (W-dw)/2, (H-dh)/2, dw, dh);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  function loop(ts) {
+    const dt = Math.min(0.05, (ts - last)/1000 || 0.016);
+    last = ts;
+    if (state === 'intro') {
+      updateIntro(dt);
+      drawIntro();
+    } else if (state === 'play') {
+      updatePlay(dt);
+      if (state === 'play') drawPlay();
+    } else if (state === 'menu') {
+      drawMenuBg();
+    }
+    // 'paused' and 'over' keep the last frame on screen
+    requestAnimationFrame(loop);
+  }
+
+  // ---------- pause ----------
+  function pause() {
+    if (state !== 'play') return;
+    state = 'paused';
+    touch.active = false;
+    pauseOv.style.display = 'flex';
+  }
+  function resume() {
+    if (state !== 'paused') return;
+    initAudio();
+    pauseOv.style.display = 'none';
+    state = 'play';
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { pause(); if (state === 'intro') { /* intro just waits */ } }
+    if (actx) { try { document.hidden ? actx.suspend() : actx.resume(); } catch(e) {} }
+  });
+  window.addEventListener('pagehide', pause);
+  window.addEventListener('blur', pause);
+
+  // ---------- input ----------
+  function pointerXY(e) {
+    const p = e.changedTouches ? e.changedTouches[0] : (e.touches ? e.touches[0] : e);
+    const r = canvas.getBoundingClientRect();
+    return {
+      x: p.clientX - r.left,
+      y: p.clientY - r.top,
+      id: p.identifier != null ? p.identifier : 'mouse'
+    };
+  }
+
+  function onDown(e) {
+    if (state !== 'play') return;
+    if (e.cancelable) e.preventDefault();
+    const p = pointerXY(e);
+    touch.active = true;
+    touch.id = p.id;
+    touch.x = p.x;
+    touch.y = p.y;
+    hint.style.display = 'none';
+  }
+
+  function onMove(e) {
+    if (!touch.active || state !== 'play') return;
+    if (e.cancelable) e.preventDefault();
+    let p = null;
+    if (e.touches && e.touches.length) {
+      for (const t of e.touches) if (t.identifier === touch.id) p = t;
+      if (!p) p = e.touches[0];
+    } else if (!e.touches) {
+      p = e;
+    }
+    if (!p) return;
+    const r = canvas.getBoundingClientRect();
+    touch.x = p.clientX - r.left;
+    touch.y = p.clientY - r.top;
+  }
+
+  function onUp(e) {
+    if (!touch.active) return;
+    if (e.changedTouches) {
+      let match = false;
+      for (const t of e.changedTouches) if (t.identifier === touch.id) match = true;
+      if (!match && e.touches && e.touches.length) return;
+    }
+    touch.active = false;
+  }
+
+  canvas.addEventListener('touchstart', onDown, {passive:false});
+  canvas.addEventListener('touchmove', onMove, {passive:false});
+  canvas.addEventListener('touchend', onUp, {passive:false});
+  canvas.addEventListener('touchcancel', onUp, {passive:false});
+  canvas.addEventListener('mousedown', onDown);
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+  // stop iOS page scroll / rubber-band while playing
+  document.addEventListener('touchmove', e => { if (e.cancelable && state === 'play') e.preventDefault(); }, {passive:false});
+
+  window.addEventListener('keydown', e => {
+    const k = e.key.toLowerCase();
+    keys[k] = true;
+    if (k === 'p' || k === 'escape') { state === 'play' ? pause() : resume(); }
+  });
+  window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+
+  $('startBtn').addEventListener('click', () => {
+    initAudio();
+    titleOv.style.display = 'none';
+    if (introSeen) { startPlay(); return; }
+    skipBtn.style.display = 'block';
+    state = 'intro';
+    introT = 0;
+  });
+  skipBtn.addEventListener('click', () => { initAudio(); startPlay(); });
+  $('againBtn').addEventListener('click', () => { initAudio(); startPlay(); });
+  $('menuBtn').addEventListener('click', () => {
+    endOv.style.display = 'none';
+    titleOv.style.display = 'flex';
+    introSeen = false;          // from the menu START shows the intro again
+    showBestMenu();
+    state = 'menu';
+  });
+  $('pauseBtn').addEventListener('click', pause);
+  $('resumeBtn').addEventListener('click', resume);
+  $('quitBtn').addEventListener('click', () => {
+    pauseOv.style.display = 'none';
+    hud.style.display = 'none';
+    banner.style.display = 'none';
+    titleOv.style.display = 'flex';
+    showBestMenu();
+    state = 'menu';
+  });
+
+  document.addEventListener('gesturestart', e => e.preventDefault());
+  document.addEventListener('dblclick', e => e.preventDefault());
+
+  // test hook (harmless): lets automated tests read game state
+  window.__robaki = () => ({ state, wave, score, kills, hp: truck.hp, time: timeLeft, bugs: bugs.length, toSpawn,
+    truck: { x: truck.x, y: truck.y }, nearest: bugs.length ? bugs.reduce((m,b) => dist(b.x,b.y,truck.x,truck.y) < dist(m.x,m.y,truck.x,truck.y) ? b : m) : null,
+    pickups: pickups.length, splats: splats.length, imgs: Object.keys(imgs) });
+
+  Promise.all([
+    loadImg('intro', 'intro.jpg'),
+    loadImg('parking', 'parking.jpg'),
+    loadImg('bugS', 'bug.png'),
+    loadImg('truckS', 'truck.png'),
+    loadImg('venomS', 'venom.png'),
+  ]).then(() => requestAnimationFrame(loop));
+})();
+</script>
+</body>
+</html>
