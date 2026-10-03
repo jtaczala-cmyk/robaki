@@ -8,6 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#050505" />
   <title>Atak Czarnych Robaków</title>
+  <meta name="robaki-version" content="v3-dzwiek-nick-ranking" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Creepster&family=Share+Tech+Mono&display=swap" />
@@ -122,6 +123,44 @@
     }
     #hint { bottom: calc(18px + env(safe-area-inset-bottom, 0px)); font-size: 13px; color: #ddd; }
     #banner { top: 38%; font-family: 'Creepster', Impact, 'Arial Black', fantasy; font-size: clamp(30px, 10vw, 54px); color: #f33; text-shadow: 0 0 18px #f00, 0 3px 0 #400; }
+    #title-overlay, #end-overlay, #pause-overlay, #rank-overlay { overflow-y: auto; -webkit-overflow-scrolling: touch; touch-action: pan-y; justify-content: flex-start; }
+    #title-overlay > :first-child, #end-overlay > :first-child, #pause-overlay > :first-child, #rank-overlay > :first-child { margin-top: auto; }
+    #title-overlay > :last-child, #end-overlay > :last-child, #pause-overlay > :last-child, #rank-overlay > :last-child { margin-bottom: auto; }
+    #rank-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; background: rgba(0,0,0,0.92); text-align: center; padding: calc(24px + env(safe-area-inset-top, 0px)) 18px calc(24px + env(safe-area-inset-bottom, 0px)); }
+    #rank-overlay h1 { font-family: 'Creepster', Impact, 'Arial Black', fantasy; font-size: clamp(36px, 11vw, 60px); color: #c00; text-shadow: 0 0 20px #f00, 0 4px 0 #400; margin-bottom: 6px; }
+    .nickbox { width: 100%; max-width: 340px; margin: 10px 0 0; text-align: left; }
+    .nickbox > label { font-size: 11px; letter-spacing: 2px; color: #f88; display: block; margin-bottom: 4px; }
+    input, textarea { -webkit-user-select: text; user-select: text; }
+    #nick { width: 100%; font: 18px 'Share Tech Mono', ui-monospace, Menlo, monospace; padding: 11px 12px; background: #140606; color: #fff; border: 2px solid #a33; border-radius: 6px; outline: none; touch-action: manipulation; }
+    #nick:focus { border-color: #f66; box-shadow: 0 0 10px rgba(255,60,60,.45); }
+    .err { color: #ff6a6a; font-size: 12px; min-height: 15px; margin-top: 3px; }
+    .lb-note { font-size: 11px; line-height: 1.4; color: #aaa; }
+    .lb-note p { margin: 0 !important; font-size: 11px !important; max-width: none !important; }
+    .lb-note a { color: #fd8; text-decoration: underline; display: inline-block; padding: 8px 4px; margin: -8px -4px; }
+    .chk { display: flex; align-items: center; gap: 10px; min-height: 44px; cursor: pointer; font-size: 13px; color: #ddd; }
+    .chk input { width: 22px; height: 22px; accent-color: #c00; margin: 0; flex: none; }
+    .btnrow { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+    .btnrow button { min-width: 150px; }
+    .sndBtn { margin: 0; padding: 0; min-width: 44px; min-height: 44px; width: 44px; height: 44px; font-size: 20px; letter-spacing: 0; background: rgba(40,0,0,.7); border-width: 1px; }
+    #sndMenu { position: absolute; top: calc(10px + env(safe-area-inset-top, 0px)); right: 10px; z-index: 5; }
+    #hud-right .sndBtn { pointer-events: auto; margin-top: 6px; }
+    #hudNick { color: #fd8; font-size: 12px; display: block; }
+    .rank { width: 100%; max-width: 340px; margin: 8px 0 0; text-align: left; font-size: 14px; }
+    .rank-cap { font-size: 11px; letter-spacing: 2px; color: #f88; text-align: center; margin-bottom: 4px; }
+    .rank ol { list-style: none; border: 1px solid #522; border-radius: 6px; overflow: hidden; }
+    .rank li { display: flex; gap: 8px; padding: 4px 10px; background: rgba(30,6,6,.75); border-top: 1px solid rgba(255,80,80,.12); }
+    .rank li:first-child { border-top: 0; }
+    .rank li .pos { width: 24px; color: #888; text-align: right; flex: none; }
+    .rank li .nm { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .rank li .sc { color: #fd8; flex: none; }
+    .rank li .tag { color: #f88; font-size: 11px; }
+    .rank li.mine .nm { color: #ffc6a0; }
+    .rank li.me { background: linear-gradient(90deg, rgba(160,20,20,.85), rgba(110,60,0,.8)); box-shadow: inset 0 0 0 1px #fd8; }
+    .rank li.me .nm, .rank li.me .pos { color: #fff; font-weight: bold; }
+    .rank .empty { text-align: center; color: #999; padding: 10px; font-size: 13px; }
+    .send { font-size: 12px !important; color: #bbb; min-height: 16px; margin: 6px 0 0 !important; }
+    .send.bad { color: #ff8a6a; }
+    .send.ok { color: #8f8; }
     #banner small { display: block; font-family: 'Share Tech Mono', ui-monospace, Menlo, monospace; font-size: 15px; color: #fd8; text-shadow: 0 2px 6px #000; margin-top: 6px; }
   </style>
 </head>
@@ -131,6 +170,7 @@
       <canvas id="c" width="390" height="844"></canvas>
       <div id="hud" style="display:none">
         <div>
+          <small id="hudNick"></small>
           <div>CZAS: <span id="t">60</span>s</div>
           <div>PKT: <span id="s">0</span></div>
           <small>FALA <span id="w">1</span>/5 · ROBAKI <span id="left">0</span></small><br>
@@ -143,25 +183,48 @@
         </div>
         <div id="hud-right">
           <button id="pauseBtn" type="button" aria-label="Pauza">II</button>
+          <button class="sndBtn" type="button" aria-label="Dźwięk">🔊</button>
         </div>
       </div>
       <div id="title-overlay">
         <h1>ATAK CZARNYCH ROBAKÓW</h1>
-        <p>Nocny parking. Ciężarówka. I coś, co nie powinno tu być.</p>
         <p class="goal">CEL: rozgnieć robaki ze wszystkich 5 fal, zanim skończy się czas albo jad przeżre ciężarówkę.</p>
-        <p>Sterowanie: przytrzymaj palec na ekranie — ciężarówka jedzie w to miejsce. Rozjeżdżaj robaki w ruchu! Stojąca ciężarówka dostaje ugryzienia.</p>
-        <p class="legend">Zbieraj bonusy:<b style="background:#f66">+</b>naprawa<b style="background:#8f8">T</b>+czas<b style="background:#fd4">»</b>turbo<b style="background:#f84">✸</b>miażdżenie<b style="background:#8cf">◆</b>pancerz</p>
+        <p>Przytrzymaj palec na ekranie — ciężarówka jedzie w to miejsce. Rozjeżdżaj robaki w ruchu! Stojąca ciężarówka dostaje ugryzienia.</p>
+        <p class="legend">Bonusy:<b style="background:#f66">+</b>naprawa<b style="background:#8f8">T</b>+czas<b style="background:#fd4">»</b>turbo<b style="background:#f84">✸</b>miażdżenie<b style="background:#8cf">◆</b>pancerz</p>
+        <div class="nickbox">
+          <label for="nick">TWÓJ NICK</label>
+          <input id="nick" type="text" maxlength="16" autocomplete="nickname" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="np. Jacek" />
+          <div class="err" id="nickErr"></div>
+          <div class="lb-note">
+            <p>Nick i wynik trafią do publicznego rankingu online. Nie wpisuj imienia i nazwiska ani e-maila. <a href="/prad/prywatnosc/" target="_blank" rel="noopener">Prywatność</a></p>
+            <label class="chk"><input type="checkbox" id="lbConsent" /> Pokaż mój wynik w rankingu online</label>
+          </div>
+        </div>
         <p class="best" id="bestMenu"></p>
-        <button id="startBtn" type="button">ROZPOCZNIJ</button>
+        <div class="btnrow">
+          <button id="startBtn" type="button">ROZPOCZNIJ</button>
+          <button id="rankBtn" class="ghost" type="button">RANKING</button>
+        </div>
+      </div>
+      <button id="sndMenu" class="sndBtn" type="button" aria-label="Dźwięk">🔊</button>
+      <div id="rank-overlay" style="display:none">
+        <h1>RANKING</h1>
+        <div class="rank" id="rankList"></div>
+        <p class="send" id="rankNote"></p>
+        <button id="rankBack" class="ghost" type="button">WRÓĆ</button>
       </div>
       <div id="end-overlay" style="display:none">
         <h1 id="endTitle">KONIEC</h1>
         <p id="endMsg"></p>
         <p id="endStats"></p>
-        <p>Wynik: <strong id="endScore">0</strong></p>
+        <p><span id="endNick"></span>Wynik: <strong id="endScore">0</strong></p>
         <p class="best" id="endBest"></p>
-        <button id="againBtn" type="button">JESZCZE RAZ</button>
-        <button id="menuBtn" class="ghost" type="button">MENU / INTRO</button>
+        <div class="rank" id="endRank"></div>
+        <p class="send" id="endSend"></p>
+        <div class="btnrow">
+          <button id="againBtn" type="button">JESZCZE RAZ</button>
+          <button id="menuBtn" class="ghost" type="button">MENU</button>
+        </div>
       </div>
       <div id="pause-overlay" style="display:none">
         <h1>PAUZA</h1>
@@ -240,49 +303,255 @@
   showBestMenu();
 
   // ---------- sound (WebAudio, no files) ----------
-  let actx = null, master = null, noiseBuf = null;
-  function initAudio() {
+  // iOS notes: (1) the AudioContext must be resumed inside a real touchend/click, (2) the ring/silent switch
+  // mutes WebAudio unless the page's audio session is "playback" -> navigator.audioSession (iOS 17+) and,
+  // as a fallback, a silent looping <audio> element started on a tap, (3) after an app switch the context
+  // can be "interrupted"/"suspended" and must be resumed again.
+  const SND_KEY = 'robaki_sound_v1';
+  let soundOn = (() => { try { return localStorage.getItem(SND_KEY) !== '0'; } catch(e) { return true; } })();
+  let actx = null, master = null, noiseBuf = null, keepAlive = null;
+  function silentWavURI() {
+    const n = 2000, buf = new Uint8Array(44 + n), dv = new DataView(buf.buffer);
+    const str = (o, t) => { for (let i=0;i<t.length;i++) buf[o+i] = t.charCodeAt(i); };
+    str(0,'RIFF'); dv.setUint32(4, 36+n, true); str(8,'WAVE'); str(12,'fmt ');
+    dv.setUint32(16,16,true); dv.setUint16(20,1,true); dv.setUint16(22,1,true);
+    dv.setUint32(24,8000,true); dv.setUint32(28,8000,true); dv.setUint16(32,1,true); dv.setUint16(34,8,true);
+    str(36,'data'); dv.setUint32(40,n,true); buf.fill(128, 44);
+    let bin = ''; for (let i=0;i<buf.length;i++) bin += String.fromCharCode(buf[i]);
+    return 'data:audio/wav;base64,' + btoa(bin);
+  }
+  function ensureAudio() {
     try {
       if (!actx) {
         const AC = window.AudioContext || window.webkitAudioContext;
-        if (!AC) return;
-        actx = new AC();
-        master = actx.createGain(); master.gain.value = 0.5; master.connect(actx.destination);
-        noiseBuf = actx.createBuffer(1, actx.sampleRate * 0.4, actx.sampleRate);
+        if (!AC) return null;
+        try { actx = new AC({ latencyHint: 'interactive' }); } catch(e) { actx = new AC(); }
+        const comp = actx.createDynamicsCompressor();
+        comp.threshold.value = -16; comp.knee.value = 12; comp.ratio.value = 4; comp.attack.value = 0.003; comp.release.value = 0.2;
+        master = actx.createGain(); master.gain.value = soundOn ? 1 : 0;
+        master.connect(comp); comp.connect(actx.destination);
+        noiseBuf = actx.createBuffer(1, Math.floor(actx.sampleRate * 0.5), actx.sampleRate);
         const d = noiseBuf.getChannelData(0);
         for (let i=0;i<d.length;i++) d[i] = Math.random()*2-1;
       }
-      if (actx.state === 'suspended') actx.resume();
-    } catch(e) { actx = null; }
+      if (actx.state !== 'running' && actx.state !== 'closed' && !document.hidden) {
+        const pr = actx.resume(); if (pr && pr.catch) pr.catch(() => {});
+      }
+    } catch(e) {}
+    return actx;
   }
+  // called from every touchend / click / key (capture phase) -> always inside a user gesture
+  function unlockAudio() {
+    if (!soundOn) return;
+    try { if (navigator.audioSession && navigator.audioSession.type !== 'playback') navigator.audioSession.type = 'playback'; } catch(e) {}
+    try {
+      if (!keepAlive) {
+        keepAlive = document.createElement('audio');
+        keepAlive.setAttribute('playsinline', ''); keepAlive.setAttribute('x-webkit-airplay', 'deny');
+        keepAlive.loop = true; keepAlive.preload = 'auto'; keepAlive.src = silentWavURI();
+      }
+      if (keepAlive.paused) { const pr = keepAlive.play(); if (pr && pr.catch) pr.catch(() => {}); }
+    } catch(e) {}
+    const c = ensureAudio();
+    if (c && c.state !== 'running') {
+      try { const sb = c.createBufferSource(); sb.buffer = c.createBuffer(1, 1, 22050); sb.connect(c.destination); sb.start(0); } catch(e) {}
+    }
+  }
+  ['touchend', 'click', 'pointerup', 'keydown'].forEach(ev => window.addEventListener(ev, unlockAudio, { capture: true, passive: true }));
+  window.addEventListener('pageshow', () => { if (actx) ensureAudio(); });
+  const audioReady = () => soundOn && actx && master && actx.state !== 'closed';
   function tone(freq, dur, type='square', vol=0.2, slide=0, delay=0) {
-    if (!actx || actx.state !== 'running') return;
-    const t0 = actx.currentTime + delay;
+    if (!audioReady()) return;
+    const t0 = actx.currentTime + 0.005 + delay;
     const o = actx.createOscillator(), g = actx.createGain();
     o.type = type; o.frequency.setValueAtTime(freq, t0);
     if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, freq+slide), t0+dur);
-    g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.001, t0+dur);
-    o.connect(g); g.connect(master); o.start(t0); o.stop(t0+dur+0.02);
+    g.gain.setValueAtTime(0.0001, t0); g.gain.linearRampToValueAtTime(vol, t0 + 0.006);
+    g.gain.exponentialRampToValueAtTime(0.001, t0+dur);
+    o.connect(g); g.connect(master); o.start(t0); o.stop(t0+dur+0.03);
   }
   function noise(dur, vol=0.3, freq=900, delay=0) {
-    if (!actx || actx.state !== 'running') return;
-    const t0 = actx.currentTime + delay;
-    const s = actx.createBufferSource(); s.buffer = noiseBuf;
+    if (!audioReady()) return;
+    const t0 = actx.currentTime + 0.005 + delay;
+    const sn = actx.createBufferSource(); sn.buffer = noiseBuf;
     const f = actx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = freq;
     const g = actx.createGain(); g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.001, t0+dur);
-    s.connect(f); f.connect(g); g.connect(master); s.start(t0); s.stop(t0+dur);
+    sn.connect(f); f.connect(g); g.connect(master); sn.start(t0); sn.stop(t0+dur+0.02);
   }
   const sfx = {
-    squash: (c) => { noise(0.16, 0.45, 1400); tone(180 + Math.min(c,6)*40, 0.12, 'sawtooth', 0.12, -120); },
-    hit:    () => { noise(0.22, 0.4, 400); tone(90, 0.2, 'square', 0.15, -40); },
-    bite:   () => { tone(140, 0.06, 'square', 0.08, -60); },
-    spit:   () => { tone(700, 0.08, 'sine', 0.04, -400); },
-    pickup: () => { [523,659,784,1046].forEach((f,i) => tone(f, 0.09, 'square', 0.1, 0, i*0.06)); },
-    wave:   () => { tone(220, 0.35, 'sawtooth', 0.12); tone(165, 0.5, 'sawtooth', 0.12, 0, 0.3); },
-    win:    () => { [392,523,659,784,1046].forEach((f,i) => tone(f, 0.18, 'square', 0.12, 0, i*0.12)); },
-    lose:   () => { [330,262,196,131].forEach((f,i) => tone(f, 0.3, 'sawtooth', 0.14, -20, i*0.22)); },
+    squash: (c) => { noise(0.2, 0.8, 1800); tone(220 + Math.min(c,6)*55, 0.14, 'sawtooth', 0.28, -150); tone(70, 0.12, 'sine', 0.5, -30); },
+    hit:    () => { noise(0.26, 0.7, 500); tone(110, 0.22, 'square', 0.3, -60); },
+    bite:   () => { tone(160, 0.07, 'square', 0.2, -70); noise(0.05, 0.25, 2500); },
+    spit:   () => { tone(760, 0.09, 'sine', 0.1, -420); },
+    pickup: () => { [523,659,784,1046].forEach((f,i) => tone(f, 0.11, 'square', 0.2, 0, i*0.06)); },
+    wave:   () => { tone(220, 0.38, 'sawtooth', 0.26); tone(165, 0.55, 'sawtooth', 0.26, 0, 0.3); },
+    win:    () => { [392,523,659,784,1046].forEach((f,i) => tone(f, 0.2, 'square', 0.24, 0, i*0.12)); },
+    lose:   () => { [330,262,196,131].forEach((f,i) => tone(f, 0.32, 'sawtooth', 0.28, -20, i*0.22)); },
+    click:  () => { tone(880, 0.06, 'square', 0.16); tone(1320, 0.08, 'square', 0.12, 0, 0.05); },
   };
+  function sndIcons() {
+    document.querySelectorAll('.sndBtn').forEach(b => { b.textContent = soundOn ? '🔊' : '🔇'; b.setAttribute('aria-label', soundOn ? 'Wyłącz dźwięk' : 'Włącz dźwięk'); });
+  }
+  function setSound(on) {
+    soundOn = on;
+    try { localStorage.setItem(SND_KEY, on ? '1' : '0'); } catch(e) {}
+    sndIcons();
+    if (on) { unlockAudio(); if (master) master.gain.setValueAtTime(1, actx.currentTime); sfx.click(); }
+    else { if (master) master.gain.setValueAtTime(0, actx.currentTime); try { if (keepAlive) keepAlive.pause(); } catch(e) {} }
+  }
   const vibrate = p => { try { if (navigator.vibrate) navigator.vibrate(p); } catch(e) {} };
+
+
+  // ---------- nick ----------
+  const NICK_KEY = 'robaki_nick_v1';
+  const NAME_RE = /^[0-9A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźżÆØÅæøåÄÖÜäöüÉÈÁéèáß][0-9A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźżÆØÅæøåÄÖÜäöüÉÈÁéèáß _.'-]*$/;
+  const BAD_SUB = ['kurw','chuj','pierdol','pierdal','jeban','jebac','jebie','zajeb','wyjeb','pizd','dziwk','szmat','kutas','cwel','ruchac','skurwiel',
+    'faen','fitte','fitta','hestkuk','jaevel','jaevla','fanden','rasshol','rasshul','drittsekk','neger',
+    'fuck','shit','cunt','bitch','pussy','whore','nigg','faggot','asshole','bastard','retard','hitler','penis','vagina','porn','twat','dildo','wanker','boob'];
+  const BAD_WORD = ['huj','cipa','fiut','pedal','debil','dupa','dupek','ciota','murzyn','kuk','kukk','pikk','hore','javel','javla','soper',
+    'fuk','fck','dick','cock','fag','rape','rapist','ass','sex','cum','tits','slut','nazi','wank','kkk','heil'];
+  function normName(t) {
+    t = String(t).toLowerCase().replace(/æ/g, 'ae').replace(/ß/g, 'ss');
+    const F = 'ąćęłńóśźżøåäöüéèêáàâíìîúùûýçñ0134578@$!|', T = 'acelnoszzoaaoueeeaaaiiiuuuycnoieastbasii';
+    let o = ''; for (const ch of t) { const j = F.indexOf(ch); o += j < 0 ? ch : T[j]; }
+    return o;
+  }
+  const dedup = t => t.replace(/(.)\1+/g, '$1');
+  function nameBlocked(n) {
+    const x = normName(n), c = x.replace(/[^a-z]/g, ''), cd = dedup(c);
+    const w = x.split(/[^a-z]+/).filter(Boolean), wd = w.map(dedup);
+    if (BAD_SUB.some(b => c.includes(b) || cd.includes(dedup(b)))) return true;
+    return BAD_WORD.some(b => w.includes(b) || wd.includes(dedup(b)) || c === b || cd === dedup(b));
+  }
+  const cleanNick = n => String(n || '').replace(/<[^>]*>/g, '').replace(/[\u0000-\u001f\u007f<>&"`\\]/g, '').replace(/\s+/g, ' ').trim().slice(0, 16);
+  function nickError(n) {
+    if (n.length < 2) return 'Wpisz nick (2–16 znaków).';
+    if (!NAME_RE.test(n)) return 'Dozwolone: litery, cyfry, spacja i . _ \' - (na początku litera lub cyfra).';
+    if (nameBlocked(n)) return 'Ten nick jest niedozwolony — wybierz inny.';
+    return '';
+  }
+  let nick = (() => { try { return cleanNick(localStorage.getItem(NICK_KEY) || ''); } catch(e) { return ''; } })();
+
+  // ---------- leaderboard: shared Supabase table "scores" (same as PRĄD / POWER / STRØM), fallback: this device ----------
+  const LB = (() => {
+    const GAME = 'robaki';
+    const SB_URL = 'https://oqvqvpvlmmyxivqpaifl.supabase.co';
+    const SB_KEY = 'sb_publishable_qnC7OiwBa1HV7H9oBk4I9A_KUUHTOFG';   // publishable key: public by design, security = RLS + checks in the database
+    const LOCAL_KEY = 'robaki_lb_local_v1', QUEUE_KEY = 'robaki_lb_queue_v1', CONSENT_KEY = 'lb-online-consent';
+    const MAX_KO = 65, MAX_SCORE = 60000;      // 5 waves = 65 bugs; per bug 25..824 pts; + wave/win bonuses <= 6000
+    const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch(e) { return d; } };
+    const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch(e) {} };
+    const readJSON = k => { try { const r = JSON.parse(lsGet(k, '[]')); return Array.isArray(r) ? r : []; } catch(e) { return []; } };
+    const consent = () => lsGet(CONSENT_KEY, '0') === '1';
+    const setConsent = on => { lsSet(CONSENT_KEY, on ? '1' : '0'); lsSet('lb-online-off', on ? '0' : '1'); };
+    const plausible = r => r.ko >= 0 && r.ko <= MAX_KO && r.score >= 0 && r.score <= MAX_SCORE && r.score >= r.ko * 25 && r.score <= r.ko * 824 + 6000;
+    function sb(path, opts = {}) {
+      const h = { apikey: SB_KEY };
+      if (/^eyJ/.test(SB_KEY)) h.Authorization = 'Bearer ' + SB_KEY;
+      if (opts.body) { h['Content-Type'] = 'application/json'; h.Prefer = 'return=minimal'; }
+      const ctl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      const timer = ctl ? setTimeout(() => ctl.abort(), 7000) : null;
+      return fetch(SB_URL + '/rest/v1/' + path, { method: opts.method || 'GET', headers: h, body: opts.body, signal: ctl ? ctl.signal : undefined, credentials: 'omit', referrerPolicy: 'no-referrer', cache: 'no-store' })
+        .then(res => { if (timer) clearTimeout(timer); if (!res.ok) { const e = new Error('HTTP ' + res.status); e.status = res.status; throw e; } return opts.body ? null : res.json(); },
+              e => { if (timer) clearTimeout(timer); throw e; });
+    }
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    function localRows() { return readJSON(LOCAL_KEY); }
+    function localAdd(r) {
+      const rows = localRows(); rows.push(r);
+      rows.sort((a, b) => b.score - a.score || a.t - b.t);
+      lsSet(LOCAL_KEY, JSON.stringify(rows.slice(0, 30)));
+    }
+    function top10Unique(rows) {
+      const seen = {}, out = [];
+      for (const r of rows) { const k = String(r.name).toLowerCase(); if (seen[k]) continue; seen[k] = 1; out.push(r); }
+      return out.slice(0, 10);
+    }
+    let pend = null;     // own last score: {name, score, ko, state: 'sending'|'failed'|'sent'|'local'}
+    async function list() {
+      let reachable = false;
+      try {
+        const rows = await sb('scores?select=id,name,score,ko,created_at&game=eq.' + GAME + '&order=score.desc,created_at.asc&limit=200');
+        reachable = true;
+        let out = (rows || []).map(r => ({ id: r.id, name: r.name, score: r.score, ko: r.ko || 0 }));
+        if (out.length || (pend && pend.state === 'sent')) {
+          if (pend && pend.state !== 'sent' && pend.state !== 'local' && !out.some(r => r.name === pend.name && r.score === pend.score)) {
+            out.push({ id: 'pend', name: pend.name, score: pend.score, ko: pend.ko, tag: pend.state === 'failed' ? 'nie wysłano' : 'wysyłam…' });
+            out.sort((a, b) => b.score - a.score);
+          }
+          return { online: true, rows: top10Unique(out) };
+        }
+      } catch(e) {}
+      return { online: false, reachable, rows: localRows().slice(0, 10) };
+    }
+    async function post(r, tries) {
+      const body = JSON.stringify({ game: GAME, name: r.name, score: r.score, ko: r.ko, wave: r.wave });
+      for (let i = 0; i < tries; i++) {
+        try { await sb('scores', { method: 'POST', body }); return { ok: true }; }
+        catch(e) {
+          const st = e.status || 0;
+          if (st >= 400 && st < 500 && st !== 408 && st !== 429) return { ok: false, status: st };   // rejected: no point retrying now
+          if (i < tries - 1) await sleep(1500 * (i + 1) + Math.random() * 1000);
+          else return { ok: false, status: st };
+        }
+      }
+      return { ok: false };
+    }
+    function enqueue(r) {
+      const q = readJSON(QUEUE_KEY).filter(x => !(x.name === r.name && x.score === r.score));
+      q.push(Object.assign({ n: 0 }, r));
+      lsSet(QUEUE_KEY, JSON.stringify(q.slice(-5)));
+    }
+    let flushing = false;
+    async function flushQueue() {      // re-send scores that could not be sent earlier (offline, server error, not yet allowed)
+      if (flushing || !consent()) return;
+      flushing = true;
+      try {
+        let q = readJSON(QUEUE_KEY).filter(x => x.n < 12 && Date.now() - x.t < 7 * 864e5);
+        for (const x of q.slice()) {
+          const res = await post(x, 1);
+          if (res.ok) q = q.filter(y => y !== x); else x.n++;
+        }
+        lsSet(QUEUE_KEY, JSON.stringify(q));
+      } finally { flushing = false; }
+    }
+    async function submit(d) {
+      const r = { name: cleanNick(d.name), score: Math.max(0, Math.floor(+d.score || 0)), ko: Math.max(0, Math.floor(+d.ko || 0)), wave: Math.max(0, Math.min(6, Math.floor(+d.wave || 0))), t: Date.now() };
+      if (!r.name) return { state: 'local', row: r };
+      localAdd(r);
+      if (!consent()) { pend = Object.assign({ state: 'local' }, r); return { state: 'local', row: r }; }
+      if (nickError(r.name) || !plausible(r)) { pend = Object.assign({ state: 'failed' }, r); return { state: 'failed', row: r }; }
+      const mine = pend = Object.assign({ state: 'sending' }, r);
+      const res = await post(r, 3);
+      mine.state = res.ok ? 'sent' : 'failed';
+      if (!res.ok) enqueue(r);
+      return { state: mine.state, row: r, status: res.status };
+    }
+    return { list, submit, flushQueue, consent, setConsent, game: GAME };
+  })();
+  window.__lb = LB;
+
+  function renderRank(el, res, hl) {
+    el.textContent = '';
+    const cap = document.createElement('div'); cap.className = 'rank-cap';
+    cap.textContent = res.online ? 'TOP 10 · RANKING ONLINE' : 'TOP 10 · NA TYM URZĄDZENIU';
+    el.appendChild(cap);
+    if (!res.rows.length) { const e = document.createElement('div'); e.className = 'empty'; e.textContent = 'Brak wyników — zagraj pierwszy!'; el.appendChild(e); return; }
+    const ol = document.createElement('ol');
+    let meDone = false;
+    res.rows.forEach((r, i) => {
+      const li = document.createElement('li');
+      const same = nick && String(r.name).toLowerCase() === nick.toLowerCase();
+      if (same) li.classList.add('mine');
+      if (!meDone && hl && r.name === hl.name && r.score === hl.score) { li.classList.add('me'); meDone = true; }
+      const pos = document.createElement('span'); pos.className = 'pos'; pos.textContent = (i + 1) + '.';
+      const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = r.name;
+      if (r.tag) { const tg = document.createElement('span'); tg.className = 'tag'; tg.textContent = ' · ' + r.tag; nm.appendChild(tg); }
+      const sc = document.createElement('span'); sc.className = 'sc'; sc.textContent = r.score;
+      li.append(pos, nm, sc); ol.appendChild(li);
+    });
+    el.appendChild(ol);
+  }
 
   function resize() {
     dpr = Math.min(2.5, window.devicePixelRatio || 1);
@@ -620,6 +889,8 @@
     skipBtn.style.display = 'none';
     hud.style.display = 'flex';
     hint.style.display = 'block';
+    $('hudNick').textContent = nick;
+    $('sndMenu').style.display = 'none';
     resetGame();
     setTimeout(() => { if (state==='play') hint.style.display = 'none'; }, 4000);
   }
@@ -637,6 +908,7 @@
     const isRecord = score > prev;
     if (isRecord) setBest(score);
     endOv.style.display = 'flex';
+    $('sndMenu').style.display = 'block';
     $('endTitle').textContent = win ? 'PRZETRWAŁEŚ' : 'KONIEC GRY';
     $('endMsg').textContent = win
       ? 'Wszystkie fale rozgniecione. Ciężarówka jeszcze stoi.'
@@ -644,7 +916,41 @@
     $('endStats').textContent = 'Rozgniecione: ' + kills + ' · najlepsze combo: x' + bestCombo + (bonus ? ' · bonus: +' + bonus : '');
     $('endScore').textContent = score;
     $('endBest').textContent = isRecord ? 'NOWY REKORD!' : 'Rekord: ' + prev;
+    $('endNick').textContent = nick ? nick + ' · ' : '';
     if (win) { sfx.win(); vibrate([60,40,60,40,120]); } else { sfx.lose(); vibrate([200,80,300]); }
+    saveScore({ name: nick, score, ko: kills, wave });
+  }
+
+  // ---------- score -> ranking ----------
+  let runId = 0;
+  async function saveScore(d) {
+    const my = ++runId;
+    const sendEl = $('endSend'), rankEl = $('endRank');
+    const hl = { name: d.name, score: d.score };
+    sendEl.className = 'send';
+    sendEl.textContent = LB.consent() ? 'Wysyłam wynik do rankingu online…' : '';
+    const sub = LB.submit(d);
+    renderRank(rankEl, { online: false, rows: JSON.parse(localStorage.getItem('robaki_lb_local_v1') || '[]').slice(0, 10) }, hl);
+    const r = await sub;
+    if (my !== runId) return;
+    if (r.state === 'sent') { sendEl.className = 'send ok'; sendEl.textContent = 'Wynik zapisany w rankingu online ✓'; }
+    else if (r.state === 'failed') { sendEl.className = 'send bad'; sendEl.textContent = 'Wynik nie wysłano do rankingu online — zapisany na tym urządzeniu, spróbuję ponownie później.'; }
+    else { sendEl.className = 'send'; sendEl.textContent = 'Wynik zapisany na tym urządzeniu. Zaznacz „Pokaż mój wynik w rankingu online” w menu, żeby trafić do rankingu online.'; }
+    const res = await LB.list();
+    if (my !== runId) return;
+    renderRank(rankEl, res, hl);
+  }
+  async function showRanking() {
+    titleOv.style.display = 'none';
+    const ov = $('rank-overlay'); ov.style.display = 'flex';
+    $('rankList').textContent = 'Wczytuję…';
+    $('rankNote').textContent = '';
+    LB.flushQueue();
+    const res = await LB.list();
+    renderRank($('rankList'), res, null);
+    $('rankNote').textContent = res.online ? 'Wyniki wszystkich graczy (najlepszy wynik każdego nicku).'
+      : res.reachable ? 'Ranking online jest jeszcze pusty — pokazuję wyniki z tego urządzenia.'
+      : 'Ranking online jest chwilowo niedostępny — pokazuję wyniki z tego urządzenia.';
   }
 
   function damage(dmg, x, y) {
@@ -979,13 +1285,16 @@
   }
   function resume() {
     if (state !== 'paused') return;
-    initAudio();
+    ensureAudio();
     pauseOv.style.display = 'none';
     state = 'play';
   }
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) { pause(); if (state === 'intro') { /* intro just waits */ } }
-    if (actx) { try { document.hidden ? actx.suspend() : actx.resume(); } catch(e) {} }
+    if (document.hidden) {
+      if (actx) { try { const pr = actx.suspend(); if (pr && pr.catch) pr.catch(() => {}); } catch(e) {} }
+      try { if (keepAlive) keepAlive.pause(); } catch(e) {}
+    } else if (actx && soundOn) ensureAudio();   // full unlock happens again on the next tap
   });
   window.addEventListener('pagehide', pause);
   window.addEventListener('blur', pause);
@@ -1049,25 +1358,51 @@
   document.addEventListener('touchmove', e => { if (e.cancelable && state === 'play') e.preventDefault(); }, {passive:false});
 
   window.addEventListener('keydown', e => {
+    if (e.target && e.target.tagName === 'INPUT') return;
     const k = e.key.toLowerCase();
     keys[k] = true;
     if (k === 'p' || k === 'escape') { state === 'play' ? pause() : resume(); }
   });
   window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
 
+  const nickInp = $('nick'), consentBox = $('lbConsent');
+  nickInp.value = nick;
+  consentBox.checked = LB.consent();
+  consentBox.addEventListener('change', () => LB.setConsent(consentBox.checked));
+  nickInp.addEventListener('input', () => { $('nickErr').textContent = ''; });
+  nickInp.addEventListener('change', () => { const n = cleanNick(nickInp.value); if (!nickError(n)) { nick = n; try { localStorage.setItem(NICK_KEY, n); } catch(e) {} } });
+  nickInp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('startBtn').click(); } });
+  function acceptNick() {
+    const n = cleanNick(nickInp.value);
+    const err = nickError(n);
+    if (err) { $('nickErr').textContent = err; nickInp.focus(); return false; }
+    nick = n; nickInp.value = n;
+    try { localStorage.setItem(NICK_KEY, n); } catch(e) {}
+    nickInp.blur();
+    return true;
+  }
+  sndIcons();
+  document.querySelectorAll('.sndBtn').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); setSound(!soundOn); }));
+  $('rankBtn').addEventListener('click', () => { showRanking(); });
+  $('rankBack').addEventListener('click', () => { $('rank-overlay').style.display = 'none'; titleOv.style.display = 'flex'; });
+  LB.flushQueue();
+
   $('startBtn').addEventListener('click', () => {
-    initAudio();
+    if (!acceptNick()) return;
+    unlockAudio(); sfx.click();
     titleOv.style.display = 'none';
     if (introSeen) { startPlay(); return; }
+    $('sndMenu').style.display = 'none';
     skipBtn.style.display = 'block';
     state = 'intro';
     introT = 0;
   });
-  skipBtn.addEventListener('click', () => { initAudio(); startPlay(); });
-  $('againBtn').addEventListener('click', () => { initAudio(); startPlay(); });
+  skipBtn.addEventListener('click', () => { unlockAudio(); startPlay(); });
+  $('againBtn').addEventListener('click', () => { unlockAudio(); startPlay(); });
   $('menuBtn').addEventListener('click', () => {
     endOv.style.display = 'none';
     titleOv.style.display = 'flex';
+    nickInp.value = nick;
     introSeen = false;          // from the menu START shows the intro again
     showBestMenu();
     state = 'menu';
@@ -1079,6 +1414,7 @@
     hud.style.display = 'none';
     banner.style.display = 'none';
     titleOv.style.display = 'flex';
+    $('sndMenu').style.display = 'block';
     showBestMenu();
     state = 'menu';
   });
@@ -1087,16 +1423,16 @@
   document.addEventListener('dblclick', e => e.preventDefault());
 
   // test hook (harmless): lets automated tests read game state
-  window.__robaki = () => ({ state, wave, score, kills, hp: truck.hp, time: timeLeft, bugs: bugs.length, toSpawn,
+  window.__robaki = () => ({ state, nick, sound: soundOn, audio: actx ? actx.state : 'none', wave, score, kills, hp: truck.hp, time: timeLeft, bugs: bugs.length, toSpawn,
     truck: { x: truck.x, y: truck.y }, nearest: bugs.length ? bugs.reduce((m,b) => dist(b.x,b.y,truck.x,truck.y) < dist(m.x,m.y,truck.x,truck.y) ? b : m) : null,
     pickups: pickups.length, splats: splats.length, imgs: Object.keys(imgs) });
 
   Promise.all([
-    loadImg('intro', 'intro.jpg'),
-    loadImg('parking', 'parking.jpg'),
-    loadImg('bugS', 'bug.png'),
-    loadImg('truckS', 'truck.png'),
-    loadImg('venomS', 'venom.png'),
+    loadImg('intro', 'intro.jpg?v=3'),
+    loadImg('parking', 'parking.jpg?v=3'),
+    loadImg('bugS', 'bug.png?v=3'),
+    loadImg('truckS', 'truck.png?v=3'),
+    loadImg('venomS', 'venom.png?v=3'),
   ]).then(() => requestAnimationFrame(loop));
 })();
 </script>
