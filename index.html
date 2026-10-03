@@ -7,11 +7,18 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#1c1518" />
-  <title>Atak Czarnych Robaków</title>
-  <meta name="robaki-version" content="v4.1-swiat-truckpark" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=Racing+Sans+One&display=swap" />
+  <title>SNEAKY BUGS – Atak Czarnych Robaków</title>
+  <meta name="apple-mobile-web-app-title" content="SNEAKY BUGS" />
+  <meta name="application-name" content="SNEAKY BUGS" />
+  <meta name="description" content="SNEAKY BUGS – nocny TRUCK PARK, 60 sekund, czarne robaki o czerwonych oczach. Gra w przeglądarce na telefon." />
+  <meta property="og:title" content="SNEAKY BUGS" />
+  <meta property="og:description" content="Atak Czarnych Robaków · nocny TRUCK PARK · 60 s" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://jtaczala-cmyk.github.io/robaki/" />
+  <meta property="og:image" content="https://jtaczala-cmyk.github.io/robaki/intro.jpg" />
+  <meta name="copyright" content="© 2026 Jacek Taczała" />
+  <meta name="robaki-version" content="v4.2-swiat-truckpark" />
+  <link rel="stylesheet" href="fonts/fonts.css?v=4.2" />
   <style>
     /* =====================================================================
        THEME — every colour / font of the game lives here.
@@ -72,10 +79,6 @@
     #chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; min-height: 20px; }
     .chip { font-size: 11px; font-weight: 600; letter-spacing: 1px; padding: 2px 8px; background: var(--c-white); color: var(--c-ink); border-radius: 2px; transform: skewX(-12deg); }
     .chip.c-turbo { background: var(--c-gold); } .chip.c-crush { background: #ff8a3d; } .chip.c-armor { background: #9fd6ff; }
-    #comboBadge { position: absolute; right: 10px; top: calc(118px + env(safe-area-inset-top, 0px)); font-family: var(--font-title); font-size: 30px; color: var(--c-gold); text-shadow: 0 2px 0 var(--c-red), 0 0 12px rgba(0,0,0,.8); display: none; transform: rotate(-6deg); }
-    #zoneToast { position: absolute; left: 50%; top: calc(122px + env(safe-area-inset-top, 0px)); transform: translateX(-50%) skewX(-10deg); background: var(--c-red); color: var(--c-white); font-weight: 700; letter-spacing: 2px; font-size: 14px; padding: 5px 14px; border-radius: 2px; white-space: nowrap; opacity: 0; transition: opacity .3s; box-shadow: 0 3px 0 var(--c-wine); }
-    #zoneToast small { font-weight: 400; letter-spacing: 1px; opacity: .85; margin-right: 6px; }
-    #zoneToast.on { opacity: 1; }
 
     /* ---------------- overlays ---------------- */
     .ov { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; text-align: center;
@@ -87,6 +90,9 @@
     .logo { display: flex; flex-direction: column; align-items: center; line-height: 1; margin-bottom: 6px; }
     .logo-top { font-family: var(--font-title); font-size: clamp(26px, 8vw, 40px); color: var(--c-pink); transform: rotate(-4deg); letter-spacing: 1px; text-shadow: 0 3px 0 var(--c-ink); }
     .logo-main { font-family: var(--font-heavy); font-size: clamp(38px, 12.5vw, 66px); letter-spacing: 1px; text-transform: uppercase; transform: skewX(-10deg); text-shadow: 0 4px 0 var(--c-red), 0 8px 18px rgba(0,0,0,.6); }
+    .logo-pl { margin-top: 2px; font-family: var(--font-title); font-size: 15px; letter-spacing: .5px; color: #e8dcdf; transform: rotate(-2deg); }
+    .legal { font-size: 11px !important; color: var(--c-muted); margin: 8px 0 0 !important; letter-spacing: .3px; }
+    .legal a { color: var(--c-white); text-decoration: underline; display: inline-block; padding: 8px 2px; margin: -8px 0; }
     .logo-sub { margin-top: 8px; font-weight: 600; font-size: 13px; letter-spacing: 3px; padding: 3px 12px; background: var(--c-white); color: var(--c-ink); transform: skewX(-12deg); }
     h1.head { font-family: var(--font-heavy); font-weight: 400; font-size: clamp(38px, 12vw, 64px); line-height: 1.02; text-transform: uppercase; transform: skewX(-8deg); text-shadow: 0 4px 0 var(--c-red), 0 8px 16px rgba(0,0,0,.6); }
     .kicker { font-family: var(--font-title); color: var(--c-pink); font-size: 20px; transform: rotate(-3deg); }
@@ -110,7 +116,8 @@
     .ibtn { margin: 0; padding: 0; width: 40px; height: 40px; min-width: 40px; font-size: 16px; font-weight: 700; background: var(--panel); border: 1px solid rgba(245,245,245,.35); border-radius: var(--radius); }
     .ibtn:active { background: var(--c-red); }
     #sndMenu { position: absolute; top: calc(10px + env(safe-area-inset-top, 0px)); right: 10px; z-index: 5; }
-    #skip { position: absolute; top: calc(12px + env(safe-area-inset-top, 0px)); right: 12px; margin: 0; font-size: 14px; padding: 10px 16px; min-width: 0; min-height: 44px; }
+    #skip { position: absolute; z-index: 6; top: calc(12px + env(safe-area-inset-top, 0px)); right: 12px; margin: 0; font-size: 15px; font-weight: 700; padding: 10px 18px; min-width: 0; min-height: 46px;
+            background: var(--c-gold) !important; color: var(--c-ink) !important; box-shadow: 0 0 0 2px rgba(0,0,0,.65), 0 4px 16px rgba(0,0,0,.7); }
     .nickbox { width: 100%; max-width: 340px; margin: 10px 0 0; text-align: left; }
     .nickbox > label { font-size: 12px; letter-spacing: 2px; color: var(--c-white); font-weight: 600; display: block; margin-bottom: 4px; }
     input, textarea { -webkit-user-select: text; user-select: text; }
@@ -121,13 +128,10 @@
     .lb-note p { margin: 0 !important; font-size: 11px !important; max-width: none !important; }
     .lb-note a { color: var(--c-white); text-decoration: underline; display: inline-block; padding: 8px 4px; margin: -8px -4px; }
     .chk { display: flex; align-items: center; gap: 10px; min-height: 44px; cursor: pointer; font-size: 13px; color: var(--c-white); }
+    .nickbox > label.chk { display: flex; font-size: 13px; letter-spacing: normal; font-weight: 400; margin: 0; }
     .chk input { width: 22px; height: 22px; accent-color: var(--c-red); margin: 0; flex: none; }
     #hint { position: absolute; left: 0; right: 0; bottom: calc(140px + env(safe-area-inset-bottom, 0px)); text-align: center; pointer-events: none; display: none; }
     #hint span { display: inline-block; background: var(--panel); border-left: 3px solid var(--c-pink); padding: 6px 12px; font-size: 14px; letter-spacing: .5px; }
-    #banner { position: absolute; left: 0; right: 0; top: 32%; text-align: center; pointer-events: none; display: none;
-              font-family: var(--font-heavy); font-size: clamp(40px, 13vw, 64px); text-transform: uppercase; transform: skewX(-10deg);
-              text-shadow: 0 4px 0 var(--c-red), 0 8px 18px rgba(0,0,0,.7); }
-    #banner small { display: block; margin: 6px auto 0; width: max-content; max-width: 92%; font-family: var(--font-ui); font-weight: 600; font-size: 15px; letter-spacing: 1.5px; background: var(--c-white); color: var(--c-ink); padding: 3px 10px; text-shadow: none; }
     .scorebig { margin: 10px 0 2px; display: flex; flex-direction: column; align-items: center; }
     .scorebig small { font-size: 13px; letter-spacing: 2px; color: var(--c-muted); }
     .scorebig b { font-family: var(--font-heavy); font-weight: 400; font-size: 56px; line-height: 1; color: var(--c-gold); text-shadow: 0 4px 0 var(--c-red); }
@@ -150,6 +154,21 @@
     .rank li.me { background: linear-gradient(90deg, var(--c-red), var(--c-wine)); }
     .rank li.me .nm, .rank li.me .sc { color: var(--c-white); font-weight: 700; }
     .rank .empty { text-align: center; color: var(--c-muted); padding: 10px; font-size: 13px; background: rgba(28,21,24,.8); }
+    .endside { width: 100%; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+    .evlog { width: 100%; max-width: 360px; margin: 8px 0 0; text-align: left; }
+    .evsum { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; margin-bottom: 4px; }
+    .evsum span { font-size: 11px; letter-spacing: .5px; padding: 2px 7px; background: rgba(28,21,24,.85); border: 1px solid rgba(245,245,245,.18); border-radius: 2px; white-space: nowrap; }
+    .evsum b { color: var(--c-gold); font-weight: 700; }
+    .evlog ol { list-style: none; max-height: 132px; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; touch-action: pan-y;
+                background: rgba(28,21,24,.82); border-radius: var(--radius); padding: 2px 0; }
+    .evlog li { display: flex; gap: 8px; align-items: baseline; padding: 2px 8px; font-size: 12px; line-height: 1.35; border-left: 3px solid rgba(245,245,245,.25); }
+    .evlog li + li { border-top: 1px solid rgba(245,245,245,.06); }
+    .evlog li time { flex: none; width: 34px; color: var(--c-muted); font-variant-numeric: tabular-nums; font-size: 11px; }
+    .evlog li span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+    .evlog li.k-wave { border-left-color: var(--c-pink); } .evlog li.k-skill { border-left-color: var(--c-gold); } .evlog li.k-pick { border-left-color: #9fd6ff; }
+    .evlog li.k-time { border-left-color: var(--c-good); } .evlog li.k-zone { border-left-color: #c9b7ff; } .evlog li.k-combo { border-left-color: #ff8a3d; }
+    .evlog li.k-hp { border-left-color: #ff3030; } .evlog li.k-end { border-left-color: var(--c-white); font-weight: 600; }
+    .evlog .empty { text-align: center; color: var(--c-muted); padding: 8px; font-size: 12px; border: 0; display: block; }
     .send { font-size: 12px !important; color: var(--c-muted); min-height: 16px; margin: 6px 0 0 !important; }
     .send.bad { color: #ffb1bb; } .send.ok { color: var(--c-good); }
     #hudNick { max-width: 74px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -159,7 +178,6 @@
     .ov { padding-left: calc(18px + env(safe-area-inset-left, 0px)); padding-right: calc(18px + env(safe-area-inset-right, 0px)); }
     #sndMenu { right: calc(10px + env(safe-area-inset-right, 0px)); }
     #skip { right: calc(12px + env(safe-area-inset-right, 0px)); }
-    #comboBadge { right: calc(10px + env(safe-area-inset-right, 0px)); }
     /* short landscape screens: menu and end screen in two columns, so START / JESZCZE RAZ fit without scrolling */
     @media (orientation: landscape) and (max-height: 520px) {
       #title-overlay:not([style*="none"]), #end-overlay:not([style*="none"]) { display: grid !important; }
@@ -169,13 +187,22 @@
       #title-overlay > .nickbox { grid-column: 2; grid-row: 1 / span 2; margin: 0; align-self: end; }
       #title-overlay > #bestMenu { grid-column: 2; grid-row: 3; margin: 2px 0; }
       #title-overlay > .btnrow { grid-column: 2; grid-row: 4; align-self: start; }
+      #title-overlay > .legal { grid-column: 1; grid-row: 5; margin: 2px 0 0 !important; }
+      #title-overlay .btnrow { flex-wrap: nowrap; } #title-overlay .btnrow .btn.ghost { min-width: 0; padding: 12px 14px; }
+      #title-overlay .chk { min-height: 36px; } #title-overlay .nickbox { margin: 0; }
+      .logo-pl { font-size: 12px; margin-top: 0; }
       #title-overlay .btnrow .btn { margin-top: 4px; min-width: 150px; padding: 12px 18px; }
       .logo { margin-bottom: 2px; }
       .logo-top { font-size: 24px; } .logo-main { font-size: 40px; } .logo-sub { margin-top: 4px; font-size: 11px; }
       .checks { margin: 6px 0 2px; gap: 3px 12px; } .checks li { font-size: 11px; } .checks li i { width: 16px; height: 16px; line-height: 16px; font-size: 11px; }
       .ov p.howto { font-size: 11.5px !important; margin: 3px 0; line-height: 1.3; }
       #end-overlay > * { grid-column: 1; }
-      #end-overlay > #endRank { grid-column: 2; grid-row: 1 / span 6; align-self: center; margin: 0; }
+      #end-overlay > #endSide { grid-column: 2; grid-row: 1 / span 6; align-self: center; margin: 0; height: calc(100vh - 86px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); height: calc(100dvh - 86px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); }
+      #endSide .evlog > .rank-cap, #endSide .evsum { margin-right: calc(48px + env(safe-area-inset-right, 0px)); }
+      #endSide .rank { margin: 6px 0 0; flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+      #endSide .evlog { margin: 0; flex: 1.5 1 0; min-height: 0; display: flex; flex-direction: column; }
+      #endSide .evlog ol { max-height: none; flex: 1 1 auto; min-height: 0; }
+      .evsum { gap: 3px; margin-bottom: 3px; } .evsum span { font-size: 10px; padding: 1px 4px; letter-spacing: 0; } .evlog li { font-size: 11.5px; padding: 1px 8px; }
       #end-overlay > #endSend { grid-column: 2; grid-row: 7; margin: 4px 0 0 !important; }
       #end-overlay > .btnrow { grid-row: 7; }
       #end-overlay .btn { margin-top: 6px; min-height: 44px; padding: 10px 18px; font-size: 16px; min-width: 140px; }
@@ -210,13 +237,12 @@
         </div>
         <div id="chips"></div>
       </div>
-      <div id="comboBadge"></div>
-      <div id="zoneToast"></div>
 
       <div id="title-overlay" class="ov">
         <div class="logo">
-          <span class="logo-top">Atak</span>
-          <span class="logo-main">Czarnych Robaków</span>
+          <span class="logo-top">Sneaky</span>
+          <span class="logo-main">BUGS</span>
+          <span class="logo-pl">Atak Czarnych Robaków</span>
           <span class="logo-sub">NOCNY TRUCK PARK · 60 S</span>
         </div>
         <ul class="checks">
@@ -234,15 +260,17 @@
           <input id="nick" type="text" maxlength="16" autocomplete="nickname" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="np. Jacek" />
           <div class="err" id="nickErr"></div>
           <div class="lb-note">
-            <p>Nick i wynik trafią do publicznego rankingu online. Nie wpisuj imienia i nazwiska ani e-maila. <a href="/prad/prywatnosc/" target="_blank" rel="noopener">Prywatność</a></p>
+            <p>Nick i wynik trafią do publicznego rankingu online. Nie wpisuj imienia i nazwiska ani e-maila. <a href="prywatnosc/" target="_blank" rel="noopener">Prywatność</a></p>
             <label class="chk"><input type="checkbox" id="lbConsent" /> Pokaż mój wynik w rankingu online</label>
           </div>
+          <label class="chk"><input type="checkbox" id="skipIntroChk" /> Pomijaj intro (od razu do gry)</label>
         </div>
         <p class="best" id="bestMenu"></p>
         <div class="btnrow">
           <button id="startBtn" class="btn" type="button">ROZPOCZNIJ</button>
           <button id="rankBtn" class="btn ghost" type="button">RANKING</button>
         </div>
+        <p class="legal">© 2026 Jacek Taczała · <a href="prywatnosc/" target="_blank" rel="noopener">Prywatność</a> · <a href="informacje/" target="_blank" rel="noopener">Zasady i licencje</a></p>
       </div>
       <button id="sndMenu" class="sndBtn ibtn" type="button" aria-label="Dźwięk">🔊</button>
 
@@ -261,7 +289,10 @@
         <div class="scorebig"><small id="endNick"></small><b id="endScore">0</b><span>PUNKTÓW</span></div>
         <p class="best" id="endBest"></p>
         <div class="stats" id="endStats"></div>
-        <div class="rank" id="endRank"></div>
+        <div class="endside" id="endSide">
+          <div class="evlog" id="endLog"><div class="rank-cap">PRZEBIEG GRY</div><div class="evsum" id="endLogSum"></div><ol id="endLogList"></ol></div>
+          <div class="rank" id="endRank"></div>
+        </div>
         <p class="send" id="endSend"></p>
         <div class="btnrow">
           <button id="againBtn" class="btn" type="button">JESZCZE RAZ</button>
@@ -277,7 +308,6 @@
         <button id="quitBtn" class="btn ghost" type="button">WYJDŹ DO MENU</button>
       </div>
 
-      <div id="banner"></div>
       <button id="skip" class="btn ghost" type="button" style="display:none">POMIŃ INTRO ›</button>
       <div id="hint"><span>Przytrzymaj palec — ciężarówka jedzie w palec</span></div>
     </div>
@@ -316,7 +346,7 @@
   const loadImg = (name, src) => new Promise(res => { const i = new Image(); i.onload = () => { imgs[name] = i; res(); }; i.onerror = () => res(); i.src = src; });
 
   const hud = $('hud'), titleOv = $('title-overlay'), endOv = $('end-overlay'), pauseOv = $('pause-overlay');
-  const skipBtn = $('skip'), hint = $('hint'), banner = $('banner');
+  const skipBtn = $('skip'), hint = $('hint');
 
   const rand = (a, b) => a + Math.random() * (b - a);
   const dist = (a, b, c, d) => Math.hypot(a - c, b - d);
@@ -434,7 +464,8 @@
 
 
   // ---------- nick ----------
-  const NICK_KEY = 'robaki_nick_v1';
+  const NICK_KEY = 'robaki_nick_v1', SKIPINTRO_KEY = 'robaki_skipintro_v1';
+  let skipIntroPref = false; try { skipIntroPref = localStorage.getItem(SKIPINTRO_KEY) === '1'; } catch (e) {}
   const NAME_RE = /^[0-9A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźżÆØÅæøåÄÖÜäöüÉÈÁéèáß][0-9A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźżÆØÅæøåÄÖÜäöüÉÈÁéèáß _.'-]*$/;
   const BAD_SUB = ['kurw','chuj','pierdol','pierdal','jeban','jebac','jebie','zajeb','wyjeb','pizd','dziwk','szmat','kutas','cwel','ruchac','skurwiel',
     'faen','fitte','fitta','hestkuk','jaevel','jaevla','fanden','rasshol','rasshul','drittsekk','neger',
@@ -699,25 +730,8 @@
   function blockedAt(x, y, r, forBug) { let hit = false; query(x, y, r, o => { if (!hit && !(forBug && LOW[o.t]) && pushOut(x, y, r, o)) hit = true; }); return hit; }
   const freeSpot = (x, y, r) => x > 40 && y > 40 && x < WW - 40 && y < WH - 40 && !blockedAt(x, y, r, false);
 
-  // ---------- intro path: traffic lights on the street -> into the TRUCK PARK -> stop ----------
+  // ---------- start position in the TRUCK PARK (the intro path is defined in the INTRO section) ----------
   const START = { x: 1172, y: 1560, a: -Math.PI / 2 };
-  const PATH = (() => {
-    const pts = [];
-    const line = (a, b, n) => { for (let i = 0; i <= n; i++) pts.push([lerp(a[0], b[0], i / n), lerp(a[1], b[1], i / n)]); };
-    line([2140, 2005], [1360, 2005], 40);
-    const P1 = [1360, 2005], Cc = [1172, 2005], P2 = [1172, 1818];
-    for (let i = 1; i <= 24; i++) { const t = i / 24, u = 1 - t; pts.push([u * u * P1[0] + 2 * u * t * Cc[0] + t * t * P2[0], u * u * P1[1] + 2 * u * t * Cc[1] + t * t * P2[1]]); }
-    line(P2, [START.x, START.y], 14);
-    const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + dist(pts[i][0], pts[i][1], pts[i - 1][0], pts[i - 1][1]));
-    return { pts, cum, len: cum[cum.length - 1] };
-  })();
-  function pathPos(s) {
-    s = clamp(s, 0, PATH.len);
-    let i = 1; while (i < PATH.cum.length - 1 && PATH.cum[i] < s) i++;
-    const a = PATH.pts[i - 1], b = PATH.pts[i], t = (s - PATH.cum[i - 1]) / ((PATH.cum[i] - PATH.cum[i - 1]) || 1);
-    return [lerp(a[0], b[0], t), lerp(a[1], b[1], t)];
-  }
-  function pathAt(s) { const p = pathPos(s), q = pathPos(s - 18), r = pathPos(s + 18); return { x: p[0], y: p[1], a: Math.atan2(r[1] - q[1], r[0] - q[0]) }; }
 
   // ---------- sprites (pre-rendered, no shadowBlur per frame) ----------
   function mkCanvas(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
@@ -889,7 +903,7 @@
 
   let lightPhase = 'game', introLight = 'red', clock = 0;
   function tlColor(grp) {
-    if (lightPhase === 'intro') return grp === 'we' ? introLight : (introLight === 'green' ? 'red' : 'red');
+    if (lightPhase === 'intro') return grp === 'ns' ? introLight : 'red';
     const c = (clock % 14);
     const we = c < 6 ? 'green' : c < 7 ? 'amber' : 'red';
     const ns = c >= 7 && c < 13 ? 'green' : c >= 13 ? 'amber' : 'red';
@@ -1041,19 +1055,22 @@
     const chips = []; if (skills.turbo > 0) chips.push('turbo:TURBO ' + Math.ceil(skills.turbo)); if (skills.crush > 0) chips.push('crush:MIAŻDŻ ' + Math.ceil(skills.crush)); if (skills.armor > 0) chips.push('armor:PANCERZ ' + Math.ceil(skills.armor));
     const key = chips.join('|');
     if (hudCache.chips !== key) { hudCache.chips = key; const el = $('chips'); el.textContent = ''; chips.forEach(c => { const [k, t] = c.split(':'); const s = document.createElement('span'); s.className = 'chip c-' + k; s.textContent = t + ' S'; el.appendChild(s); }); }
-    const cb = combo >= 2 ? 'COMBO x' + Math.min(combo, 8) : '';
-    if (hudCache.combo !== cb) { hudCache.combo = cb; const el = $('comboBadge'); el.textContent = cb; el.style.display = cb ? 'block' : 'none'; }
   }
-  let bannerTimer = null;
-  function showBanner(big, small, ms) {
-    banner.textContent = ''; banner.appendChild(document.createTextNode(big));
-    if (small) { const s = document.createElement('small'); s.textContent = small; banner.appendChild(s); }
-    banner.style.display = 'block'; clearTimeout(bannerTimer); bannerTimer = setTimeout(() => { banner.style.display = 'none'; }, ms || 2100);
-  }
-  let toastTimer = null;
-  function zoneToast(z) {
-    const el = $('zoneToast'); el.textContent = ''; const s = document.createElement('small'); s.textContent = 'STREFA'; el.append(s, document.createTextNode(z.name));
-    el.classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('on'), 1900);
+  // ---------- event log: nothing big on screen during play, everything is listed on the results screen ----------
+  let evLog = [], evCount = {}, hpWarned = false;
+  function logEv(k, txt) { evCount[k] = (evCount[k] || 0) + 1; if (evLog.length < 400) evLog.push({ t: playT, k, txt }); }
+  const mmss = t => { t = Math.max(0, Math.floor(t)); return Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0'); };
+  function renderLog() {
+    const sum = $('endLogSum'), ol = $('endLogList'); sum.textContent = ''; ol.textContent = '';
+    [['fale', wave], ['umiejętn.', skillsGot], ['power-upy', evCount.pick || 0], ['premie czasu', (evCount.time || 0) + ' · +' + Math.round(timeGained) + ' s'], ['strefy', visited.size + '/5'], ['serie x3+', evCount.combo || 0]].forEach(c => {
+      const sp = document.createElement('span'), b = document.createElement('b'); sp.append(document.createTextNode(c[0] + ' ')); b.textContent = String(c[1]); sp.appendChild(b); sum.appendChild(sp);
+    });
+    if (!evLog.length) { const li = document.createElement('li'); li.className = 'empty'; li.textContent = 'Brak zdarzeń.'; ol.appendChild(li); }
+    for (const e of evLog) {
+      const li = document.createElement('li'), tm = document.createElement('time'), sp = document.createElement('span');
+      li.className = 'k-' + e.k; tm.textContent = mmss(e.t); sp.textContent = e.txt; li.append(tm, sp); ol.appendChild(li);
+    }
+    ol.scrollTop = 0;
   }
 
   // ---------- entities ----------
@@ -1113,19 +1130,20 @@
     else if (k === 'crush') { skills.crush = 9; truck.smashR = 40; }
     else if (k === 'armor') skills.armor = 10;
     else if (k === 'horn') hornBlast();
-    if (fromKills) { skillsGot++; showBanner(SK_NAME[k] + '!', 'NOWA UMIEJĘTNOŚĆ · CO ' + SKILL_EVERY + ' ROBAKÓW', 1500); sfx.skill(); vibrate(30); }
+    if (fromKills) { skillsGot++; logEv('skill', 'Umiejętność: ' + SK_NAME[k] + ' (za ' + kills + ' robaków)'); sfx.skill(); vibrate(30); }
   }
-  function addTime(s, x, y) {
+  function addTime(s, x, y, why) {
     const room = Math.max(0, MAX_TOTAL - playT - timeLeft), add = Math.min(s, room);
     if (add <= 0) return;
-    timeLeft += add; timeGained += add; floater(x, y, '+' + add.toFixed(0) + ' S', THEME.good, 18);
+    timeLeft += add; timeGained += add; floater(x, y, '+' + add.toFixed(0) + ' S', THEME.good, 13);
+    if (why) logEv('time', 'Premia czasowa +' + (Math.round(add * 10) / 10) + ' s · ' + why); else evCount.time = (evCount.time || 0) + 1;   // a +5 s power-up is listed once, as the power-up
   }
   function applyPickup(p) {
     const k = p.t.k;
     if (k === 'repair') truck.hp = Math.min(truck.maxHp, truck.hp + 35);
     else if (k === 'time') addTime(5, truck.x, truck.y - 56);
     else grantSkill(k, false);
-    floater(truck.x, truck.y - 36, p.t.name, p.t.col, 18);
+    logEv('pick', 'Power-up: ' + p.t.name.replace(/!$/, ''));
     boom(p.x, p.y, 18, p.t.col);
     sfx.pickup(); vibrate(25);
   }
@@ -1149,29 +1167,31 @@
     if (particles.length > 420) particles.splice(0, particles.length - 420);
   }
   let hornDepth = 0, hornQueued = false;
+  function endCombo() { if (combo >= 3) logEv('combo', 'Seria x' + combo + ' robaków'); combo = 0; }
   function killBug(i, byHorn) {
     const b = bugs[i];
-    combo = comboT > 0 ? combo + 1 : 1; comboT = 1.6; bestCombo = Math.max(bestCombo, combo);
+    if (comboT <= 0) endCombo(); combo = comboT > 0 ? combo + 1 : 1; comboT = 1.6; bestCombo = Math.max(bestCombo, combo);
     const mult = Math.min(combo, 8);
     const sp = byHorn ? 0 : Math.min(Math.abs(truck.speed), TURBO_SPEED);
     const add = ((b.big ? 60 : 25) + Math.floor(sp * 6)) * mult;         // per bug 25..824 (SQL plausibility check)
     score += add; kills++;
     boom(b.x, b.y, b.big ? 26 : 16, THEME.venom, 5); boom(b.x, b.y, 8, '#111', 3); boom(b.x, b.y, 4, THEME.eye, 2);
     splats.push({ x: b.x, y: b.y, r: b.r * rand(1.1, 1.6), a: rand(0, 6), t: 16 }); if (splats.length > 80) splats.shift();
-    floater(b.x, b.y - 12, '+' + add + (mult > 1 ? ' x' + mult : ''), mult > 1 ? THEME.gold : THEME.white, mult > 2 ? 21 : 16);
+    floater(b.x, b.y - 12, '+' + add + (mult > 1 ? ' x' + mult : ''), mult > 1 ? THEME.gold : THEME.white, 13);
     bugs.splice(i, 1);
     sfx.squash(combo); vibrate(b.big ? 40 : 15); shake = Math.max(shake, b.big ? .15 : .06);
     if (b.big || Math.random() < 0.1) spawnPickup(null, b.x, b.y);
-    if (kills % TIME_EVERY === 0) addTime(TIME_KILL_BONUS, truck.x, truck.y - 70);       // running over bugs extends the round
+    if (kills % TIME_EVERY === 0) addTime(TIME_KILL_BONUS, truck.x, truck.y - 70, kills + ' robaków');       // running over bugs extends the round
     if (kills % SKILL_EVERY === 0) {
       const k = SKILL_CYCLE[skillIdx % SKILL_CYCLE.length]; skillIdx++;
-      if (k === 'horn' && hornDepth > 0) { skillsGot++; hornQueued = true; showBanner(SK_NAME.horn + '!', 'NOWA UMIEJĘTNOŚĆ · CO ' + SKILL_EVERY + ' ROBAKÓW', 1500); return; }   // no horn-in-horn: blast on the next frame
+      if (k === 'horn' && hornDepth > 0) { skillsGot++; hornQueued = true; logEv('skill', 'Umiejętność: ' + SK_NAME.horn + ' (za ' + kills + ' robaków)'); return; }   // no horn-in-horn: blast on the next frame
       grantSkill(k, true);
     }
   }
   function damage(dmg) {
     if (skills.armor > 0) dmg *= 0.4;
     truck.hp -= dmg; shake = Math.max(shake, .25); flash = .25;
+    if (!hpWarned && truck.hp < 30 && truck.hp > 0) { hpWarned = true; logEv('hp', 'Kabina poniżej 30%'); }
     if (truck.hp <= 0) { truck.hp = 0; endGame(false); return true; }
     return false;
   }
@@ -1249,14 +1269,15 @@
     pickupCd = 5; touch.active = false; lightPhase = 'game'; hornQueued = false; blockedT = 0; reverseT = 0; stuckT = 0; revN = 0; freeT = 0; truck.wasHit = false;
     curZone = zoneAt(truck.x, truck.y); visited = new Set([curZone.id]);
     for (const k in hudCache) delete hudCache[k];
+    evLog = []; evCount = {}; hpWarned = false;
     pourOut(waveSize(1));
-    showBanner('FALA 1', waveSize(1) + ' ROBAKÓW · KAŻDA FALA +' + WAVE_D, 2400);
+    logEv('wave', 'Fala 1 · ' + waveSize(1) + ' robaków z naczepy · ' + (curZone ? curZone.name : ''));
     sfx.wave();
     updateHud();
   }
   function startWave() {
     wave++; const n = waveSize(wave); pending += n;
-    showBanner('FALA ' + wave, n + ' ROBAKÓW  (' + WAVE_A + ' + ' + (wave - 1) + '×' + WAVE_D + ')', 1800);
+    logEv('wave', 'Fala ' + wave + ' · ' + n + ' robaków');
     sfx.wave();
   }
   function startPlay(fromIntro) {
@@ -1275,10 +1296,13 @@
   }
   function endGame(survived) {
     state = 'over';
-    hud.style.display = 'none'; hint.style.display = 'none'; banner.style.display = 'none'; $('comboBadge').style.display = 'none'; $('zoneToast').classList.remove('on');
+    hud.style.display = 'none'; hint.style.display = 'none';
     touch.active = false;
     const bonus = survived ? 1000 + Math.round(truck.hp) * 10 : 0;     // <= 2000
     score += bonus;
+    endCombo();
+    logEv('end', survived ? 'Koniec czasu · ciężarówka ocalała · premia +' + bonus + ' pkt' : 'Ciężarówka zniszczona na fali ' + wave);
+    renderLog();
     const prev = getBest(), isRecord = score > prev; if (isRecord) setBest(score);
     endOv.style.display = 'flex'; $('sndMenu').style.display = 'block';
     $('endKicker').textContent = survived ? 'Kierowca ocalał' : 'Ciężarówka padła';
@@ -1328,7 +1352,7 @@
     for (const k of ['turbo', 'armor', 'crush']) if (skills[k] > 0) { skills[k] -= dt; if (skills[k] <= 0) { skills[k] = 0; if (k === 'turbo') truck.maxSpeed = BASE_SPEED; if (k === 'crush') truck.smashR = BASE_SMASH; } }
     if (hornQueued) { hornQueued = false; hornBlast(); }
     invuln = Math.max(0, invuln - dt); shake = Math.max(0, shake - dt); flash = Math.max(0, flash - dt); thudCd -= dt; biteSnd -= dt;
-    if (comboT > 0) { comboT -= dt; if (comboT <= 0) combo = 0; }
+    if (comboT > 0) { comboT -= dt; if (comboT <= 0) endCombo(); }
 
     let throttle = 0, turnBy = 0;
     if (touch.active) {
@@ -1370,7 +1394,7 @@
     }
 
     const z = zoneAt(truck.x, truck.y);
-    if (z !== curZone) { curZone = z; zoneToast(z); visited.add(z.id); }
+    if (z !== curZone) { curZone = z; if (!visited.has(z.id)) logEv('zone', 'Nowa strefa: ' + z.name); visited.add(z.id); }
 
     const look = 16 * truck.speed, tx0 = truck.x + Math.cos(truck.a) * look, ty0 = truck.y + Math.sin(truck.a) * look;
     const kc = 1 - Math.exp(-dt * 4.5);
@@ -1444,12 +1468,12 @@
       const s = shots[i];
       s.x += s.vx * f; s.y += s.vy * f; s.life -= dt;
       if (s.life <= 0) { shots.splice(i, 1); continue; }
-      if (blockedAt(s.x, s.y, 3, true)) { shots.splice(i, 1); boom(s.x, s.y, 6, THEME.venom, 2); splats.push({ x: s.x, y: s.y, r: 6, a: 0, t: 4, green: true }); continue; }   // obstacles give cover
+      if (blockedAt(s.x, s.y, 3, true)) { shots.splice(i, 1); boom(s.x, s.y, 6, THEME.venom, 2); splats.push({ x: s.x, y: s.y, r: 6, a: 0, t: 4, green: true }); if (splats.length > 80) splats.shift(); continue; }   // obstacles give cover
       if (truckDist(s.x, s.y) < TW / 2 + 4) {
-        shots.splice(i, 1); boom(s.x, s.y, 10, THEME.venom); splats.push({ x: s.x, y: s.y, r: 7, a: 0, t: 4, green: true });
+        shots.splice(i, 1); boom(s.x, s.y, 10, THEME.venom); splats.push({ x: s.x, y: s.y, r: 7, a: 0, t: 4, green: true }); if (splats.length > 80) splats.shift();
         if (invuln <= 0) {
           invuln = .3; sfx.hit(); vibrate(60);
-          floater(truck.x, truck.y - 30, skills.armor > 0 ? 'PANCERZ' : '-JAD', skills.armor > 0 ? '#9fd6ff' : THEME.venom);
+          floater(truck.x, truck.y - 30, skills.armor > 0 ? 'PANCERZ' : '-JAD', skills.armor > 0 ? '#9fd6ff' : THEME.venom, 13);
           if (damage(Math.min(14, 6 + wave * .6))) return;
         }
       }
@@ -1489,12 +1513,16 @@
   function setWorld(sx, sy) { ctx.setTransform(dpr * cam.z, 0, 0, dpr * cam.z, dpr * (W / 2 - cam.x * cam.z + (sx || 0)), dpr * (H / 2 - cam.y * cam.z + (sy || 0))); }
   const setScreen = () => ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   let headGrad = null;
+  const TRUCK_COL = '#ffba14';
+  const TRUCK_GLOW = (() => { const c = mkCanvas(TL + 44, TW + 44), g = c.getContext('2d'); g.shadowColor = 'rgba(255,190,30,.9)'; g.shadowBlur = 14;
+    g.strokeStyle = 'rgba(255,214,90,.55)'; g.lineWidth = 3; rr(g, 20, 20, TL + 4, TW + 4, 6); g.stroke(); g.shadowBlur = 0; return c; })();
   function drawTruck(x, y, a, opt) {
     opt = opt || {};
     ctx.save(); ctx.translate(x, y); ctx.rotate(a);
     ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.fillRect(-TL / 2 + 5, -TW / 2 + 6, TL, TW);
+    ctx.drawImage(TRUCK_GLOW, -TL / 2 - 22, -TW / 2 - 22, TL + 44, TW + 44);      // soft amber halo: the player's truck is always easy to spot
     if (imgs.truckS) { ctx.rotate(Math.PI); ctx.drawImage(imgs.truckS, -TL / 2, -TW / 2, TL, TW); ctx.rotate(Math.PI); }
-    else { ctx.fillStyle = '#9a9aa0'; ctx.fillRect(-TL / 2, -TW / 2, TL - 34, TW); ctx.fillStyle = '#1a3a6b'; ctx.fillRect(TL / 2 - 32, -TW / 2 + 1, 32, TW - 2); }
+    else { ctx.fillStyle = '#f2f2f2'; ctx.fillRect(-TL / 2, -TW / 2, TL - 34, TW); ctx.fillStyle = TRUCK_COL; ctx.fillRect(TL / 2 - 32, -TW / 2 + 1, 32, TW - 2); }
     if (opt.riders) for (const r of opt.riders) drawBugAt(r.lx, r.ly, Math.PI / 2 + Math.sin(clock * 3 + r.lx) * .3, 9, clock * 8 + r.lx);
     ctx.restore();
   }
@@ -1650,7 +1678,7 @@
     for (const p of pickups) { ctx.fillStyle = p.t.col; ctx.fillRect(x0 + p.x * k - 2, y0 + p.y * k - 2, 4, 4); }
     ctx.fillStyle = THEME.pink; for (const b of bugs) { const q = b.big ? 3.4 : 2.4; ctx.fillRect(x0 + b.x * k - q / 2, y0 + b.y * k - q / 2, q, q); }
     ctx.save(); ctx.translate(x0 + truck.x * k, y0 + truck.y * k); ctx.rotate(truck.a);
-    ctx.fillStyle = THEME.white; ctx.strokeStyle = THEME.ink; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(7, 0); ctx.lineTo(-5, -5); ctx.lineTo(-2, 0); ctx.lineTo(-5, 5); ctx.closePath(); ctx.stroke(); ctx.fill();
+    ctx.fillStyle = TRUCK_COL; ctx.strokeStyle = THEME.ink; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(7, 0); ctx.lineTo(-5, -5); ctx.lineTo(-2, 0); ctx.lineTo(-5, 5); ctx.closePath(); ctx.stroke(); ctx.fill();
     ctx.restore();
     ctx.strokeStyle = 'rgba(245,245,245,.35)'; ctx.strokeRect(x0 - .5, y0 - .5, s + 1, s + 1);
   }
@@ -1658,64 +1686,165 @@
   // =====================================================================================
   //  INTRO (canvas): bird's-eye -> fly in onto the truck at the red light -> bugs climb on -> green -> drive -> stop at the TRUCK PARK
   // =====================================================================================
-  const T_ZOOM = 4.2, T_GREEN = 8.6, T_GO = 8.9, T_STOP = 15.0, T_END = 16.6;
-  const INTRO_P0 = { x: 2140, y: 2005, a: Math.PI };
+  // v4.2 scenario: a small boat sails up to the quay -> the bugs land, run up the quay road and climb onto the truck waiting at a red light
+  //  -> green -> the unaware driver turns north, crosses the street and drives into the TRUCK PARK -> stop
+  const T_ZOOM = 4.2, T_LAND = 5.0, T_GREEN = 10.2, T_GO = 10.5, T_STOP = 18.5, T_END = 20.1;
+  const QY = 2620, WATER_Y = 2668, IH = 3060;                       // intro-only strip south of the map: quay road 2440..2620, quay edge, water
+  const INTRO_P0 = { x: 2150, y: 2482, a: Math.PI };
+  const QUAY_TL = { x: 2072, y: 2426, grp: 'quay', face: 1 };
+  const BOAT = { x0: 1380, y0: 3010, x1: 2236, y1: 2706, a1: 0 };
+  const IPATH = (() => {
+    const pts = [];
+    const line = (a, b, n) => { for (let i = 0; i <= n; i++) pts.push([lerp(a[0], b[0], i / n), lerp(a[1], b[1], i / n)]); };
+    const quad = (P1, Cc, P2, n) => { for (let i = 1; i <= n; i++) { const t = i / n, u = 1 - t; pts.push([u * u * P1[0] + 2 * u * t * Cc[0] + t * t * P2[0], u * u * P1[1] + 2 * u * t * Cc[1] + t * t * P2[1]]); } };
+    line([INTRO_P0.x, INTRO_P0.y], [2080, 2482], 4);
+    quad([2080, 2482], [2010, 2482], [2010, 2412], 18);              // right turn off the quay road, north
+    line([2010, 2412], [2010, 2090], 16);
+    quad([2010, 2090], [2010, 2005], [1925, 2005], 18);              // left turn onto the street, west
+    line([1925, 2005], [1360, 2005], 28);
+    quad([1360, 2005], [1172, 2005], [1172, 1818], 24);              // into the TRUCK PARK
+    line([1172, 1818], [START.x, START.y], 14);
+    const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + dist(pts[i][0], pts[i][1], pts[i - 1][0], pts[i - 1][1]));
+    return { pts, cum, len: cum[cum.length - 1] };
+  })();
+  function ipathPos(s) {
+    s = clamp(s, 0, IPATH.len);
+    let i = 1; while (i < IPATH.cum.length - 1 && IPATH.cum[i] < s) i++;
+    const a = IPATH.pts[i - 1], b = IPATH.pts[i], t = (s - IPATH.cum[i - 1]) / ((IPATH.cum[i] - IPATH.cum[i - 1]) || 1);
+    return [lerp(a[0], b[0], t), lerp(a[1], b[1], t)];
+  }
+  function ipathAt(s) { const p = ipathPos(s), q = ipathPos(s - 18), r = ipathPos(s + 18); return { x: p[0], y: p[1], a: Math.atan2(r[1] - q[1], r[0] - q[0]) }; }
+  const boat = { x: BOAT.x0, y: BOAT.y0, a: 0, sp: 0 };
+  function boatAt(t) {
+    const u = clamp((t - 0.4) / (T_LAND - 0.4), 0, 1), e = 1 - Math.pow(1 - u, 3);
+    const cx = lerp(BOAT.x0, BOAT.x1, e), cy = lerp(BOAT.y0, BOAT.y1, e) + Math.sin(e * Math.PI) * 60;      // gentle curve in towards the quay
+    const u2 = clamp(u + .02, 0, 1), e2 = 1 - Math.pow(1 - u2, 3), nx = lerp(BOAT.x0, BOAT.x1, e2), ny = lerp(BOAT.y0, BOAT.y1, e2) + Math.sin(e2 * Math.PI) * 60;
+    return { x: cx, y: cy + (u >= 1 ? Math.sin(t * 1.7) * 1.5 : 0), a: u >= 1 ? BOAT.a1 : Math.atan2(ny - cy, nx - cx), moving: u < 1 };
+  }
   function initIntro() {
     introT = 0; lightPhase = 'intro'; introLight = 'red'; riders = [];
     truck.x = INTRO_P0.x; truck.y = INTRO_P0.y; truck.a = INTRO_P0.a; truck.speed = 0; truck.brake = 1;
-    const starts = [[2104, 1952, 4.4], [2196, 1950, 4.9], [2120, 2186, 5.5], [2214, 2190, 6.1], [2040, 2110, 6.8], [2290, 2080, 8.25]];
-    introBugs = starts.map((s, i) => ({ x: s[0], y: s[1], delay: s[2], lx: -54 + i * 12, ly: (i % 2 ? 7 : -7), done: false, r: 11, a: 0, wiggle: i, sp: i === 5 ? 230 : 95 }));
+    Object.assign(boat, boatAt(0));
+    const delays = [5.3, 5.75, 6.2, 6.65, 7.1, 8.3];
+    introBugs = delays.map((d, i) => ({ x: boat.x, y: boat.y, delay: d, bx: -30 + i * 11, by: (i % 2 ? 7 : -7), lx: -54 + i * 12, ly: (i % 2 ? 7 : -7), done: false, r: 11, a: 0, wiggle: i, sp: i === 5 ? 230 : 100, hop: 0 }));
     bugs = []; shots = []; particles = []; floaters = []; splats = []; pickups = []; rings = [];
+  }
+  function introClamp() {
+    const hw = W / 2 / cam.z, hh = H / 2 / cam.z;
+    cam.x = hw * 2 >= WW ? WW / 2 : clamp(cam.x, hw, WW - hw);
+    cam.y = hh * 2 >= IH ? IH / 2 : clamp(cam.y, hh - 60 / cam.z, IH - hh);
   }
   function updateIntro(dt) {
     introT += dt; const t = introT;
     introLight = t < T_GREEN - 0.6 ? 'red' : t < T_GREEN ? 'amber' : 'green';
+    Object.assign(boat, boatAt(t));
     if (t >= T_GO) {
-      const u = clamp((t - T_GO) / (T_STOP - T_GO), 0, 1), s = PATH.len * (1 - Math.cos(Math.PI * u)) / 2, p = pathAt(s);
-      truck.x = p.x; truck.y = p.y; truck.a = u >= 1 ? START.a : p.a; truck.brake = u > .8 ? 1 : 0;
+      const u = clamp((t - T_GO) / (T_STOP - T_GO), 0, 1), sd = IPATH.len * (1 - Math.cos(Math.PI * u)) / 2, p = ipathAt(sd);
+      truck.x = p.x; truck.y = p.y; truck.a = u >= 1 ? START.a : p.a; truck.brake = u > .85 ? 1 : 0;
     }
-    const ca = Math.cos(truck.a), sa = Math.sin(truck.a);
+    const ca = Math.cos(truck.a), sa = Math.sin(truck.a), cb = Math.cos(boat.a), sb = Math.sin(boat.a);
     for (const b of introBugs) {
-      if (b.done || t < b.delay) continue;
-      b.wiggle += dt * 12;
+      if (b.done) continue;
+      b.wiggle += dt * (t >= b.delay ? 12 : 3);
+      if (t < b.delay) { b.x = boat.x + cb * b.bx - sb * b.by; b.y = boat.y + sb * b.bx + cb * b.by; b.a = boat.a + Math.PI / 2 * (b.by > 0 ? 1 : -1); continue; }   // riding in the boat
+      b.hop = Math.min(1, b.hop + dt * 3);
       const tx = truck.x + ca * b.lx - sa * b.ly, ty = truck.y + sa * b.lx + ca * b.ly, dx = tx - b.x, dy = ty - b.y, d = Math.hypot(dx, dy);
       b.a = Math.atan2(dy, dx);
       if (d < b.sp * dt + 4) { b.done = true; riders.push({ lx: b.lx, ly: b.ly }); sfx.bite(); continue; }
       b.x += dx / d * b.sp * dt; b.y += dy / d * b.sp * dt;
     }
+    const land = W > H, fx = (truck.x + boat.x) / 2 - 10, fy = (truck.y + Math.max(boat.y, 2690)) / 2 + (land ? 60 : 10), zq = Zg * (land ? 0.85 : 1.05);      // frame both the truck and the boat (above the caption)
     if (t < T_ZOOM) {
-      const e = ease(clamp(t / T_ZOOM, 0, 1)), z0 = Math.min(W / WW, H / WH) * 0.98, z1 = Zg * 1.25;
-      cam.z = Math.exp(lerp(Math.log(z0), Math.log(z1), e)); cam.x = lerp(WW / 2, truck.x - 40, e); cam.y = lerp(WH / 2, truck.y + 30, e);
-    } else if (t < T_GO) { cam.z = Zg * 1.25; cam.x = truck.x - 40; cam.y = truck.y + 30; }
+      const e = ease(clamp(t / T_ZOOM, 0, 1)), z0 = Math.min(W / WW, H / IH) * 0.98, z1 = zq;
+      cam.z = Math.exp(lerp(Math.log(z0), Math.log(z1), e)); cam.x = lerp(WW / 2, fx, e); cam.y = lerp(IH / 2, fy, e);
+    } else if (t < T_GO) { cam.z = zq; const k = 1 - Math.exp(-dt * 2); cam.x += (fx - cam.x) * k; cam.y += (fy - cam.y) * k; }
     else {
       const k = 1 - Math.exp(-dt * 3); cam.z += (Zg - cam.z) * k;
       const look = 70; cam.x += (truck.x + Math.cos(truck.a) * look - cam.x) * Math.min(1, k * 1.4); cam.y += (truck.y + Math.sin(truck.a) * look - cam.y) * Math.min(1, k * 1.4);
     }
-    if (t >= T_ZOOM) clampCam();
+    if (t >= T_ZOOM) introClamp();
     if (t > T_END) {
       riders.length = Math.min(riders.length, WAVE_A);
       while (riders.length < WAVE_A) riders.push({ lx: rand(-55, 15), ly: rand(-10, 10) });
+      lightPhase = 'game';
       startPlay(true);
     }
+  }
+  function drawQuay(v) {          // intro-only scenery south of the map: sidewalk, quay road with a red light, quay edge, harbour water
+    if (v.y1 < 2400) return;
+    const x0 = Math.max(0, v.x0), x1 = Math.min(WW, v.x1), w = x1 - x0;
+    ctx.fillStyle = PAT.sidewalk; ctx.fillRect(x0, 2400, w, 40);
+    ctx.fillStyle = PAT.road; ctx.fillRect(1880, 2390, 180, 60); ctx.fillRect(x0, 2440, w, QY - 2440);
+    ctx.fillStyle = 'rgba(240,240,240,.7)';
+    for (let x = Math.floor(x0 / 80) * 80 + 20; x < x1; x += 80) { if (x > 1860 && x < 2080) continue; ctx.fillRect(x, 2528, 44, 5); }
+    ctx.fillRect(2076, 2444, 7, 84);                                                                  // stop line
+    for (let i = 0; i < 6; i++) { ctx.fillRect(1846, 2448 + i * 28, 28, 15); }                       // zebra west of the junction
+    ctx.fillStyle = 'rgba(245,245,245,.45)'; ctx.font = F('italic 700', 26, THEME.fontUI); ctx.textAlign = 'center'; ctx.fillText('NABRZEŻE', 1500, 2590); ctx.fillText('↑ TRUCK PARK', 2300, 2590);
+    ctx.fillStyle = PAT.concrete; ctx.fillRect(x0, QY, w, WATER_Y - QY);
+    ctx.fillStyle = '#e7b416'; ctx.fillRect(x0, WATER_Y - 6, w, 4);
+    ctx.fillStyle = '#1a1a1e'; for (let x = Math.floor(x0 / 160) * 160 + 60; x < x1; x += 160) { ctx.beginPath(); ctx.arc(x, QY + 26, 7, 0, 7); ctx.fill(); }
+    const gw = ctx.createLinearGradient(0, WATER_Y, 0, IH); gw.addColorStop(0, '#0b2030'); gw.addColorStop(1, '#050d16');
+    ctx.fillStyle = gw; ctx.fillRect(x0, WATER_Y, w, Math.max(0, Math.min(IH, v.y1) - WATER_Y) + 400);
+    ctx.strokeStyle = 'rgba(150,200,240,.13)'; ctx.lineWidth = 2; ctx.beginPath();
+    for (let i = 0; i < 220; i++) {
+      const wx = ((i * 197) % 2600) - 100 + Math.sin(clock * .8 + i) * 10, wy = WATER_Y + 18 + ((i * 89) % (IH - WATER_Y - 20));
+      if (wx < v.x0 - 40 || wx > v.x1 + 40 || wy < v.y0 || wy > v.y1) continue;
+      ctx.moveTo(wx, wy); ctx.quadraticCurveTo(wx + 14, wy - 4, wx + 28, wy);
+    }
+    ctx.stroke();
+    ctx.globalCompositeOperation = 'lighter';
+    for (let x = 200; x < WW; x += 400) {                                                             // quay lamps + their reflection on the water
+      if (x < v.x0 - 200 || x > v.x1 + 200) continue;
+      ctx.globalAlpha = .5; ctx.drawImage(SPR.warm, x - 200, QY - 170, 400, 340);
+      ctx.globalAlpha = .18 + Math.sin(clock * 2 + x) * .05; ctx.drawImage(SPR.warm, x - 40, WATER_Y + 20, 80, 220);
+    }
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = '#2b2b30'; for (let x = 200; x < WW; x += 400) { ctx.beginPath(); ctx.arc(x, QY + 8, 6, 0, 7); ctx.fill(); }
+  }
+  function drawQuayLight() {
+    const t = QUAY_TL, col = introLight, hx = t.x + t.face * 14, ys = { red: -12, amber: 0, green: 12 };
+    ctx.fillStyle = '#26262b'; ctx.beginPath(); ctx.arc(t.x, t.y, 6, 0, 7); ctx.fill();
+    ctx.fillStyle = '#0d0d10'; ctx.fillRect(hx - 7, t.y - 20, 14, 40);
+    for (const k of ['red', 'amber', 'green']) { ctx.fillStyle = k === col ? (k === 'red' ? '#ff3030' : k === 'amber' ? '#ffbe28' : '#3cff78') : '#2a2a2a'; ctx.beginPath(); ctx.arc(hx, t.y + ys[k], 4.5, 0, 7); ctx.fill(); }
+    ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .95;
+    ctx.drawImage(col === 'red' ? SPR.tred : col === 'amber' ? SPR.amber : SPR.green, hx - 34, t.y + ys[col] - 34, 68, 68);
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  }
+  function drawBoat() {
+    ctx.save(); ctx.translate(boat.x, boat.y); ctx.rotate(boat.a);
+    if (boat.moving) {                                                                                 // wake
+      ctx.strokeStyle = 'rgba(200,230,255,.28)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-50, -14); ctx.lineTo(-170, -46); ctx.moveTo(-50, 14); ctx.lineTo(-170, 46); ctx.stroke();
+      ctx.fillStyle = 'rgba(220,240,255,.22)'; ctx.fillRect(-90, -6, 40, 12);
+    } else { ctx.strokeStyle = 'rgba(200,230,255,' + (.18 + Math.sin(clock * 3) * .08).toFixed(2) + ')'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(0, 0, 70, 30, 0, 0, 7); ctx.stroke(); }
+    ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.beginPath(); ctx.moveTo(-50, -18 + 6); ctx.lineTo(34, -18 + 6); ctx.lineTo(62, 6); ctx.lineTo(34, 24); ctx.lineTo(-50, 24); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#3a4048'; ctx.beginPath(); ctx.moveTo(-50, -20); ctx.lineTo(32, -20); ctx.lineTo(60, 0); ctx.lineTo(32, 20); ctx.lineTo(-50, 20); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#8a96a3'; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = '#20252b'; ctx.fillRect(-44, -14, 74, 28);
+    ctx.fillStyle = '#54606c'; ctx.fillRect(-12, -9, 16, 18);                                            // little console
+    ctx.fillStyle = '#15171a'; ctx.fillRect(-62, -7, 14, 14);                                            // outboard motor
+    ctx.restore();
   }
   function drawIntro() {
     const t = introT;
     setWorld(0, 0);
     const v = view(); v.x0 -= 40; v.y0 -= 40; v.x1 += 40; v.y1 += 40;
     drawWorldBase(v);
-    const walking = introBugs.filter(b => !b.done && t >= b.delay);
-    for (const b of walking) drawBugAt(b.x, b.y, b.a, b.r, b.wiggle);
+    drawQuay(v);
+    drawBoat();
+    const walking = introBugs.filter(b => !b.done);
+    for (const b of walking) { const hop = b.hop > 0 && b.hop < 1 ? 1 + Math.sin(b.hop * Math.PI) * .35 : 1; drawBugAt(b.x, b.y, b.a, b.r * hop, b.wiggle); }
     drawTruck(truck.x, truck.y, truck.a, { riders });
     drawOverlay(ctx, v); drawLights(ctx, v);
+    drawQuayLight();
     drawTruckLights(truck.x, truck.y, truck.a, truck.brake);
     drawEyes(walking);
     ctx.globalCompositeOperation = 'lighter';
     const ca = Math.cos(truck.a), sa = Math.sin(truck.a);
     for (const r of riders) { const x = truck.x + ca * r.lx - sa * r.ly, y = truck.y + sa * r.lx + ca * r.ly; ctx.drawImage(SPR.eye, x - 8, y - 8, 16, 16); }
     ctx.globalCompositeOperation = 'source-over';
-    if (t < T_ZOOM + .5) {
+    if (t < T_LAND + .6) {                                                                             // pulse on the boat: "look here"
       const ph = t % 1; ctx.strokeStyle = 'rgba(237,53,75,' + (0.85 - ph * .85).toFixed(2) + ')'; ctx.lineWidth = 3 / cam.z;
-      ctx.beginPath(); ctx.arc(INTRO_P0.x, INTRO_P0.y, (30 + ph * 90) / cam.z, 0, 7); ctx.stroke();
+      ctx.beginPath(); ctx.arc(boat.x, boat.y, (30 + ph * 90) / cam.z, 0, 7); ctx.stroke();
     }
     setScreen();
     if (vignette) ctx.drawImage(vignette, 0, 0, W, H);
@@ -1726,16 +1855,17 @@
       ctx.globalAlpha = clamp(a, 0, 1); ctx.textAlign = 'center';
       const cy = H * .3;
       ctx.save(); ctx.translate(W / 2, cy - 30); ctx.rotate(-.06);
-      ctx.font = F('400', Math.round(Math.min(46, W * .11)), THEME.fontTitle); ctx.fillStyle = THEME.pink; ctx.fillText('Atak', 0, 0); ctx.restore();
+      ctx.font = F('400', Math.round(Math.min(46, W * .11)), THEME.fontTitle); ctx.fillStyle = THEME.pink; ctx.fillText('Sneaky', 0, 0); ctx.restore();
       ctx.save(); ctx.translate(W / 2, cy + 26); ctx.transform(1, 0, -.18, 1, 0, 0);
       const fs = Math.round(Math.min(58, W * .12)); ctx.font = F('400', fs, THEME.fontHeavy);
-      ctx.fillStyle = THEME.red; ctx.fillText('CZARNYCH ROBAKÓW', 0, 4); ctx.fillStyle = THEME.white; ctx.fillText('CZARNYCH ROBAKÓW', 0, 0);
+      ctx.fillStyle = THEME.red; ctx.fillText('BUGS', 0, 4); ctx.fillStyle = THEME.white; ctx.fillText('BUGS', 0, 0);
       ctx.restore(); ctx.globalAlpha = 1;
     }
-    const caps = [[0, T_ZOOM, 'NOC · SKRZYŻOWANIE', 'Widok z lotu ptaka. Ciężarówka czeka na czerwonym świetle.'],
-      [T_ZOOM, T_GREEN, 'COŚ SIĘ RUSZA…', 'Czarne robaki o krwistoczerwonych oczach wpełzają na naczepę.'],
-      [T_GREEN, 12.6, 'ZIELONE!', 'Kierowca niczego nie zauważył. Rusza i jedzie do celu.'],
-      [12.6, T_STOP, 'TRUCK PARK', 'Cel podróży. Ostatni zakręt na parking…'],
+    const caps = [[0, T_ZOOM, 'NOC · NABRZEŻE', 'Widok z lotu ptaka. Do brzegu cicho podpływa mała łódka…'],
+      [T_ZOOM, 7.3, 'DESANT', 'Łódka przybija do nabrzeża. Wyskakują z niej czarne robaki o czerwonych oczach.'],
+      [7.3, T_GREEN, 'COŚ SIĘ RUSZA…', 'Robaki wspinają się na ciężarówkę, która stoi na czerwonym świetle.'],
+      [T_GREEN, 15.6, 'ZIELONE!', 'Kierowca niczego nie zauważył. Rusza w stronę TRUCK PARKU.'],
+      [15.6, T_STOP, 'TRUCK PARK', 'Cel podróży. Ostatni zakręt na parking…'],
       [T_STOP, 99, 'STOP.', 'Ciężarówka staje. Robaki wysypują się z naczepy!']];
     for (const c of caps) {
       if (t < c[0] || t >= c[1]) continue;
@@ -1836,6 +1966,8 @@
   const nickInp = $('nick'), consentBox = $('lbConsent');
   nickInp.value = nick; consentBox.checked = LB.consent();
   consentBox.addEventListener('change', () => LB.setConsent(consentBox.checked));
+  const skipChk = $('skipIntroChk'); skipChk.checked = skipIntroPref;
+  skipChk.addEventListener('change', () => { skipIntroPref = skipChk.checked; try { localStorage.setItem(SKIPINTRO_KEY, skipIntroPref ? '1' : '0'); } catch (e) {} });
   nickInp.addEventListener('input', () => { $('nickErr').textContent = ''; });
   nickInp.addEventListener('change', () => { const n = cleanNick(nickInp.value); if (!nickError(n)) { nick = n; try { localStorage.setItem(NICK_KEY, n); } catch (e) {} } });
   nickInp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('startBtn').click(); } });
@@ -1854,7 +1986,7 @@
     if (!acceptNick()) return;
     unlockAudio(); sfx.click();
     titleOv.style.display = 'none';
-    if (introSeen) { startPlay(false); return; }
+    if (introSeen || skipIntroPref) { startPlay(false); return; }
     $('sndMenu').style.display = 'none'; skipBtn.style.display = 'block';
     initIntro(); state = 'intro';
   });
@@ -1867,8 +1999,8 @@
   $('pauseBtn').addEventListener('click', pause);
   $('resumeBtn').addEventListener('click', resume);
   $('quitBtn').addEventListener('click', () => {
-    pauseOv.style.display = 'none'; hud.style.display = 'none'; banner.style.display = 'none'; $('comboBadge').style.display = 'none';
-    hint.style.display = 'none'; $('zoneToast').classList.remove('on'); touch.active = false;
+    pauseOv.style.display = 'none'; hud.style.display = 'none';
+    hint.style.display = 'none'; touch.active = false;
     titleOv.style.display = 'flex'; $('sndMenu').style.display = 'block'; showBestMenu(); state = 'menu';
   });
   document.addEventListener('gesturestart', e => e.preventDefault());
@@ -1876,7 +2008,7 @@
 
   // read-only test hook for automated tests
   window.__robaki = () => ({
-    state, nick, sound: soundOn, audio: actx ? actx.state : 'none', wave, score, kills, hp: truck.hp, time: timeLeft, playT, bugs: bugs.length, pending,
+    state, nick, sound: soundOn, skipIntro: skipIntroPref, evLog: evLog.length, audio: actx ? actx.state : 'none', wave, score, kills, hp: truck.hp, time: timeLeft, playT, bugs: bugs.length, pending,
     truck: { x: truck.x, y: truck.y, a: truck.a, speed: truck.speed }, cam: { x: cam.x, y: cam.y, z: cam.z }, W, H, zone: curZone ? curZone.id : null, visited: [...visited],
     introT, riders: riders.length, tiles: tileCache.size, tilesMade, pickups: pickups.length, shots: shots.length, skillsGot, timeGained, bestCombo, hits, mm: Object.assign({}, mm), imgs: Object.keys(imgs),
     nearest: bugs.length ? (b => ({ x: b.x, y: b.y }))(bugs.reduce((m, b) => dist(b.x, b.y, truck.x, truck.y) < dist(m.x, m.y, truck.x, truck.y) ? b : m)) : null,
@@ -1887,7 +2019,7 @@
   const fontsReady = (document.fonts && document.fonts.load)
     ? Promise.race([Promise.all([document.fonts.load('700 20px Oswald'), document.fonts.load('400 20px Anton'), document.fonts.load('400 20px "Racing Sans One"')]), new Promise(r => setTimeout(r, 2500))]).catch(() => {})
     : Promise.resolve();
-  Promise.all([loadImg('bugS', 'bug.png?v=4.1'), loadImg('truckS', 'truck.png?v=4.1'), loadImg('venomS', 'venom.png?v=4.1'), fontsReady])
+  Promise.all([loadImg('bugS', 'bug.png?v=4.2'), loadImg('truckS', 'truck.png?v=4.2'), loadImg('venomS', 'venom.png?v=4.2'), fontsReady])
     .then(() => { renderThumb(); requestAnimationFrame(loop); });
 })();
 </script>
