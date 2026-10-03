@@ -16,3 +16,7 @@ The full licence texts are included as `fonts/OFL-Oswald.txt`, `fonts/OFL-Anton.
 
 Online services: online leaderboard via Supabase (supabase.com, EU region, Ireland), accessed with plain
 `fetch` to its REST API; no Supabase library is loaded. No analytics. Hosting: GitHub Pages.
+
+## QR code
+
+The QR code in the menu and on the end screen is a static inline SVG generated offline (no external QR service, no tracking); it encodes only `https://jtaczala-cmyk.github.io/robaki/`. QR Code is a registered trademark of DENSO WAVE INCORPORATED.
