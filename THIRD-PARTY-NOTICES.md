@@ -1,6 +1,6 @@
 # Third-party notices
 
-The game code and content of SNEAKY BUGS are © 2026 Jacek Mariusz Taczała, all rights reserved (see `LICENSE`).
+The game code and content of SNEAKY BUGS are © 2026 Stop60, all rights reserved (see `LICENSE`).
 The game is a single `index.html` without third-party code libraries.
 
 Fonts (self-hosted in `fonts/`: unmodified WOFF2 files, latin + latin-ext subsets, as distributed by
