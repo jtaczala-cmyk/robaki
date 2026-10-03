@@ -19,4 +19,4 @@ Online services: online leaderboard via Supabase (supabase.com, EU region, Irela
 
 ## QR code
 
-The QR code in the menu and on the end screen is a static inline SVG generated offline (no external QR service, no tracking); it encodes only `https://jtaczala-cmyk.github.io/robaki/`. QR Code is a registered trademark of DENSO WAVE INCORPORATED.
+The QR code in the menu and on the end screen is a static inline SVG generated offline (no external QR service, no tracking); it encodes only `https://stop60.no/robaki/`. QR Code is a registered trademark of DENSO WAVE INCORPORATED.
