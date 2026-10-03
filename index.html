@@ -480,6 +480,21 @@
     } catch (e) {}
     return /^pl\b/i.test(navigator.language || '') ? 'pl' : 'en';
   })();
+  // ---------- Analytics: GoatCounter, cookie-free (self-hosted count.js, ISC); off when GC_CODE is "" ----------
+  // one page view per load (/robaki/ or /robaki/en/ by language) + events robaki-start / robaki-finish
+  const GC_CODE = 'jtaczala-games';
+  const gcOn = /^[a-z0-9][a-z0-9-]{1,49}$/.test(GC_CODE);
+  if (gcOn) {
+    window.goatcounter = { path: LANG === 'en' ? '/robaki/en/' : '/robaki/' };
+    const gs = document.createElement('script');
+    gs.async = true; gs.src = '/robaki/count.js';
+    gs.setAttribute('data-goatcounter', 'https://' + GC_CODE + '.goatcounter.com/count');
+    (document.head || document.documentElement).appendChild(gs);
+  }
+  function track(name) {
+    if (!gcOn) return;
+    setTimeout(() => { try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: 'robaki-' + name, title: 'robaki ' + name, event: true }); } catch (e) {} }, Math.random() * 15000);
+  }
   const L = (k, ...a) => { const v = STR[LANG][k] != null ? STR[LANG][k] : STR.pl[k]; return typeof v === 'function' ? v(...a) : v; };
   const $ = id => document.getElementById(id);
   const canvas = $('c');
@@ -1450,7 +1465,7 @@
     sfx.wave();
   }
   function startPlay(fromIntro) {
-    introSeen = true; state = 'play';
+    introSeen = true; state = 'play'; track('start');
     titleOv.style.display = 'none'; endOv.style.display = 'none'; pauseOv.style.display = 'none'; skipBtn.style.display = 'none';
     hud.style.display = 'block'; hint.style.display = 'block';
     $('sndMenu').style.display = 'none';
@@ -1464,7 +1479,7 @@
     setTimeout(() => { if (state === 'play') hint.style.display = 'none'; }, 4500);
   }
   function endGame(survived) {
-    state = 'over';
+    state = 'over'; track('finish');
     hud.style.display = 'none'; hint.style.display = 'none';
     touch.active = false;
     const bonus = survived ? 1000 + Math.round(truck.hp) * 10 : 0;     // <= 2000
