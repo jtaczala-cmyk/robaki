@@ -8,7 +8,7 @@ Stop60 games); nothing is loaded from gc.zgo.at. The only external request is th
 `https://jtaczala-games.goatcounter.com/count`. It records:
 - one page view per visit of the game: path `/robaki/` (Polish) or `/robaki/en/` (English, chosen language at load),
 - page views of `/robaki/informacje/`, `/robaki/prywatnosc/`, `/robaki/en/info/`, `/robaki/en/privacy/`,
-- events `robaki-start` (a round starts) and `robaki-finish` (end screen), sent with a random 0–15 s delay.
+- events `robaki-start` (a round starts) and `robaki-finish` (end screen), sent with a random 0–15 s delay, or immediately when the page is hidden/closed so they are not lost.
 
 GoatCounter sets no cookies, stores nothing in the browser and stores no IP address or personal data
 (IP + user agent are only kept in memory for up to 8 hours to count unique visits). Legal basis given on the

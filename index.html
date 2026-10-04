@@ -514,9 +514,26 @@
     gs.setAttribute('data-goatcounter', 'https://' + GC_CODE + '.goatcounter.com/count');
     (document.head || document.documentElement).appendChild(gs);
   }
+  // events go out after a random 0-15 s delay, but are never lost: pending ones are sent at once when the page is
+  // hidden/closed (sendBeacon survives unload), and retried while count.js is still loading
+  const gcPend = [];
   function track(name) {
     if (!gcOn) return;
-    setTimeout(() => { try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: 'robaki-' + name, title: 'robaki ' + name, event: true }); } catch (e) {} }, Math.random() * 15000);
+    const it = { n: name, tries: 0 };
+    it.t = setTimeout(() => gcSend(it), Math.random() * 15000);
+    gcPend.push(it);
+  }
+  function gcSend(it) {
+    const i = gcPend.indexOf(it); if (i < 0) return;
+    clearTimeout(it.t);
+    if (!(window.goatcounter && window.goatcounter.count)) { if (++it.tries <= 40) it.t = setTimeout(() => gcSend(it), 500); else gcPend.splice(i, 1); return; }
+    gcPend.splice(i, 1);
+    try { window.goatcounter.count({ path: 'robaki-' + it.n, title: 'robaki ' + it.n, event: true }); } catch (e) {}
+  }
+  function gcFlush() { gcPend.slice().forEach(it => { it.tries = 99; gcSend(it); }); }
+  if (gcOn) {
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') gcFlush(); });
+    window.addEventListener('pagehide', gcFlush);
   }
   const L = (k, ...a) => { const v = STR[LANG][k] != null ? STR[LANG][k] : STR.pl[k]; return typeof v === 'function' ? v(...a) : v; };
   const $ = id => document.getElementById(id);
