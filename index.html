@@ -17,7 +17,7 @@
   <meta property="og:url" content="https://stop60.no/robaki/" />
   <meta property="og:image" content="https://stop60.no/robaki/intro.jpg" />
   <meta name="copyright" content="© 2026 Stop60" />
-  <meta name="robaki-version" content="v4.5-grafika" />
+  <meta name="robaki-version" content="v4.5.1-intro-fix" />
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=1"/>
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1"/>
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png?v=1"/>
@@ -387,7 +387,7 @@
             <p><span data-i18n="lbNote">Nick i wynik trafią do publicznego rankingu online. Nie wpisuj imienia i nazwiska ani e-maila.</span> <a href="prywatnosc/" target="_blank" rel="noopener" data-i18n="privacy" data-i18n-href="privacyHref">Prywatność</a></p>
             <label class="chk"><input type="checkbox" id="lbConsent" /> <span data-i18n="lbConsent">Pokaż mój wynik w rankingu online</span></label>
           </div>
-          <label class="chk"><input type="checkbox" id="skipIntroChk" /> <span data-i18n="skipIntro">Pomijaj intro (od razu do gry)</span></label>
+          <label class="chk"><input type="checkbox" id="showIntroChk" checked /> <span data-i18n="showIntro">Pokaż intro przed grą</span></label>
         </div>
         <p class="best" id="bestMenu"></p>
         <div class="btnrow">
@@ -466,7 +466,7 @@
       nickLabel: 'TWÓJ NICK', nickPh: 'np. Jacek',
       lbNote: 'Nick i wynik trafią do publicznego rankingu online. Nie wpisuj imienia i nazwiska ani e-maila.',
       privacy: 'Prywatność', terms: 'Zasady i licencje', privacyHref: 'prywatnosc/', termsHref: 'informacje/',
-      lbConsent: 'Pokaż mój wynik w rankingu online', skipIntro: 'Pomijaj intro (od razu do gry)',
+      lbConsent: 'Pokaż mój wynik w rankingu online', showIntro: 'Pokaż intro przed grą',
       start: 'ROZPOCZNIJ', ranking: 'RANKING', rankKicker: 'Najlepsi kierowcy', rankHead: 'RANKING', back: 'WRÓĆ',
       endKicker: 'Koniec rundy', endTitle: 'KONIEC', points: 'PUNKTÓW', logCap: 'PRZEBIEG GRY', again: 'JESZCZE RAZ', menu: 'MENU',
       pKicker: 'Silnik na luzie', pHead: 'PAUZA', pText: 'Robaki czekają…', resume: 'GRAJ DALEJ', quit: 'WYJDŹ DO MENU',
@@ -512,7 +512,7 @@
       nickLabel: 'YOUR NICKNAME', nickPh: 'e.g. Jack',
       lbNote: 'Your nickname and score go on a public online leaderboard. Don\'t use your real name or email.',
       privacy: 'Privacy', terms: 'Terms & licences', privacyHref: 'en/privacy/', termsHref: 'en/info/',
-      lbConsent: 'Show my score on the online leaderboard', skipIntro: 'Skip the intro (straight into the game)',
+      lbConsent: 'Show my score on the online leaderboard', showIntro: 'Show the intro before the game',
       start: 'START', ranking: 'LEADERBOARD', rankKicker: 'Top drivers', rankHead: 'LEADERBOARD', back: 'BACK',
       endKicker: 'Round over', endTitle: 'THE END', points: 'POINTS', logCap: 'GAME LOG', again: 'PLAY AGAIN', menu: 'MENU',
       pKicker: 'Engine idling', pHead: 'PAUSED', pText: 'The bugs are waiting…', resume: 'RESUME', quit: 'QUIT TO MENU',
@@ -735,8 +735,10 @@
 
 
   // ---------- nick ----------
-  const NICK_KEY = 'robaki_nick_v1', SKIPINTRO_KEY = 'robaki_skipintro_v1';
-  let skipIntroPref = false; try { skipIntroPref = localStorage.getItem(SKIPINTRO_KEY) === '1'; } catch (e) {}
+  // intro option is a positive 'show intro' checkbox (on by default); the old 'skip intro' value (robaki_skipintro_v1) is dropped,
+  // so a stale saved 'skip' can never hide the intro again
+  const NICK_KEY = 'robaki_nick_v1', SHOWINTRO_KEY = 'robaki_showintro_v2';
+  let skipIntroPref = false; try { skipIntroPref = localStorage.getItem(SHOWINTRO_KEY) === '0'; localStorage.removeItem('robaki_skipintro_v1'); } catch (e) {}
   const NAME_RE = /^[0-9A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźżÆØÅæøåÄÖÜäöüÉÈÁéèáß][0-9A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźżÆØÅæøåÄÖÜäöüÉÈÁéèáß _.'-]*$/;
   const BAD_SUB = ['kurw','chuj','pierdol','pierdal','jeban','jebac','jebie','zajeb','wyjeb','pizd','dziwk','szmat','kutas','cwel','ruchac','skurwiel',
     'faen','fitte','fitta','hestkuk','jaevel','jaevla','fanden','rasshol','rasshul','drittsekk','neger',
@@ -2606,8 +2608,8 @@
   }
   applyLang();
   document.querySelectorAll('#langSw [data-lang]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); if (b.dataset.lang !== LANG) applyLang(b.dataset.lang); }));
-  const skipChk = $('skipIntroChk'); skipChk.checked = skipIntroPref;
-  skipChk.addEventListener('change', () => { skipIntroPref = skipChk.checked; try { localStorage.setItem(SKIPINTRO_KEY, skipIntroPref ? '1' : '0'); } catch (e) {} });
+  const showChk = $('showIntroChk'); showChk.checked = !skipIntroPref;
+  showChk.addEventListener('change', () => { skipIntroPref = !showChk.checked; try { localStorage.setItem(SHOWINTRO_KEY, showChk.checked ? '1' : '0'); } catch (e) {} });
   nickInp.addEventListener('input', () => { if ($('nickErr').textContent) { $('nickErr').textContent = ''; fitMenu(); } });
   nickInp.addEventListener('change', () => { const n = cleanNick(nickInp.value); if (!nickError(n)) { nick = n; try { localStorage.setItem(NICK_KEY, n); } catch (e) {} } });
   nickInp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('startBtn').click(); } });
@@ -2626,7 +2628,8 @@
     if (!acceptNick() || leaving) return;
     unlockAudio(); sfx.click();
     beginLeave(() => {
-      if (introSeen || skipIntroPref) { startPlay(false); return; }
+      if (skipIntroPref) { startPlay(false); return; }      // START from the menu always plays the intro when 'show intro' is ticked
+      titleOv.style.display = 'none';                       // hide the menu, otherwise it covers the intro (bug in v4.5)
       $('sndMenu').style.display = 'none'; skipBtn.style.display = 'block';
       initIntro(); state = 'intro';
     });
