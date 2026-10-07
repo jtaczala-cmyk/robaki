@@ -17,7 +17,7 @@
   <meta property="og:url" content="https://stop60.no/robaki/" />
   <meta property="og:image" content="https://stop60.no/robaki/intro.jpg" />
   <meta name="copyright" content="© 2026 Stop60" />
-  <meta name="robaki-version" content="v4.5.1-intro-fix" />
+  <meta name="robaki-version" content="v4.5.2-intro-no-captions" />
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=1"/>
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1"/>
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png?v=1"/>
@@ -493,9 +493,6 @@
       sendLocal: 'Wynik zapisany na tym urządzeniu. Zaznacz „Pokaż mój wynik w rankingu online” w menu, żeby trafić do rankingu online.',
       loading: 'Wczytuję…', noteOnline: 'Wyniki wszystkich graczy (najlepszy wynik każdego nicku).',
       noteEmpty: 'Ranking online jest jeszcze pusty — pokazuję wyniki z tego urządzenia.', noteDown: 'Ranking online jest chwilowo niedostępny — pokazuję wyniki z tego urządzenia.',
-      caps: [['NOC · NABRZEŻE', 'Widok z lotu ptaka. Do brzegu cicho podpływa mała łódka…'], ['DESANT', 'Łódka przybija do nabrzeża. Wyskakują z niej czarne robaki o czerwonych oczach.'],
-        ['COŚ SIĘ RUSZA…', 'Robaki wspinają się na ciężarówkę, która stoi na czerwonym świetle.'], ['ZIELONE!', 'Kierowca niczego nie zauważył. Rusza w stronę TRUCK PARKU.'],
-        ['TRUCK PARK', 'Cel podróży. Ostatni zakręt na parking…'], ['STOP.', 'Ciężarówka staje. Robaki wysypują się z naczepy!']],
     },
     en: {
       docTitle: 'SNEAKY BUGS – Attack of the Black Bugs', htmlLang: 'en',
@@ -539,9 +536,6 @@
       sendLocal: 'Score saved on this device. Tick “Show my score on the online leaderboard” in the menu to get on the online leaderboard.',
       loading: 'Loading…', noteOnline: 'Everyone\'s scores (best score per nickname).',
       noteEmpty: 'The online leaderboard is still empty — showing scores from this device.', noteDown: 'The online leaderboard is down right now — showing scores from this device.',
-      caps: [['NIGHT · QUAYSIDE', 'Bird\'s-eye view. A small boat is quietly heading for the shore…'], ['LANDING PARTY', 'The boat pulls up at the quay. Black bugs with blood-red eyes come pouring out.'],
-        ['SOMETHING\'S MOVING…', 'The bugs climb onto a truck waiting at a red light.'], ['GREEN!', 'The driver hasn\'t noticed a thing. Off he goes, towards the TRUCK PARK.'],
-        ['TRUCK PARK', 'Destination reached. One last turn into the lot…'], ['STOP.', 'The truck pulls up. Bugs spill off the trailer!']],
     },
   };
   let LANG = (() => {
@@ -2316,17 +2310,7 @@
       ctx.fillStyle = THEME.red; ctx.fillText('BUGS', 0, 4); ctx.fillStyle = THEME.white; ctx.fillText('BUGS', 0, 0);
       ctx.restore(); ctx.globalAlpha = 1;
     }
-    const C = L('caps'), caps = [[0, T_ZOOM].concat(C[0]), [T_ZOOM, 7.3].concat(C[1]), [7.3, T_GREEN].concat(C[2]), [T_GREEN, 15.6].concat(C[3]), [15.6, T_STOP].concat(C[4]), [T_STOP, 99].concat(C[5])];
-    for (const c of caps) {
-      if (t < c[0] || t >= c[1]) continue;
-      ctx.globalAlpha = clamp((t - c[0]) / .35, 0, 1);
-      const y = H - bar - 24 - safeBot * .5;
-      ctx.fillStyle = 'rgba(28,21,24,.92)'; ctx.fillRect(12, y - 56, W - 24, 72);
-      ctx.fillStyle = THEME.red; ctx.fillRect(12, y - 56, 5, 72);
-      ctx.textAlign = 'left'; ctx.fillStyle = THEME.white; ctx.font = F('italic 700', 21, THEME.fontUI); ctx.fillText(c[2], 28, y - 30);
-      ctx.fillStyle = '#e8dcdf'; ctx.font = F('400', 14, THEME.fontUI); wrapText(c[3], 28, y - 8, W - 60, 17);
-      ctx.globalAlpha = 1;
-    }
+    // v4.5.2: no caption/narration boxes in the intro - animation only (Jacek, 2026-10-07)
     if (t < 0.55) { ctx.globalAlpha = 1; ctx.fillStyle = 'rgba(0,0,0,' + (1 - t / 0.55).toFixed(3) + ')'; ctx.fillRect(0, 0, W, H); }
     if (t > T_END - 0.6) { ctx.fillStyle = 'rgba(0,0,0,' + clamp((t - (T_END - 0.6)) / 0.55, 0, 1).toFixed(3) + ')'; ctx.fillRect(0, 0, W, H); }
   }
