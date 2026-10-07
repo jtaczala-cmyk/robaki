@@ -17,7 +17,7 @@
   <meta property="og:url" content="https://stop60.no/robaki/" />
   <meta property="og:image" content="https://stop60.no/robaki/intro.jpg" />
   <meta name="copyright" content="© 2026 Stop60" />
-  <meta name="robaki-version" content="v4.5.2-intro-no-captions" />
+  <meta name="robaki-version" content="v4.6-maciek-parking" />
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=1"/>
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1"/>
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png?v=1"/>
@@ -725,6 +725,69 @@
     if (on) { unlockAudio(); if (master) master.gain.setValueAtTime(1, actx.currentTime); sfx.click(); }
     else { if (master) master.gain.setValueAtTime(0, actx.currentTime); try { if (keepAlive) keepAlive.pause(); } catch(e) {} }
   }
+  // ---------- v4.6: procedural heavy-metal guitar solo for the MACIEK PARKING sign (Web Audio only, no audio files) ----------
+  // self-contained (ac, out, t0, D): distorted saw+square lead (bends, vibrato, pentatonic shred) -> E5 power chord; silent exactly at t0 + D
+  function metalSolo(ac, out, t0, D) {
+    const n2f = m => 440 * Math.pow(2, (m - 69) / 12), at = s => t0 + s;
+    const curve = new Float32Array(2048); for (let i = 0; i < 2048; i++) { const x = i / 1023.5 - 1; curve[i] = Math.tanh(6 * x + 0.35 * x * x); }
+    const shaper = ac.createWaveShaper(); shaper.curve = curve; try { shaper.oversample = '4x'; } catch (e) {}
+    const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 110;
+    const mid = ac.createBiquadFilter(); mid.type = 'peaking'; mid.frequency.value = 1700; mid.Q.value = 0.9; mid.gain.value = 5;
+    const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 4800; lp.Q.value = 0.7;
+    const outG = ac.createGain(); const VOL = 0.05;
+    outG.gain.setValueAtTime(0, t0); outG.gain.linearRampToValueAtTime(VOL, at(0.012));
+    outG.gain.setValueAtTime(VOL, at(D - 0.07)); outG.gain.linearRampToValueAtTime(0, at(D));
+    shaper.connect(hp); hp.connect(mid); mid.connect(lp); lp.connect(outG); outG.connect(out);
+    const lead = [ac.createOscillator(), ac.createOscillator()]; lead[0].type = 'sawtooth'; lead[1].type = 'square'; lead[1].detune.value = 7;
+    const leadG = ac.createGain(); leadG.gain.setValueAtTime(0, t0); lead.forEach(o => o.connect(leadG)); leadG.connect(shaper);
+    const lfo = ac.createOscillator(); lfo.frequency.value = 6.6; const vib = ac.createGain(); vib.gain.setValueAtTime(0, t0);
+    lfo.connect(vib); lead.forEach(o => vib.connect(o.detune));
+    const F = (f, s) => lead.forEach(o => o.frequency.setValueAtTime(f, at(s)));
+    const R = (f, s) => lead.forEach(o => o.frequency.linearRampToValueAtTime(f, at(s)));
+    const pick = (s, v) => { leadG.gain.setValueAtTime(v || 0.9, at(s)); leadG.gain.setTargetAtTime((v || 0.9) * 0.62, at(s + 0.004), 0.035); };
+    let s = 0;
+    F(n2f(81), 0); pick(0, 1); R(n2f(81), 0.03); R(n2f(83), 0.15);                     // opening bend A5 -> B5
+    vib.gain.setValueAtTime(0, at(0.16)); vib.gain.linearRampToValueAtTime(45, at(0.26)); vib.gain.setValueAtTime(45, at(0.37)); vib.gain.linearRampToValueAtTime(0, at(0.38));
+    s = 0.38;
+    for (const m of [88, 86, 83, 86, 83, 81, 83, 81, 79, 81, 79, 76, 74]) { F(n2f(m), s); pick(s); s += 0.055; }    // descending pentatonic shred
+    for (const m of [64, 67, 69, 71, 74, 76, 79, 81, 83, 86, 88, 91]) { F(n2f(m), s); pick(s, 0.85); s += 0.05; }  // fast run up
+    for (let i = 0; i < 9; i++) { F(n2f(i % 2 ? 91 : 88), s); pick(s, i % 2 ? 0.7 : 0.9); s += 0.045; }           // hammer-on trill
+    F(n2f(88), 2.10); pick(2.10, 1); R(n2f(88), 2.13); R(n2f(90), 2.28);                 // scream bend E6 -> F#6 with wide vibrato
+    vib.gain.setValueAtTime(0, at(2.28)); vib.gain.linearRampToValueAtTime(75, at(2.4));
+    leadG.gain.cancelScheduledValues(at(2.53)); leadG.gain.setValueAtTime(0.6, at(2.53)); leadG.gain.linearRampToValueAtTime(0, at(2.56));
+    const chordG = ac.createGain(); chordG.gain.setValueAtTime(0, t0); chordG.gain.setValueAtTime(0, at(2.55));
+    chordG.gain.linearRampToValueAtTime(0.75, at(2.56)); chordG.gain.setTargetAtTime(0.5, at(2.6), 0.25); chordG.connect(shaper);
+    const chord = [40, 47, 52, 59].map((m, i) => { const o = ac.createOscillator(); o.type = i % 2 ? 'square' : 'sawtooth'; o.frequency.value = n2f(m); o.detune.value = i * 3 - 4; o.connect(chordG); return o; });
+    const nb = ac.createBuffer(1, Math.floor(ac.sampleRate * 0.6), ac.sampleRate), nd = nb.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+    const drums = ac.createGain(); drums.gain.value = 0.5; drums.connect(out);
+    const hit = (s0, crash) => {
+      const k = ac.createOscillator(), kg = ac.createGain(); k.type = 'sine'; k.frequency.setValueAtTime(130, at(s0)); k.frequency.exponentialRampToValueAtTime(42, at(s0 + 0.16));
+      kg.gain.setValueAtTime(0.0001, at(s0)); kg.gain.linearRampToValueAtTime(0.55, at(s0 + 0.004)); kg.gain.exponentialRampToValueAtTime(0.001, at(Math.min(s0 + 0.3, D)));
+      k.connect(kg); kg.connect(drums); k.start(at(s0)); k.stop(at(D)); nodes.push(k);
+      const n = ac.createBufferSource(), f = ac.createBiquadFilter(), ng = ac.createGain(); n.buffer = nb; f.type = 'highpass'; f.frequency.value = crash ? 3500 : 1800;
+      ng.gain.setValueAtTime(crash ? 0.22 : 0.12, at(s0)); ng.gain.exponentialRampToValueAtTime(0.001, at(Math.min(s0 + (crash ? 0.6 : 0.12), D)));
+      n.connect(f); f.connect(ng); ng.connect(drums); n.start(at(s0)); n.stop(at(D)); nodes.push(n);
+    };
+    const nodes = [];
+    hit(0, false); hit(2.55, true);
+    drums.gain.setValueAtTime(0.5, at(D - 0.07)); drums.gain.linearRampToValueAtTime(0, at(D));
+    const osc = lead.concat([lfo], chord);
+    osc.forEach(o => { o.start(t0); o.stop(at(D)); });
+    nodes.push(...osc);
+    const info = { t0, D, nodes: nodes.length, ended: 0, endedAt: 0 };
+    lead[0].onended = () => { info.ended = 1; info.endedAt = ac.currentTime; };
+    info.stop = () => {
+      const n = ac.currentTime; if (n >= at(D)) return;
+      try { [outG, drums].forEach(g => { g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(g.gain.value, n); g.gain.linearRampToValueAtTime(0, n + 0.02); }); } catch (e) {}
+      nodes.forEach(o => { try { o.stop(n + 0.03); } catch (e) {} });
+    };
+    return info;
+  }
+  let soloInfo = null;
+  function playMetalSolo(D, delay) {
+    if (!audioReady()) return null;
+    try { soloInfo = metalSolo(actx, master, actx.currentTime + delay, D); return soloInfo; } catch (e) { return null; }
+  }
   const vibrate = p => { try { if (navigator.vibrate) navigator.vibrate(p); } catch(e) {} };
 
 
@@ -1076,9 +1139,8 @@
       }
       g.stroke();
       g.strokeStyle = 'rgba(231,180,22,.75)'; g.lineWidth = 3; g.setLineDash([26, 18]); g.beginPath(); g.moveTo(1172, 780); g.lineTo(1172, 1400); g.moveTo(1172, 1500); g.lineTo(1172, 1880); g.stroke(); g.setLineDash([]);
-      g.fillStyle = 'rgba(245,245,245,.55)'; g.font = F('italic 700', 54, THEME.fontUI); g.textAlign = 'center';
-      g.fillText('TRUCK PARK', 1172, 1478);
-      g.fillStyle = 'rgba(198,45,49,.6)'; g.fillRect(1062, 1488, 220, 7);
+      g.textAlign = 'center';
+      if (g === ctx) drawParkSign(g, v);              // the big lot lettering is drawn live (TRUCK PARK -> MACIEK PARKING), not baked into tiles
       g.fillStyle = 'rgba(245,245,245,.42)'; g.font = F('700', 26, THEME.fontUI); g.fillText('24/7 · P', 1172, 1025);
     }
     if (inView(v, 300, 330, 2100, 360)) {
@@ -1105,6 +1167,87 @@
       g.fillStyle = 'rgba(255,26,26,.35)'; g.beginPath(); g.arc(n[0], n[1], 4, 0, 7); g.fill();
     }
     drawGroundWear(g, v);
+  }
+  // ---------- v4.6: painted lot lettering 'TRUCK PARK' -> 'MACIEK PARKING' (glitch + letter flip + red flash), once per page load ----------
+  // trigger: the first time the lettering is on screen in a round (normally right at the first START, the truck starts just below it)
+  const PARK_SIGN = { x: 1172, y: 1478, from: 'TRUCK PARK', to: 'MACIEK PARKING', D: 3.2, TF: 2.55 };
+  const parkMorph = { st: 'idle', t0: 0, solo: null };     // idle | run | done
+  const GLYPHS = 'ABCDEFGHIKLMNOPRSTUVWXYZ#%&@!?0123456789';
+  const hr = a => { const x = Math.sin(a * 12.9898 + 78.233) * 43758.5453; return x - Math.floor(x); };
+  const parkT = () => parkMorph.st === 'run' ? Math.max(0, (performance.now() - parkMorph.t0) / 1000) : parkMorph.st === 'done' ? 99 : 0;
+  function startParkMorph() {
+    if (parkMorph.st !== 'idle') return;
+    parkMorph.st = 'run'; parkMorph.t0 = performance.now() + 30;          // the solo is scheduled 30 ms ahead -> picture and sound start together
+    parkMorph.solo = playMetalSolo(PARK_SIGN.D, 0.03);
+  }
+  function endParkMorph() {
+    if (parkMorph.st !== 'run') return;
+    parkMorph.st = 'done';
+    if (parkMorph.solo) { parkMorph.solo.stop(); parkMorph.solo = null; }
+  }
+  function updateParkMorph() {
+    if (parkMorph.st === 'run') { if (parkT() >= PARK_SIGN.D) endParkMorph(); return; }
+    if (parkMorph.st !== 'idle' || cam.z < Zg * 0.8) return;
+    const sx = (PARK_SIGN.x - cam.x) * cam.z + W / 2, sy = (PARK_SIGN.y - 20 - cam.y) * cam.z + H / 2;
+    if (sx > W * 0.2 && sx < W * 0.8 && sy > hudBottom + 30 && sy < H * 0.8) startParkMorph();
+  }
+  function parkFont(g, txt) {           // shrink the world font if needed so the text fits the aisle and a phone screen
+    g.font = F('italic 700', 54, THEME.fontUI);
+    const w = g.measureText(txt).width, maxW = Math.min(560, W * 0.86 / Math.max(cam.z, 0.3));
+    const fs = w > maxW ? Math.floor(54 * maxW / w) : 54; g.font = F('italic 700', fs, THEME.fontUI); return fs;
+  }
+  function drawParkSign(g, v) {
+    const P = PARK_SIGN, t = parkT();
+    if (!inView(v, P.x - 330, P.y - 80, P.x + 330, P.y + 40)) return;
+    g.save(); g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+    if (t <= 0 || t >= P.D) {
+      const txt = t <= 0 ? P.from : P.to; parkFont(g, txt);
+      g.fillStyle = 'rgba(245,245,245,.55)'; g.fillText(txt, P.x, P.y);
+      const uw = t <= 0 ? 220 : Math.round(g.measureText(txt).width * 0.8);
+      g.fillStyle = 'rgba(198,45,49,.6)'; g.fillRect(P.x - uw / 2, P.y + 10, uw, 7);
+      g.restore(); return;
+    }
+    const fr = Math.floor(t * 24);
+    if (t < 0.9) {                                     // 1) glitch: jitter, RGB split, scrambled letters, slices
+      const k = t / 0.9; parkFont(g, P.from);
+      let s = ''; for (let i = 0; i < P.from.length; i++) { const c = P.from[i]; s += c !== ' ' && hr(fr * 31 + i) < k * 0.5 ? GLYPHS[Math.floor(hr(fr * 17 + i * 7) * GLYPHS.length)] : c; }
+      const j = (hr(fr) - .5) * 16 * k, dx = 2 + 8 * k, al = hr(fr * 3 + 1) < 0.15 * k ? 0.2 : 0.6 + 0.4 * k;
+      g.globalAlpha = al * .85; g.fillStyle = '#ff2a44'; g.fillText(s, P.x + j - dx, P.y + (hr(fr + 5) - .5) * 5 * k);
+      g.fillStyle = '#3ce6ff'; g.fillText(s, P.x + j + dx, P.y);
+      g.globalAlpha = al; g.fillStyle = '#f5f5f5'; g.fillText(s, P.x + j, P.y);
+      g.globalAlpha = 1; g.fillStyle = 'rgba(198,45,49,.6)'; g.fillRect(P.x - 110 + j, P.y + 10, 220, 7);
+      for (let q = 0; q < 2; q++) if (hr(fr * 7 + q) < k) { g.fillStyle = q ? 'rgba(60,230,255,.4)' : 'rgba(237,53,75,.6)'; g.fillRect(P.x - 240 + hr(fr * 11 + q) * 200, P.y - 46 + hr(fr * 13 + q) * 50, 60 + hr(fr * 19 + q) * 220, 2 + hr(fr * 23 + q) * 6); }
+      g.restore(); return;
+    }
+    const fs = parkFont(g, P.to), txt = P.to, n = txt.length, tw = g.measureText(txt).width, x0 = P.x - tw / 2, my = P.y - fs * 0.35;
+    const after = t - P.TF;
+    if (after >= 0) {                                  // 3) red flash + shockwave when the last letter lands
+      const e = clamp(after / 0.6, 0, 1);
+      g.globalCompositeOperation = 'lighter';
+      const rad = 90 + 300 * e, gr = g.createRadialGradient(P.x, my, 10, P.x, my, rad);
+      gr.addColorStop(0, 'rgba(255,40,60,' + (0.75 * (1 - e)).toFixed(3) + ')'); gr.addColorStop(1, 'rgba(255,40,60,0)');
+      g.fillStyle = gr; g.fillRect(P.x - rad, my - rad, rad * 2, rad * 2);
+      g.globalCompositeOperation = 'source-over';
+      g.strokeStyle = 'rgba(255,70,90,' + (0.9 * (1 - e)).toFixed(3) + ')'; g.lineWidth = 6 * (1 - e) + 1;
+      g.beginPath(); g.ellipse(P.x, my, 60 + 380 * e, 24 + 150 * e, 0, 0, 7); g.stroke();
+    }
+    const punch = after >= 0 ? 1 + 0.12 * Math.max(0, 1 - after / 0.28) : 1;
+    const baseA = after >= 0 ? lerp(1, 0.55, clamp(after / (P.D - P.TF), 0, 1)) : 0.95;
+    g.save(); g.translate(P.x, my); g.scale(punch, punch); g.translate(-P.x, -my);
+    for (let i = 0; i < n; i++) {                     // 2) letters flip one by one into MACIEK PARKING
+      const c = txt[i]; if (c === ' ') continue;
+      const cx = x0 + g.measureText(txt.slice(0, i)).width + g.measureText(c).width / 2, tr = 0.95 + i / (n - 1) * 1.45;
+      const glyph = GLYPHS[Math.floor(hr(fr * 13 + i * 5) * GLYPHS.length)];
+      let ch = c, col = 'rgba(245,245,245,' + baseA.toFixed(3) + ')', sy = 1;
+      if (t < tr - 0.12) { ch = glyph; col = hr(fr + i * 3) < 0.2 ? 'rgba(255,42,68,.8)' : 'rgba(245,245,245,.45)'; }
+      else if (t < tr + 0.12) { const u = (t - (tr - 0.12)) / 0.24; sy = Math.abs(Math.cos(u * Math.PI)); ch = u < .5 ? glyph : c; col = '#ff2a44'; }
+      else if (t < tr + 0.4 && after < 0) col = '#ff6070';
+      g.save(); g.translate(cx, my); g.scale(1, Math.max(0.06, sy)); g.fillStyle = col; g.fillText(ch, 0, fs * 0.35); g.restore();
+    }
+    g.restore();
+    const uw = after >= 0 ? tw * 0.8 * ease(clamp(after / 0.35, 0, 1)) : 0;
+    if (uw > 1) { g.fillStyle = 'rgba(198,45,49,.85)'; g.fillRect(P.x - uw / 2, P.y + 10, uw, 7); }
+    g.restore();
   }
   function drawGroundWear(g, v) {
     const rng = mulberry32(44021);
@@ -2034,6 +2177,7 @@
     drawTiles(sx, sy);
     setWorld(sx, sy);
     const v = view(); v.x0 -= 40; v.y0 -= 40; v.x1 += 40; v.y1 += 40;
+    updateParkMorph(); drawParkSign(ctx, v);
     drawSplats(v);
     for (const p of pickups) if (inView(v, p.x - 40, p.y - 40, p.x + 40, p.y + 40)) drawPickup(p);
     const visBugs = [];
@@ -2490,7 +2634,7 @@
   }
 
   // ---------- pause ----------
-  function pause() { for (const k in keys) keys[k] = false; if (state !== 'play') return; state = 'paused'; touch.active = false; pauseOv.style.display = 'flex'; }
+  function pause() { for (const k in keys) keys[k] = false; if (state !== 'play') return; endParkMorph(); state = 'paused'; touch.active = false; pauseOv.style.display = 'flex'; }
   function resume() { if (state !== 'paused') return; ensureAudio(); pauseOv.style.display = 'none'; state = 'play'; }
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
@@ -2644,7 +2788,7 @@
   window.__robaki = () => ({
     state, lang: LANG, nick, sound: soundOn, skipIntro: skipIntroPref, evLog: evLog.length, audio: actx ? actx.state : 'none', wave, score, kills, hp: truck.hp, time: timeLeft, playT, bugs: bugs.length, pending,
     truck: { x: truck.x, y: truck.y, a: truck.a, speed: truck.speed }, cam: { x: cam.x, y: cam.y, z: cam.z }, W, H, zone: curZone ? curZone.id : null, visited: [...visited],
-    introT, riders: riders.length, tiles: tileCache.size, tilesMade, pickups: pickups.length, shots: shots.length, skillsGot, timeGained, bestCombo, hits, mm: Object.assign({}, mm), imgs: Object.keys(imgs),
+    introT, park: { st: parkMorph.st, t: +parkT().toFixed(2), solo: soloInfo ? { t0: soloInfo.t0, D: soloInfo.D, nodes: soloInfo.nodes, ended: soloInfo.ended, endedAt: soloInfo.endedAt } : null, actxNow: actx ? actx.currentTime : 0 }, riders: riders.length, tiles: tileCache.size, tilesMade, pickups: pickups.length, shots: shots.length, skillsGot, timeGained, bestCombo, hits, mm: Object.assign({}, mm), imgs: Object.keys(imgs),
     nearest: bugs.length ? (b => ({ x: b.x, y: b.y }))(bugs.reduce((m, b) => dist(b.x, b.y, truck.x, truck.y) < dist(m.x, m.y, truck.x, truck.y) ? b : m)) : null,
   });
   window.__robakiPerf = reset => { const r = { frames: perf.n, avgFrameMs: perf.n ? perf.dt / perf.n : 0, avgWorkMs: perf.n ? perf.work / perf.n : 0, maxWorkMs: perf.maxWork, slowFrames: perf.slow }; if (reset) { perf.n = perf.dt = perf.work = perf.maxWork = perf.slow = 0; } return r; };
