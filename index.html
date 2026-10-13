@@ -561,7 +561,7 @@
   // events go out after a random 0-15 s delay, but are never lost: pending ones are sent at once when the page is
   // hidden/closed (sendBeacon survives unload), and retried while count.js is still loading
   const gcPend = [];
-  function track(name) {
+  function track(name) { gcPlayTime(name);
     if (!gcOn) return;
     const it = { n: name, tries: 0 };
     it.t = setTimeout(() => gcSend(it), Math.random() * 15000);
@@ -575,6 +575,15 @@
     try { window.goatcounter.count({ path: 'robaki-' + it.n, title: 'robaki ' + it.n, event: true }); } catch (e) {}
   }
   function gcFlush() { gcPend.slice().forEach(it => { it.tries = 99; gcSend(it); }); }
+
+/* Play time (anonymous): '<game>-time-<bucket>' sent once per game, on game over or when the page is left. Nothing stored. */
+function gcPlayTime(n) { if (/^start/.test(n)) gcPlayTime.t0 = Date.now(); else if (/^(finish|over)/.test(n)) gcPlayEnd(); }
+function gcPlayEnd() { var t0 = gcPlayTime.t0; if (!t0) return; gcPlayTime.t0 = 0; var m = (Date.now() - t0) / 60000;
+  track('time-' + (m < 1 ? '0-1m' : m < 3 ? '1-3m' : m < 5 ? '3-5m' : m < 10 ? '5-10m' : m < 20 ? '10-20m' : '20m+')); }
+if (gcOn) {
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') { gcPlayEnd(); gcFlush(); } });
+  window.addEventListener('pagehide', function () { gcPlayEnd(); gcFlush(); });
+}
   if (gcOn) {
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') gcFlush(); });
     window.addEventListener('pagehide', gcFlush);
