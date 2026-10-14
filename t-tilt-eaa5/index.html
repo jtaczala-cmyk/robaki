@@ -394,6 +394,7 @@
           <p id="tiltMsg" role="status" style="color:#ffba14;font-size:12px;margin:2px 0" hidden></p>
         </div>
         <p class="best" id="bestMenu"></p>
+        <p id="startErr" role="alert" style="color:#ffb1bb;font-size:13px;font-weight:700;margin:4px 0;text-align:center" hidden></p>
         <div class="btnrow">
           <button id="startBtn" class="btn" type="button" data-i18n="start">ROZPOCZNIJ</button>
           <button id="rankBtn" class="btn ghost" type="button" data-i18n="ranking">RANKING</button>
@@ -2783,7 +2784,8 @@ if (gcOn) {
   }
   $('menuShare').addEventListener('click', e => { e.stopPropagation(); shareGame(false); });
   $('endShare').addEventListener('click', e => { e.stopPropagation(); shareGame(true); });
-  function tiltMsg(k) { const el = $('tiltMsg'); el.textContent = k ? L(k) : ''; el.hidden = !k; }
+  let tiltMsgT = 0;
+  function tiltMsg(k) { const el = $('tiltMsg'); el.textContent = k ? L(k) : ''; el.hidden = !k; clearTimeout(tiltMsgT); if (k === 'tiltCal') tiltMsgT = setTimeout(() => tiltMsg(''), 2500); fitMenu(); }
   function updTilt() { $('tiltChk').checked = TILT.on; $('tiltCal').hidden = !TILT.on; }
   TILT.onchange = updTilt;
   $('tiltChk').addEventListener('change', e => { e.stopPropagation(); $('tiltChk').checked = TILT.on; TILT.toggle(tiltMsg); });
@@ -2810,12 +2812,14 @@ if (gcOn) {
   document.querySelectorAll('#langSw [data-lang]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); if (b.dataset.lang !== LANG) applyLang(b.dataset.lang); }));
   const showChk = $('showIntroChk'); showChk.checked = !skipIntroPref;
   showChk.addEventListener('change', () => { skipIntroPref = !showChk.checked; try { localStorage.setItem(SHOWINTRO_KEY, showChk.checked ? '1' : '0'); } catch (e) {} });
-  nickInp.addEventListener('input', () => { if ($('nickErr').textContent) { $('nickErr').textContent = ''; fitMenu(); } });
+  nickInp.addEventListener('input', () => { $('startErr').hidden = true; if ($('nickErr').textContent) { $('nickErr').textContent = ''; fitMenu(); } });
   nickInp.addEventListener('change', () => { const n = cleanNick(nickInp.value); if (!nickError(n)) { nick = n; try { localStorage.setItem(NICK_KEY, n); } catch (e) {} } });
   nickInp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('startBtn').click(); } });
   function acceptNick() {
     const n = cleanNick(nickInp.value), err = nickError(n);
-    if (err) { $('nickErr').textContent = err; fitMenu(); nickInp.focus(); return false; }
+    if (err && !LB.consent() && !n) { nick = LANG === 'pl' ? 'Gracz' : LANG === 'no' ? 'Spiller' : 'Player'; $('nickErr').textContent = ''; $('startErr').hidden = true; nickInp.blur(); return true; }   // no online ranking -> nick optional
+    if (err) { $('nickErr').textContent = err; const se = $('startErr'); se.textContent = err; se.hidden = false; fitMenu(); try { nickInp.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {} nickInp.focus({ preventScroll: true }); return false; }
+    $('startErr').hidden = true;
     nick = n; nickInp.value = n; try { localStorage.setItem(NICK_KEY, n); } catch (e) {}
     nickInp.blur(); return true;
   }
