@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -389,8 +390,11 @@
             <label class="chk"><input type="checkbox" id="lbConsent" /> <span data-i18n="lbConsent">Mam co najmniej 16 lat (18 w Indiach) i chcę pokazać nick, punkty, robaki i falę w rankingu online</span></label>
           </div>
           <label class="chk"><input type="checkbox" id="showIntroChk" checked /> <span data-i18n="showIntro">Pokaż intro przed grą</span></label>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><label class="chk"><input type="checkbox" id="tiltChk" /> <span data-i18n="tilt">Steruj pochyleniem</span></label><button type="button" id="tiltCal" class="btn ghost" data-i18n="calib" style="margin:0;min-height:36px;min-width:0;padding:4px 12px;font-size:13px" hidden>Kalibruj</button></div>
+          <p id="tiltMsg" role="status" style="color:#ffba14;font-size:12px;margin:2px 0" hidden></p>
         </div>
         <p class="best" id="bestMenu"></p>
+        <p id="startErr" role="alert" style="color:#ffb1bb;font-size:13px;font-weight:700;margin:4px 0;text-align:center" hidden></p>
         <div class="btnrow">
           <button id="startBtn" class="btn" type="button" data-i18n="start">ROZPOCZNIJ</button>
           <button id="rankBtn" class="btn ghost" type="button" data-i18n="ranking">RANKING</button>
@@ -450,6 +454,49 @@
 (() => {
   'use strict';
   // ---------- i18n: Polish (default for pl) / English. Priority: ?lang= or /en/ link > saved choice > browser language ----------
+  var TILT_KEY = 'robaki_tilt_v1';
+/* Optional tilt steering (DeviceOrientation). Off by default; touch stays the default. Test build only. */
+var TILT = (function () {
+  var K = typeof TILT_KEY === 'string' ? TILT_KEY : 'tilt_v1';
+  var T = { on: false, have: false, rx: 0, ry: 0, x0: 0, y0: 0, cal: true, ix: 0, iy: 0, last: 0, granted: false, ang: -1, dz: 3, full: 18, onchange: null, lt: 0 };
+  try { T.on = localStorage.getItem(K) === '1'; } catch (e) {}
+  function scrAngle() { var a = screen.orientation && typeof screen.orientation.angle === 'number' ? screen.orientation.angle : (window.orientation || 0); return ((a % 360) + 360) % 360; }
+  function dz(v) { var a = Math.abs(v); if (a <= T.dz) return 0; return (v < 0 ? -1 : 1) * Math.min(1, (a - T.dz) / (T.full - T.dz)); }
+  window.addEventListener('deviceorientation', function (e) {
+    if (e.beta == null || e.gamma == null) return;
+    var b = e.beta, gm = e.gamma, a = scrAngle(), x, y;
+    // x: tilt right = +, y: top edge away from you (forward) = - ; same feel in portrait and landscape
+    if (a === 90) { x = b; y = -gm; } else if (a === 270) { x = -b; y = gm; } else if (a === 180) { x = -gm; y = -b; } else { x = gm; y = b; }
+    if (T.cal || T.ang !== a) { T.x0 = x; T.y0 = y; T.cal = false; T.ang = a; }   // calibrate: current angle = neutral (also after rotating the phone)
+    T.rx = x - T.x0; T.ry = y - T.y0; T.have = true; T.last = Date.now();
+  });
+  T.active = function () { return T.on && T.have && Date.now() - T.last < 1000; };
+  T.update = function (dt) { // smoothing; dt in s (if omitted, measured)
+    if (dt == null) { var n = (window.performance ? performance.now() : Date.now()); dt = T.lt ? Math.min(0.1, (n - T.lt) / 1000) : 0.016; T.lt = n; }
+    var k = Math.min(1, dt * 10), act = T.active();
+    T.ix += ((act ? dz(T.rx) : 0) - T.ix) * k; T.iy += ((act ? dz(T.ry) : 0) - T.iy) * k;
+  };
+  T.calibrate = function () { T.cal = true; T.ix = T.iy = 0; };
+  T.set = function (on) { T.on = on; try { localStorage.setItem(K, on ? '1' : '0'); } catch (e) {} if (T.onchange) T.onchange(); };
+  T.perm = function (cb) { var D = window.DeviceOrientationEvent;
+    if (!D) { cb(false, 'tiltNone'); return; }
+    if (T.granted || typeof D.requestPermission !== 'function') { T.granted = true; cb(true); return; }
+    try { D.requestPermission().then(function (r) { T.granted = r === 'granted'; cb(T.granted, 'tiltDenied'); }).catch(function () { cb(false, 'tiltDenied'); }); } catch (e) { cb(false, 'tiltDenied'); } };
+  T.toggle = function (msg) { // must run inside a tap (iOS permission prompt)
+    if (T.on) { T.set(false); msg(''); return; }
+    T.perm(function (ok, why) { if (ok) { T.calibrate(); T.set(true); msg(''); setTimeout(function () { if (T.on && !T.have) { T.set(false); msg('tiltNone'); } }, 1500); } else { T.set(false); msg(why); } });
+  };
+  T.ensure = function (msg) { // remembered ON from an earlier visit: iOS needs the permission again, asked on the "play" tap
+    if (T.on && !T.granted) T.perm(function (ok, why) { if (!ok) { T.set(false); msg(why); } });
+  };
+  T.L = {
+    no: { tilt: 'Styr med vipping', calib: 'Kalibrer', on: 'PÅ', off: 'AV', tiltDenied: 'Ingen tilgang til bevegelsessensor – berøring brukes.', tiltNone: 'Fant ingen bevegelsessensor – berøring brukes.', tiltCal: 'Kalibrert: denne vinkelen er nøytral.' },
+    pl: { tilt: 'Steruj pochyleniem', calib: 'Kalibruj', on: 'WŁ.', off: 'WYŁ.', tiltDenied: 'Brak dostępu do czujnika ruchu – używam dotyku.', tiltNone: 'Nie znaleziono czujnika ruchu – używam dotyku.', tiltCal: 'Skalibrowano: ten kąt jest neutralny.' },
+    en: { tilt: 'Tilt control', calib: 'Calibrate', on: 'ON', off: 'OFF', tiltDenied: 'Motion sensor access denied – using touch.', tiltNone: 'No motion sensor found – using touch.', tiltCal: 'Calibrated: this angle is neutral.' }
+  };
+  return T;
+})();
+
   const LANG_KEY = 'robaki_lang_v1';
   const STR = {
     pl: {
@@ -588,7 +635,7 @@ if (gcOn) {
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') gcFlush(); });
     window.addEventListener('pagehide', gcFlush);
   }
-  const L = (k, ...a) => { const v = STR[LANG][k] != null ? STR[LANG][k] : STR.pl[k]; return typeof v === 'function' ? v(...a) : v; };
+  const L = (k, ...a) => { const v = TILT.L[LANG] && TILT.L[LANG][k] != null ? TILT.L[LANG][k] : STR[LANG][k] != null ? STR[LANG][k] : STR.pl[k]; return typeof v === 'function' ? v(...a) : v; };
   const $ = id => document.getElementById(id);
   const canvas = $('c');
   const ctx = canvas.getContext('2d', { alpha: false });
@@ -1764,6 +1811,7 @@ if (gcOn) {
     sfx.wave();
   }
   function startPlay(fromIntro) {
+    TILT.calibrate();
     introSeen = true; state = 'play'; track('start');
     titleOv.style.display = 'none'; endOv.style.display = 'none'; pauseOv.style.display = 'none'; skipBtn.style.display = 'none';
     hud.style.display = 'block'; hint.style.display = 'block';
@@ -1868,6 +1916,14 @@ if (gcOn) {
         else if (truck.wasHit && Math.abs(truck.speed) < 0.8) { blockedT += dt; if (blockedT > 0.35 && Math.abs(diff) > 0.35) { revN = Math.min(4, revN + 1); reverseT = 0.5 * revN; blockedT = 0; freeT = 0; } }
         else blockedT = Math.max(0, blockedT - dt);
         if (!truck.wasHit) { freeT += dt; if (freeT > 1.5) revN = 0; }
+      }
+    } else if (TILT.update(dt), TILT.active() && !(keys.w || keys.arrowup || keys.s || keys.arrowdown || keys.a || keys.arrowleft || keys.d || keys.arrowright)) {
+      // tilt: the phone's tilt direction = where the truck heads (screen up = tilt the top edge away), more tilt = faster
+      const mag = Math.min(1, Math.hypot(TILT.ix, TILT.iy));
+      if (mag > 0.05) {
+        const diff = wrapAng(Math.atan2(TILT.iy, TILT.ix) - truck.a), maxTurn = truck.turn * 2.1 * f;
+        turnBy = clamp(diff, -maxTurn, maxTurn);
+        throttle = clamp(mag, 0.35, 1) * (Math.abs(diff) > 2.2 ? 0.5 : 1);
       }
     } else {
       if (keys.w || keys.arrowup) throttle += 1;
@@ -2728,6 +2784,14 @@ if (gcOn) {
   }
   $('menuShare').addEventListener('click', e => { e.stopPropagation(); shareGame(false); });
   $('endShare').addEventListener('click', e => { e.stopPropagation(); shareGame(true); });
+  let tiltMsgT = 0;
+  function tiltMsg(k) { const el = $('tiltMsg'); el.textContent = k ? L(k) : ''; el.hidden = !k; clearTimeout(tiltMsgT); if (k === 'tiltCal') tiltMsgT = setTimeout(() => tiltMsg(''), 2500); fitMenu(); }
+  function updTilt() { $('tiltChk').checked = TILT.on; $('tiltCal').hidden = !TILT.on; }
+  TILT.onchange = updTilt;
+  $('tiltChk').addEventListener('change', e => { e.stopPropagation(); $('tiltChk').checked = TILT.on; TILT.toggle(tiltMsg); });
+  $('tiltCal').addEventListener('click', e => { e.stopPropagation(); TILT.calibrate(); tiltMsg('tiltCal'); });
+  $('startBtn').addEventListener('click', () => TILT.ensure(tiltMsg), true);
+  updTilt();
   function applyLang(l) {
     if (l) { LANG = l; try { localStorage.setItem(LANG_KEY, l); } catch (e) {} }
     document.documentElement.lang = L('htmlLang'); document.title = L('docTitle');
@@ -2748,12 +2812,14 @@ if (gcOn) {
   document.querySelectorAll('#langSw [data-lang]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); if (b.dataset.lang !== LANG) applyLang(b.dataset.lang); }));
   const showChk = $('showIntroChk'); showChk.checked = !skipIntroPref;
   showChk.addEventListener('change', () => { skipIntroPref = !showChk.checked; try { localStorage.setItem(SHOWINTRO_KEY, showChk.checked ? '1' : '0'); } catch (e) {} });
-  nickInp.addEventListener('input', () => { if ($('nickErr').textContent) { $('nickErr').textContent = ''; fitMenu(); } });
+  nickInp.addEventListener('input', () => { $('startErr').hidden = true; if ($('nickErr').textContent) { $('nickErr').textContent = ''; fitMenu(); } });
   nickInp.addEventListener('change', () => { const n = cleanNick(nickInp.value); if (!nickError(n)) { nick = n; try { localStorage.setItem(NICK_KEY, n); } catch (e) {} } });
   nickInp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('startBtn').click(); } });
   function acceptNick() {
     const n = cleanNick(nickInp.value), err = nickError(n);
-    if (err) { $('nickErr').textContent = err; fitMenu(); nickInp.focus(); return false; }
+    if (err && !LB.consent() && !n) { nick = LANG === 'pl' ? 'Gracz' : LANG === 'no' ? 'Spiller' : 'Player'; $('nickErr').textContent = ''; $('startErr').hidden = true; nickInp.blur(); return true; }   // no online ranking -> nick optional
+    if (err) { $('nickErr').textContent = err; const se = $('startErr'); se.textContent = err; se.hidden = false; fitMenu(); try { nickInp.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {} nickInp.focus({ preventScroll: true }); return false; }
+    $('startErr').hidden = true;
     nick = n; nickInp.value = n; try { localStorage.setItem(NICK_KEY, n); } catch (e) {}
     nickInp.blur(); return true;
   }
