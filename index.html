@@ -1810,7 +1810,7 @@ if (gcOn) {
     logEv('wave', L('evWave', wave, n));
     sfx.wave();
   }
-  function startPlay(fromIntro) {
+  function startPlay(fromIntro) {window.StopWisdom&&StopWisdom.hide();
     TILT.calibrate();
     introSeen = true; state = 'play'; track('start');
     titleOv.style.display = 'none'; endOv.style.display = 'none'; pauseOv.style.display = 'none'; skipBtn.style.display = 'none';
@@ -2830,7 +2830,7 @@ if (gcOn) {
   LB.flushQueue();
   $('startBtn').addEventListener('click', () => {
     if (!acceptNick() || leaving) return;
-    unlockAudio(); sfx.click();
+    unlockAudio(); sfx.click(); window.StopWisdom&&StopWisdom.hide();
     beginLeave(() => {
       if (skipIntroPref) { startPlay(false); return; }      // START from the menu always plays the intro when 'show intro' is ticked
       titleOv.style.display = 'none';                       // hide the menu, otherwise it covers the intro (bug in v4.5)
@@ -2878,5 +2878,7 @@ if (gcOn) {
     .then(() => { booted = true; renderThumb(); refit(); requestAnimationFrame(loop); });
 })();
 </script>
+<script src="https://stop60.no/assets/wisdom.js" defer></script>
+<script>addEventListener("load",function(){window.StopWisdom&&StopWisdom.show({before:document.getElementById("startBtn").parentNode})});</script>
 </body>
 </html>
