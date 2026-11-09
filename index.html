@@ -8,16 +8,27 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#1c1518" />
-  <title>SNEAKY BUGS – Atak Czarnych Robaków</title>
+  <title>Sneaky Bugs – darmowa gra bez reklam | Stop60</title>
   <meta name="apple-mobile-web-app-title" content="Sneaky Bugs" />
   <meta name="application-name" content="SNEAKY BUGS" />
-  <meta name="description" content="SNEAKY BUGS – nocny TRUCK PARK, 60 sekund, czarne robaki o czerwonych oczach. Gra w przeglądarce na telefon." />
-  <meta property="og:title" content="SNEAKY BUGS" />
-  <meta property="og:description" content="Atak Czarnych Robaków · nocny TRUCK PARK · 60 s" />
+  <meta name="description" content="Darmowa gra bez reklam w przeglądarce: nocny truck park, 60 sekund, czarne robaki o czerwonych oczach. Bez konta – zagraj w Sneaky Bugs." />
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <meta property="og:title" content="Sneaky Bugs – darmowa gra bez reklam | Stop60" />
+  <meta property="og:description" content="Darmowa gra bez reklam w przeglądarce: nocny truck park, 60 sekund, czarne robaki o czerwonych oczach. Bez konta – zagraj w Sneaky Bugs." />
   <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Stop60" />
   <meta property="og:url" content="https://stop60.no/robaki/" />
+  <meta property="og:locale" content="pl_PL" />
+  <meta property="og:locale:alternate" content="en_GB" />
   <link rel="canonical" href="https://stop60.no/robaki/" />
+  <link rel="alternate" hreflang="pl" href="https://stop60.no/robaki/" />
+  <link rel="alternate" hreflang="en" href="https://stop60.no/robaki/en/" />
+  <link rel="alternate" hreflang="x-default" href="https://stop60.no/robaki/" />
   <meta property="og:image" content="https://stop60.no/robaki/intro.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Sneaky Bugs – darmowa gra bez reklam | Stop60" />
+  <meta name="twitter:description" content="Darmowa gra bez reklam w przeglądarce: nocny truck park, 60 sekund, czarne robaki o czerwonych oczach. Bez konta – zagraj w Sneaky Bugs." />
+  <meta name="twitter:image" content="https://stop60.no/robaki/intro.jpg" />
   <meta name="copyright" content="© 2026 Stop60" />
   <meta name="robaki-version" content="v4.6-maciek-parking" />
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=1"/>
@@ -454,7 +465,8 @@
 <script>
 (() => {
   'use strict';
-  // ---------- i18n: Polish (default for pl) / English. Priority: ?lang= or /en/ link > saved choice > browser language ----------
+  // ---------- i18n: Polish at /robaki/ (default), English at /robaki/en/. Priority: ?lang= > language path > saved choice > browser language ----------
+  // en/index.html carries the same program. Keep this script identical there; only its head and the static menu text are English. ----------
   var TILT_KEY = 'robaki_tilt_v1';
 /* Optional tilt steering (DeviceOrientation). Off by default; touch stays the default. Test build only. */
 var TILT = (function () {
@@ -501,7 +513,9 @@ var TILT = (function () {
   const LANG_KEY = 'robaki_lang_v1';
   const STR = {
     pl: {
-      docTitle: 'SNEAKY BUGS – Atak Czarnych Robaków', htmlLang: 'pl',
+      docTitle: 'Sneaky Bugs – darmowa gra bez reklam | Stop60',
+      metaDesc: 'Darmowa gra bez reklam w przeglądarce: nocny truck park, 60 sekund, czarne robaki o czerwonych oczach. Bez konta – zagraj w Sneaky Bugs.',
+      htmlLang: 'pl',
       hudTime: 'CZAS', hudCab: 'KABINA', hudPoints: 'PUNKTY', aPause: 'Pauza', aSound: 'Dźwięk', aLang: 'Język',
       share: 'Udostępnij', shareScore: 'Udostępnij wynik', copied: 'Link skopiowany', copyPrompt: 'Skopiuj link',
       shareText: 'SNEAKY BUGS – Atak Czarnych Robaków. Nocny truck park, 60 sekund i czarne robaki o czerwonych oczach. Zagraj w przeglądarce:',
@@ -544,7 +558,9 @@ var TILT = (function () {
       noteEmpty: 'Ranking online jest jeszcze pusty — pokazuję wyniki z tego urządzenia.', noteDown: 'Ranking online jest chwilowo niedostępny — pokazuję wyniki z tego urządzenia.',
     },
     en: {
-      docTitle: 'SNEAKY BUGS – Attack of the Black Bugs', htmlLang: 'en',
+      docTitle: 'Sneaky Bugs – free browser game, no ads | Stop60',
+      metaDesc: 'Free browser game, no ads: a night-time truck park, 60 seconds and black bugs with glowing red eyes. No account – play Sneaky Bugs.',
+      htmlLang: 'en',
       hudTime: 'TIME', hudCab: 'CAB', hudPoints: 'POINTS', aPause: 'Pause', aSound: 'Sound', aLang: 'Language',
       share: 'Share', shareScore: 'Share score', copied: 'Link copied', copyPrompt: 'Copy the link',
       shareText: 'SNEAKY BUGS – Attack of the Black Bugs. A night-time truck park, 60 seconds and black bugs with glowing red eyes. Play in your browser:',
@@ -587,10 +603,19 @@ var TILT = (function () {
       noteEmpty: 'The online leaderboard is still empty — showing scores from this device.', noteDown: 'The online leaderboard is down right now — showing scores from this device.',
     },
   };
+  function editionFromPath() {
+    let p = (location.pathname || '').replace(/\/index\.html$/i, '');
+    if (p.length > 1 && p.endsWith('/')) p = p.slice(0, -1);
+    if (p.endsWith('/en')) return 'en';
+    if (p.endsWith('/pl')) return 'pl';
+    return '';
+  }
   let LANG = (() => {
     try {
       const q = new URLSearchParams(location.search).get('lang');
       if (q === 'pl' || q === 'en') { localStorage.setItem(LANG_KEY, q); return q; }
+      const fromPath = editionFromPath();
+      if (fromPath) { localStorage.setItem(LANG_KEY, fromPath); return fromPath; }
       const s = localStorage.getItem(LANG_KEY); if (s === 'pl' || s === 'en') return s;
     } catch (e) {}
     return /^pl\b/i.test(navigator.language || '') ? 'pl' : 'en';
@@ -2796,6 +2821,16 @@ if (gcOn) {
   function applyLang(l) {
     if (l) { LANG = l; try { localStorage.setItem(LANG_KEY, l); } catch (e) {} }
     document.documentElement.lang = L('htmlLang'); document.title = L('docTitle');
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute('content', L('metaDesc'));
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) ogTitle.setAttribute('content', L('docTitle'));
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc) ogDesc.setAttribute('content', L('metaDesc'));
+    const twTitle = document.querySelector('meta[name="twitter:title"]');
+    if (twTitle) twTitle.setAttribute('content', L('docTitle'));
+    const twDesc = document.querySelector('meta[name="twitter:description"]');
+    if (twDesc) twDesc.setAttribute('content', L('metaDesc'));
     document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = L(el.dataset.i18n); });          // textContent only: no HTML injection
     document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = L(el.dataset.i18nPh); });
     document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', L(el.dataset.i18nAria)); });
