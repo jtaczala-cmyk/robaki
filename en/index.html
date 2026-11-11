@@ -32,7 +32,7 @@
   <meta name="twitter:description" content="Free browser game, no ads: a night-time truck park, 60 seconds and black bugs with glowing red eyes. No account – play Sneaky Bugs." />
   <meta name="twitter:image" content="https://stop60.no/robaki/intro.jpg" />
   <meta name="copyright" content="© 2026 Stop60" />
-  <meta name="robaki-version" content="v4.6-maciek-parking" />
+  <meta name="robaki-version" content="v4.6-magic-parking" />
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=1"/>
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1"/>
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png?v=1"/>
@@ -810,7 +810,7 @@ if (gcOn) {
     if (on) { unlockAudio(); if (master) master.gain.setValueAtTime(1, actx.currentTime); sfx.click(); }
     else { if (master) master.gain.setValueAtTime(0, actx.currentTime); try { if (keepAlive) keepAlive.pause(); } catch(e) {} }
   }
-  // ---------- v4.6: procedural heavy-metal guitar solo for the MACIEK PARKING sign (Web Audio only, no audio files) ----------
+  // ---------- v4.6: procedural heavy-metal guitar solo for the MAGIC PARKING sign (Web Audio only, no audio files) ----------
   // self-contained (ac, out, t0, D): distorted saw+square lead (bends, vibrato, pentatonic shred) -> E5 power chord; silent exactly at t0 + D
   function metalSolo(ac, out, t0, D) {
     const n2f = m => 440 * Math.pow(2, (m - 69) / 12), at = s => t0 + s;
@@ -1225,7 +1225,7 @@ if (gcOn) {
       g.stroke();
       g.strokeStyle = 'rgba(231,180,22,.75)'; g.lineWidth = 3; g.setLineDash([26, 18]); g.beginPath(); g.moveTo(1172, 780); g.lineTo(1172, 1400); g.moveTo(1172, 1500); g.lineTo(1172, 1880); g.stroke(); g.setLineDash([]);
       g.textAlign = 'center';
-      if (g === ctx) drawParkSign(g, v);              // the big lot lettering is drawn live (TRUCK PARK -> MACIEK PARKING), not baked into tiles
+      if (g === ctx) drawParkSign(g, v);              // the big lot lettering is drawn live (TRUCK PARK -> MAGIC PARKING), not baked into tiles
       g.fillStyle = 'rgba(245,245,245,.42)'; g.font = F('700', 26, THEME.fontUI); g.fillText('24/7 · P', 1172, 1025);
     }
     if (inView(v, 300, 330, 2100, 360)) {
@@ -1253,9 +1253,9 @@ if (gcOn) {
     }
     drawGroundWear(g, v);
   }
-  // ---------- v4.6: painted lot lettering 'TRUCK PARK' -> 'MACIEK PARKING' (glitch + letter flip + red flash), once per page load ----------
+  // ---------- v4.6: painted lot lettering 'TRUCK PARK' -> 'MAGIC PARKING' (glitch + letter flip + red flash), once per page load ----------
   // trigger: the first time the lettering is on screen in a round (normally right at the first START, the truck starts just below it)
-  const PARK_SIGN = { x: 1172, y: 1478, from: 'TRUCK PARK', to: 'MACIEK PARKING', D: 3.2, TF: 2.55 };
+  const PARK_SIGN = { x: 1172, y: 1478, from: 'TRUCK PARK', to: 'MAGIC PARKING', D: 3.2, TF: 2.55 };
   const parkMorph = { st: 'idle', t0: 0, solo: null };     // idle | run | done
   const GLYPHS = 'ABCDEFGHIKLMNOPRSTUVWXYZ#%&@!?0123456789';
   const hr = a => { const x = Math.sin(a * 12.9898 + 78.233) * 43758.5453; return x - Math.floor(x); };
@@ -1319,7 +1319,7 @@ if (gcOn) {
     const punch = after >= 0 ? 1 + 0.12 * Math.max(0, 1 - after / 0.28) : 1;
     const baseA = after >= 0 ? lerp(1, 0.55, clamp(after / (P.D - P.TF), 0, 1)) : 0.95;
     g.save(); g.translate(P.x, my); g.scale(punch, punch); g.translate(-P.x, -my);
-    for (let i = 0; i < n; i++) {                     // 2) letters flip one by one into MACIEK PARKING
+    for (let i = 0; i < n; i++) {                     // 2) letters flip one by one into MAGIC PARKING
       const c = txt[i]; if (c === ' ') continue;
       const cx = x0 + g.measureText(txt.slice(0, i)).width + g.measureText(c).width / 2, tr = 0.95 + i / (n - 1) * 1.45;
       const glyph = GLYPHS[Math.floor(hr(fr * 13 + i * 5) * GLYPHS.length)];
