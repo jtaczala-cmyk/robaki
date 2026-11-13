@@ -32,7 +32,7 @@
   <meta name="twitter:description" content="Free browser game, no ads: a night-time truck park, 60 seconds and black bugs with glowing red eyes. No account – play Sneaky Bugs." />
   <meta name="twitter:image" content="https://stop60.no/robaki/intro.jpg" />
   <meta name="copyright" content="© 2026 Stop60" />
-  <meta name="robaki-version" content="v4.6-maciek-parking" />
+  <meta name="robaki-version" content="v4.7-fast-start" />
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=1"/>
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1"/>
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png?v=1"/>
@@ -318,6 +318,10 @@
       font-size: 15px; font-weight: 700; padding: 10px 18px; min-width: 0; min-height: 46px;
       background: var(--c-gold) !important; color: var(--c-ink) !important; box-shadow: 0 0 0 2px rgba(0,0,0,.65), 0 4px 16px rgba(0,0,0,.7); }
     #title-overlay.cold #coldSkip { display: block; pointer-events: auto; }
+    /* v4.7: QR is for passing the game to a phone; hide it when the player is already on one */
+    @media (max-width:900px), (pointer:coarse){
+      .qrbox, #menuQr, figure.endqr, #endQr { display: none !important; }
+    }
     #title-overlay.show-menu .logo-top { animation: logoIn .62s cubic-bezier(.16,.84,.32,1) both; }
     #title-overlay.show-menu .logo-main { animation: logoIn .7s cubic-bezier(.16,.84,.32,1) .08s both; }
     #title-overlay.show-menu .logo-pl { animation: logoIn .7s cubic-bezier(.16,.84,.32,1) .18s both; text-shadow: 0 0 16px rgba(255,80,110,.45); }
@@ -403,7 +407,7 @@
             <p><span data-i18n="lbNote">Your nickname and score go on a public online leaderboard. Don't use your real name or email.</span> <a href="en/privacy/" target="_blank" rel="noopener" data-i18n="privacy" data-i18n-href="privacyHref">Privacy</a></p>
             <label class="chk"><input type="checkbox" id="lbConsent" /> <span data-i18n="lbConsent">I am 16 or older (18 or older in India) and want my nickname, score, bugs and wave shown on the online leaderboard</span></label>
           </div>
-          <label class="chk"><input type="checkbox" id="showIntroChk" checked /> <span data-i18n="showIntro">Show the intro before the game</span></label>
+          <label class="chk"><input type="checkbox" id="showIntroChk" /> <span data-i18n="showIntro">Show the intro before the game</span></label>
           <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><label class="chk"><input type="checkbox" id="tiltChk" /> <span data-i18n="tilt">Tilt control</span></label><button type="button" id="tiltCal" class="btn ghost" data-i18n="calib" style="margin:0;min-height:36px;min-width:0;padding:4px 12px;font-size:13px" hidden>Calibrate</button></div>
           <p id="tiltMsg" role="status" style="color:#ffba14;font-size:12px;margin:2px 0" hidden></p>
         </div>
@@ -524,7 +528,7 @@ var TILT = (function () {
       shareScoreText: (sc, w) => `Mam ${sc} pkt w SNEAKY BUGS (fala ${w}). Pobijesz mój wynik?`,
       qrLabel: 'Zeskanuj i zagraj', qrShare: 'Zeskanuj i zagraj — podaj dalej',
       logoSub: 'NOCNY TRUCK PARK · 60 S', logoPl: 'Atak Czarnych Robaków',
-      coldKicker: 'SNEAKY BUGS', coldL1: 'ATAK', coldL2: 'CZARNYCH ROBAKÓW', coldTap: 'DOTKNIJ, ABY WEJŚĆ', coldSkip: 'POMIŃ ›',
+      coldKicker: 'SNEAKY BUGS', coldL1: 'ATAK', coldL2: 'CZARNYCH ROBAKÓW', coldTap: 'DOTKNIJ, ABY GRAĆ', coldSkip: 'MENU',
       chk1: '60 s + premie', chk2: 'Fale 6·8·10·12…', chk3: '5 stref na mapie', chk4: 'Umiejętności',
       howto: 'Przytrzymaj palec — ciężarówka jedzie w to miejsce. Rozjeżdżaj robaki w\u00a0ruchu i\u00a0uciekaj przed jadem. Co 6 robaków nowa umiejętność, co 5 robaków +1\u00a0s. Uwaga: gra ma błyski i\u00a0wybuchy.',
       icRepair: 'naprawa', icTurbo: 'turbo', icCrush: 'miażdż.', icArmor: 'pancerz', icHorn: 'klakson',
@@ -569,7 +573,7 @@ var TILT = (function () {
       shareScoreText: (sc, w) => `I scored ${sc} points in SNEAKY BUGS (wave ${w}). Can you beat that?`,
       qrLabel: 'Scan & play', qrShare: 'Scan & play — pass it on',
       logoSub: 'NIGHT TRUCK PARK · 60 S', logoPl: 'Attack of the Black Bugs',
-      coldKicker: 'SNEAKY BUGS', coldL1: 'ATTACK', coldL2: 'OF THE BLACK BUGS', coldTap: 'TAP TO ENTER', coldSkip: 'SKIP ›',
+      coldKicker: 'SNEAKY BUGS', coldL1: 'ATTACK', coldL2: 'OF THE BLACK BUGS', coldTap: 'TAP TO PLAY', coldSkip: 'MENU',
       chk1: '60 s + bonuses', chk2: 'Waves 6·8·10·12…', chk3: '5 map zones', chk4: 'Skills',
       howto: 'Hold your finger down — the truck drives to that spot. Squash bugs on the move and dodge the venom. Every 6 bugs = a new skill, every 5 bugs = +1\u00a0s. Note: flashes and explosions.',
       icRepair: 'repair', icTurbo: 'turbo', icCrush: 'crush', icArmor: 'armor', icHorn: 'horn',
@@ -877,10 +881,9 @@ if (gcOn) {
 
 
   // ---------- nick ----------
-  // intro option is a positive 'show intro' checkbox (on by default); the old 'skip intro' value (robaki_skipintro_v1) is dropped,
-  // so a stale saved 'skip' can never hide the intro again
+  // v4.7: intro is off unless the player ticks 'show intro' (saved as '1'). A previous explicit '0' still skips.
   const NICK_KEY = 'robaki_nick_v1', SHOWINTRO_KEY = 'robaki_showintro_v2';
-  let skipIntroPref = false; try { skipIntroPref = localStorage.getItem(SHOWINTRO_KEY) === '0'; localStorage.removeItem('robaki_skipintro_v1'); } catch (e) {}
+  let skipIntroPref = true; try { const v = localStorage.getItem(SHOWINTRO_KEY); if (v === '1') skipIntroPref = false; else if (v === '0') skipIntroPref = true; localStorage.removeItem('robaki_skipintro_v1'); } catch (e) {}
   const NAME_RE = /^[0-9A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźżÆØÅæøåÄÖÜäöüÉÈÁéèáß][0-9A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźżÆØÅæøåÄÖÜäöüÉÈÁéèáß _.'-]*$/;
   const BAD_SUB = ['kurw','chuj','pierdol','pierdal','jeban','jebac','jebie','zajeb','wyjeb','pizd','dziwk','szmat','kutas','cwel','ruchac','skurwiel',
     'faen','fitte','fitta','hestkuk','jaevel','jaevla','fanden','rasshol','rasshul','drittsekk','neger',
@@ -2571,6 +2574,12 @@ if (gcOn) {
     if (!stingPlayed) { stingPlayed = true; try { sfx.intro(); } catch (e) {} }
     showMenu();
   }
+  function playFromCold() {
+    if (state !== 'cold') return;
+    unlockAudio();
+    if (!stingPlayed) { stingPlayed = true; try { sfx.intro(); } catch (e) {} }
+    startPlay(false);
+  }
   function beginLeave(next) {
     if (leaving) return;
     leaving = true; leaveT = 0; leaveNext = next;
@@ -2579,7 +2588,7 @@ if (gcOn) {
   function updateCold(dt) {
     coldT += dt;
     if (!stingPlayed && coldT > 1.2 && audioReady()) { stingPlayed = true; sfx.intro(); }
-    if (coldT > 7.1) showMenu();
+    if (coldT > 2.0) showMenu();
   }
   function drawColdLogo() {
     const t = coldT, cx = W / 2;
@@ -2880,7 +2889,7 @@ if (gcOn) {
   titleOv.addEventListener('pointerdown', e => {
     if (state !== 'cold') return;
     if (e.target && e.target.closest && e.target.closest('#coldSkip, a, button, input, label')) return;
-    skipCold();
+    playFromCold();
   });
   skipBtn.addEventListener('click', () => { unlockAudio(); startPlay(false); });
   $('againBtn').addEventListener('click', () => { unlockAudio(); startPlay(false); });
