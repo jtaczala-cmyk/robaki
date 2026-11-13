@@ -804,7 +804,7 @@ if (gcOn) {
     sn.connect(f); f.connect(g); g.connect(master); sn.start(t0); sn.stop(t0+dur+0.02);
   }
   const sfx = {
-    squash: (c) => { noise(0.2, 0.8, 1800); tone(220 + Math.min(c,6)*55, 0.14, 'sawtooth', 0.28, -150); tone(70, 0.12, 'sine', 0.5, -30); },
+    squash: (c) => { const juicy = c >= 3; noise(juicy ? 0.22 : 0.2, juicy ? 0.92 : 0.8, juicy ? 1500 : 1800); tone(220 + Math.min(c,6)*55, 0.14, 'sawtooth', juicy ? 0.32 : 0.28, -150); tone(juicy ? 62 : 70, juicy ? 0.15 : 0.12, 'sine', juicy ? 0.58 : 0.5, -30); },
     hit:    () => { noise(0.26, 0.7, 500); tone(110, 0.22, 'square', 0.3, -60); },
     bite:   () => { tone(160, 0.07, 'square', 0.2, -70); noise(0.05, 0.25, 2500); },
     spit:   () => { tone(760, 0.09, 'sine', 0.1, -420); },
@@ -1570,7 +1570,7 @@ if (gcOn) {
   let Zg = 0.9;
   let bugs = [], shots = [], particles = [], floaters = [], splats = [], pickups = [], rings = [];
   let score = 0, timeLeft = ROUND, kills = 0, wave = 0, pending = 0, spawnCd = 0, waveTimer = 0;
-  let pickupCd = 6, combo = 0, comboT = 0, bestCombo = 0, invuln = 0, biteSnd = 0, shake = 0, flash = 0, playT = 0, thudCd = 0;
+  let pickupCd = 6, combo = 0, comboT = 0, bestCombo = 0, invuln = 0, biteSnd = 0, shake = 0, flash = 0, successFlash = 0, playT = 0, thudCd = 0;
   let skills = { turbo: 0, armor: 0, crush: 0 }, skillIdx = 0, skillsGot = 0, timeGained = 0;
   let curZone = null, visited = new Set(), introBugs = [], riders = [];
   const keys = {};
@@ -1750,7 +1750,9 @@ if (gcOn) {
     rings.push({ x: b.x, y: b.y, r: 8, t: .34, col: b.big ? '#ffd36a' : '#b6ff6a' });
     floater(b.x, b.y - 12, '+' + add + (mult > 1 ? ' x' + mult : ''), mult > 1 ? THEME.gold : THEME.white, 13);
     bugs.splice(i, 1);
-    sfx.squash(combo); vibrate(b.big ? 40 : 15); shake = Math.max(shake, b.big ? .15 : .06);
+    sfx.squash(combo); vibrate(b.big ? 40 : 15); shake = Math.max(shake, b.big ? .20 : .10);
+    // v4.9-hit-juice: brief warm flash on a squash, a touch longer on a combo or a big bug (the red `flash` stays damage-only)
+    successFlash = Math.max(successFlash, (combo >= 3 || b.big) ? .16 : .12);
     if (b.big || Math.random() < 0.1) spawnPickup(null, b.x, b.y);
     if (kills % TIME_EVERY === 0) addTime(TIME_KILL_BONUS, truck.x, truck.y - 70, L('whyKills', kills));       // running over bugs extends the round
     if (kills % SKILL_EVERY === 0) {
@@ -1835,7 +1837,7 @@ if (gcOn) {
     truck.hp = 100; truck.smashR = BASE_SMASH; truck.maxSpeed = BASE_SPEED;
     bugs = []; shots = []; particles = []; floaters = []; splats = []; pickups = []; rings = [];
     score = 0; timeLeft = ROUND; kills = 0; wave = 1; pending = 0; spawnCd = 0; waveTimer = WAVE_INT;
-    combo = 0; comboT = 0; bestCombo = 0; invuln = 0; shake = 0; flash = 0; playT = 0; thudCd = 0; hits = 0;
+    combo = 0; comboT = 0; bestCombo = 0; invuln = 0; shake = 0; flash = 0; successFlash = 0; playT = 0; thudCd = 0; hits = 0;
     skills = { turbo: 0, armor: 0, crush: 0 }; skillIdx = 0; skillsGot = 0; timeGained = 0;
     pickupCd = 5; touch.active = false; lightPhase = 'game'; hornQueued = false; blockedT = 0; reverseT = 0; stuckT = 0; revN = 0; freeT = 0; truck.wasHit = false;
     curZone = zoneAt(truck.x, truck.y); visited = new Set([curZone.id]);
@@ -1941,7 +1943,7 @@ if (gcOn) {
     playT += dt;
     for (const k of ['turbo', 'armor', 'crush']) if (skills[k] > 0) { skills[k] -= dt; if (skills[k] <= 0) { skills[k] = 0; if (k === 'turbo') truck.maxSpeed = BASE_SPEED; if (k === 'crush') truck.smashR = BASE_SMASH; } }
     if (hornQueued) { hornQueued = false; hornBlast(); }
-    invuln = Math.max(0, invuln - dt); shake = Math.max(0, shake - dt); flash = Math.max(0, flash - dt); thudCd -= dt; biteSnd -= dt;
+    invuln = Math.max(0, invuln - dt); shake = Math.max(0, shake - dt); flash = Math.max(0, flash - dt); successFlash = Math.max(0, successFlash - dt); thudCd -= dt; biteSnd -= dt;
     if (comboT > 0) { comboT -= dt; if (comboT <= 0) endCombo(); }
 
     let throttle = 0, turnBy = 0;
@@ -2332,6 +2334,8 @@ if (gcOn) {
     drawIndicators();
     drawMinimap();
     if (flash > 0) { ctx.fillStyle = 'rgba(237,53,75,' + (flash * .45).toFixed(3) + ')'; ctx.fillRect(0, 0, W, H); }
+    // v4.9-hit-juice: warm success flash, drawn like the damage flash and never written by a bite
+    if (successFlash > 0) { ctx.fillStyle = 'rgba(255,214,150,' + (successFlash * .5).toFixed(3) + ')'; ctx.fillRect(0, 0, W, H); }
     if (truck.hp < 30) { ctx.fillStyle = 'rgba(160,0,0,' + (.12 + Math.sin(playT * 6) * .08).toFixed(3) + ')'; ctx.fillRect(0, 0, W, H); }
     if (playT < 0.45) { ctx.fillStyle = 'rgba(0,0,0,' + (1 - playT / 0.45).toFixed(3) + ')'; ctx.fillRect(0, 0, W, H); }
   }
