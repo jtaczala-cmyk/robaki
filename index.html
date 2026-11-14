@@ -30,7 +30,7 @@
   <meta name="twitter:description" content="Darmowa gra bez reklam w przeglądarce: nocny truck park, 60 sekund, czarne robaki o czerwonych oczach. Bez konta – zagraj w Sneaky Bugs." />
   <meta name="twitter:image" content="https://stop60.no/robaki/intro.jpg" />
   <meta name="copyright" content="© 2026 Stop60" />
-  <meta name="robaki-version" content="v4.7-fast-start" />
+  <meta name="robaki-version" content="v4.10-hold-title" />
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=1"/>
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1"/>
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png?v=1"/>
@@ -2601,7 +2601,6 @@ if (gcOn) {
   function updateCold(dt) {
     coldT += dt;
     if (!stingPlayed && coldT > 1.2 && audioReady()) { stingPlayed = true; sfx.intro(); }
-    if (coldT > 2.0) showMenu();
   }
   function drawColdLogo() {
     const t = coldT, cx = W / 2;
@@ -2801,7 +2800,16 @@ if (gcOn) {
   window.addEventListener('keydown', e => {
     if (e.target && e.target.tagName === 'INPUT') return;
     const k = e.key.toLowerCase();
-    if (state === 'cold') { if (k !== 'tab') { skipCold(); e.preventDefault(); } return; }
+    if (state === 'cold') {
+      // Space, Enter, or a plain letter starts like a tap. Escape opens the menu. Tab does not start.
+      if (k === 'escape') { skipCold(); e.preventDefault(); return; }
+      if (k === 'tab') return;
+      const tag = e.target && e.target.tagName;
+      const activatesControl = (tag === 'BUTTON' || tag === 'A') && (k === ' ' || k === 'enter');
+      const plainLetter = !e.ctrlKey && !e.altKey && !e.metaKey && k.length === 1 && /\p{L}/u.test(k);
+      if (!activatesControl && (k === ' ' || k === 'enter' || plainLetter)) { playFromCold(); e.preventDefault(); }
+      return;
+    }
     if (state === 'intro' && (k === 'escape' || k === 'enter' || k === ' ')) { e.preventDefault(); skipBtn.click(); return; }
     keys[k] = true;
     if (k === 'p' || k === 'escape') { state === 'play' ? pause() : resume(); }
