@@ -33,12 +33,12 @@
   <meta name="twitter:image" content="https://stop60.no/robaki/intro.jpg" />
   <meta name="copyright" content="© 2026 Stop60" />
   <meta name="robaki-version" content="v4.10-hold-title" />
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=1"/>
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1"/>
-  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png?v=1"/>
-  <link rel="icon" href="favicon.ico?v=1" sizes="any"/>
-  <link rel="manifest" href="manifest.webmanifest?v=1"/>
-  <link rel="stylesheet" href="fonts/fonts.css?v=4.4" />
+  <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png?v=1"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png?v=1"/>
+  <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16.png?v=1"/>
+  <link rel="icon" href="../favicon.ico?v=1" sizes="any"/>
+  <link rel="manifest" href="../manifest.webmanifest?v=1"/>
+  <link rel="stylesheet" href="../fonts/fonts.css?v=4.4" />
   <style>
     /* =====================================================================
        THEME — every colour / font of the game lives here.
@@ -363,7 +363,7 @@
     }
   /* stop60 flags v1 */#langSw .ibtn{line-height:1}#langSw .ibtn::before{content:'';display:block;width:16px;height:11px;margin:0 auto 2px;border-radius:2px;background:no-repeat center/100% 100%;box-shadow:0 0 0 1px rgba(0,0,0,.5)}#langSw [data-lang=pl]::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 10'%3E%3Crect width='16' height='10' fill='%23fff'/%3E%3Crect y='5' width='16' height='5' fill='%23dc143c'/%3E%3C/svg%3E")}#langSw [data-lang=en]::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30' preserveAspectRatio='none'%3E%3Crect width='60' height='30' fill='%23012169'/%3E%3Cpath d='M0 0l60 30M60 0L0 30' stroke='%23fff' stroke-width='6'/%3E%3Cpath d='M0 0l60 30M60 0L0 30' stroke='%23c8102e' stroke-width='2.4'/%3E%3Cpath d='M30 0v30M0 15h60' stroke='%23fff' stroke-width='10'/%3E%3Cpath d='M30 0v30M0 15h60' stroke='%23c8102e' stroke-width='6'/%3E%3C/svg%3E")}
 </style>
-</head>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "VideoGame", "name": "Sneaky Bugs", "url": "https://stop60.no/robaki/en/", "description": "Free browser game, no ads: a night-time truck park, 60 seconds and black bugs with glowing red eyes. No account – play Sneaky Bugs.", "image": "https://stop60.no/robaki/intro.jpg", "inLanguage": ["pl", "en"], "genre": ["Arcade"], "gamePlatform": "Web browser", "applicationCategory": "GameApplication", "operatingSystem": "Any (web browser)", "playMode": "SinglePlayer", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "NOK"}, "publisher": {"@type": "Organization", "name": "Stop60", "url": "https://stop60.no/"}, "copyrightYear": 2026}</script></head>
 <body>
   <div id="wrap">
     <div id="stage">
@@ -414,7 +414,7 @@
           <input id="nick" type="text" maxlength="16" autocomplete="nickname" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="e.g. Jack" data-i18n-ph="nickPh" />
           <div class="err" id="nickErr"></div>
           <div class="lb-note">
-            <p><span data-i18n="lbNote">Your nickname and score go on a public online leaderboard. Don't use your real name or email.</span> <a href="en/privacy/" target="_blank" rel="noopener" data-i18n="privacy" data-i18n-href="privacyHref">Privacy</a></p>
+            <p><span data-i18n="lbNote">Your nickname and score go on a public online leaderboard. Don't use your real name or email.</span> <a href="privacy/" target="_blank" rel="noopener" data-i18n="privacy" data-i18n-href="privacyHref">Privacy</a></p>
             <label class="chk"><input type="checkbox" id="lbConsent" /> <span data-i18n="lbConsent">I am 16 or older (18 or older in India) and want my nickname, score, bugs and wave shown on the online leaderboard</span></label>
           </div>
           <label class="chk"><input type="checkbox" id="showIntroChk" /> <span data-i18n="showIntro">Show the intro before the game</span></label>
@@ -427,7 +427,7 @@
           <button id="startBtn" class="btn" type="button" data-i18n="start">START</button>
           <button id="rankBtn" class="btn ghost" type="button" data-i18n="ranking">LEADERBOARD</button>
         </div>
-        <p class="legal">© 2026 Stop60 · <a href="en/privacy/" target="_blank" rel="noopener" data-i18n="privacy" data-i18n-href="privacyHref">Privacy</a> · <a href="en/info/" target="_blank" rel="noopener" data-i18n="terms" data-i18n-href="termsHref">Terms &amp; licences</a> · <a href="#about">About the game</a></p>
+        <p class="legal">© 2026 Stop60 · <a href="privacy/" target="_blank" rel="noopener" data-i18n="privacy" data-i18n-href="privacyHref">Privacy</a> · <a href="info/" target="_blank" rel="noopener" data-i18n="terms" data-i18n-href="termsHref">Terms &amp; licences</a> · <a href="#about">About the game</a></p>
         </div>
         <div class="mQ">
           <div class="qrbox"><figure class="qr" id="menuQr" role="img" aria-label="QR: https://stop60.no/robaki/"><svg class="qrsvg" viewBox="0 0 37 37" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><rect width="37" height="37" fill="#fff"/><path transform="translate(4 4)" stroke="#000" d="M0 0.5h7m1 0h8m2 0h1m3 0h7m-29 1h1m5 0h1m1 0h1m1 0h1m2 0h3m1 0h3m2 0h1m5 0h1m-29 1h1m1 0h3m1 0h1m1 0h7m4 0h1m2 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m2 0h1m2 0h1m1 0h2m1 0h1m2 0h1m1 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m1 0h4m1 0h1m1 0h1m2 0h2m2 0h1m1 0h3m1 0h1m-29 1h1m5 0h1m2 0h1m3 0h2m2 0h2m3 0h1m5 0h1m-29 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-19 1h2m2 0h1m5 0h1m-21 1h1m2 0h17m1 0h1m2 0h1m1 0h3m-29 1h3m1 0h1m4 0h4m1 0h1m2 0h3m1 0h1m2 0h1m1 0h2m-28 1h3m1 0h1m1 0h2m2 0h1m1 0h1m1 0h1m8 0h2m1 0h1m-26 1h1m1 0h3m1 0h1m1 0h2m3 0h2m1 0h1m1 0h2m2 0h3m2 0h1m-29 1h1m3 0h3m3 0h1m2 0h2m2 0h2m1 0h3m5 0h1m-29 1h2m3 0h1m2 0h2m1 0h2m4 0h2m2 0h8m-28 1h2m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h2m1 0h1m1 0h1m1 0h3m2 0h1m1 0h1m-27 1h1m4 0h1m3 0h4m1 0h5m1 0h2m2 0h1m1 0h1m-27 1h2m1 0h4m3 0h1m2 0h1m1 0h1m3 0h1m1 0h1m1 0h1m-26 1h1m3 0h2m1 0h4m1 0h1m4 0h4m3 0h1m1 0h2m-28 1h2m1 0h6m3 0h3m1 0h4m3 0h3m2 0h1m-29 1h3m4 0h1m2 0h4m1 0h2m5 0h5m-27 1h3m1 0h1m1 0h1m1 0h1m3 0h2m4 0h1m1 0h8m-20 1h6m2 0h2m2 0h1m3 0h2m-26 1h7m1 0h2m1 0h1m1 0h1m1 0h2m2 0h2m1 0h1m1 0h2m-26 1h1m5 0h1m1 0h6m2 0h1m1 0h1m1 0h1m3 0h1m2 0h2m-29 1h1m1 0h3m1 0h1m1 0h3m1 0h2m1 0h3m1 0h7m1 0h1m-28 1h1m1 0h3m1 0h1m1 0h2m1 0h1m2 0h1m1 0h1m1 0h1m2 0h1m1 0h1m3 0h1m-28 1h1m1 0h3m1 0h1m2 0h1m2 0h1m3 0h1m1 0h1m1 0h2m1 0h2m1 0h3m-29 1h1m5 0h1m4 0h1m1 0h1m1 0h1m5 0h1m1 0h1m1 0h2m1 0h1m-29 1h7m1 0h1m1 0h5m1 0h10"/></svg><figcaption data-i18n="qrLabel">Scan &amp; play</figcaption></figure><button type="button" class="shbtn" id="menuShare"><svg class="shico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg><span data-i18n="share">Share</span></button></div>
@@ -544,7 +544,7 @@ var TILT = (function () {
       icRepair: 'naprawa', icTurbo: 'turbo', icCrush: 'miażdż.', icArmor: 'pancerz', icHorn: 'klakson',
       nickLabel: 'TWÓJ NICK', nickPh: 'np. Jacek',
       lbNote: 'Nick i wynik trafią do publicznego rankingu online. Nie wpisuj imienia i nazwiska ani e-maila.',
-      privacy: 'Prywatność', terms: 'Zasady i licencje', privacyHref: 'prywatnosc/', termsHref: 'informacje/',
+      privacy: 'Prywatność', terms: 'Zasady i licencje', privacyHref: '../prywatnosc/', termsHref: '../informacje/',
       lbConsent: 'Mam co najmniej 16 lat (18 w Indiach) i chcę pokazać nick, punkty, robaki i falę w rankingu online', showIntro: 'Pokaż intro przed grą',
       start: 'START', ranking: 'RANKING', rankKicker: 'Najlepsi kierowcy', rankHead: 'RANKING', back: 'WRÓĆ',
       endKicker: 'Koniec rundy', endTitle: 'KONIEC', points: 'PUNKTÓW', logCap: 'PRZEBIEG GRY', again: 'JESZCZE RAZ', menu: 'MENU',
@@ -589,7 +589,7 @@ var TILT = (function () {
       icRepair: 'repair', icTurbo: 'turbo', icCrush: 'crush', icArmor: 'armor', icHorn: 'horn',
       nickLabel: 'YOUR NICKNAME', nickPh: 'e.g. Jack',
       lbNote: 'Your nickname and score go on a public online leaderboard. Don\'t use your real name or email.',
-      privacy: 'Privacy', terms: 'Terms & licences', privacyHref: 'en/privacy/', termsHref: 'en/info/',
+      privacy: 'Privacy', terms: 'Terms & licences', privacyHref: 'privacy/', termsHref: 'info/',
       lbConsent: 'I am 16 or older (18 or older in India) and want my nickname, score, bugs and wave shown on the online leaderboard', showIntro: 'Show the intro before the game',
       start: 'START', ranking: 'LEADERBOARD', rankKicker: 'Top drivers', rankHead: 'LEADERBOARD', back: 'BACK',
       endKicker: 'Round over', endTitle: 'THE END', points: 'POINTS', logCap: 'GAME LOG', again: 'PLAY AGAIN', menu: 'MENU',
